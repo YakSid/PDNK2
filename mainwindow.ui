@@ -26,7 +26,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
@@ -2185,7 +2185,28 @@ p, li { white-space: pre-wrap; }
      <height>20</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Сохранить</string>
+    </property>
+    <addaction name="action_save"/>
+    <addaction name="action_saveAndExit"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
+  <action name="action_save">
+   <property name="text">
+    <string>Сохранить и продолжить</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="action_saveAndExit">
+   <property name="text">
+    <string>Сохранить и выйти</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

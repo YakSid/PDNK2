@@ -13,6 +13,16 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <widget class="QTableView" name="tableView">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>20</y>
+     <width>461</width>
+     <height>291</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
