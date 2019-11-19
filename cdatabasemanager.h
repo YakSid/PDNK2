@@ -19,7 +19,7 @@ public:
     QSqlDatabase db;
 
 signals:
-    void s_databaseСonnected(bool connected);
+    void s_databaseConnected(bool connected);
 
 public slots:
     void connectDatabase(QString pathDatabase);

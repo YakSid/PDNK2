@@ -6,12 +6,25 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     auto m_startPage = new CStartPage();
-    auto m_databaseManager = new CDatabaseManager();
+    m_databaseManager = new CDatabaseManager();
     connect(m_startPage, &CStartPage::s_connectDatabase, m_databaseManager, &CDatabaseManager::connectDatabase);
-    connect(m_databaseManager, &CDatabaseManager::s_databaseСonnected, m_startPage, &CStartPage::databaseConnected);
-    // запустить стартПейдж
+    connect(m_databaseManager, &CDatabaseManager::s_databaseConnected, m_startPage, &CStartPage::databaseConnected);
+    m_startPage->setModal(true);
+    m_startPage->exec();
+    switch (m_startPage->closeMode) {
+    case 0:
+        exit(0);
+    case 1:
+        // Создать новый приказ
+        // Подготовить главное меню
+        init(); // Пока ничего не делает
+        break;
+    case 2:
+        // Редактировать старый приказ
+        // запустить COrdersPage
+        break;
+    }
     ui->setupUi(this);
-    init(); // Пока ничего не делает
 }
 
 MainWindow::~MainWindow()
