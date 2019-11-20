@@ -37,7 +37,7 @@
          <rect>
           <x>10</x>
           <y>50</y>
-          <width>501</width>
+          <width>531</width>
           <height>351</height>
          </rect>
         </property>
@@ -81,6 +81,21 @@
              <bold>false</bold>
             </font>
            </property>
+           <item>
+            <property name="text">
+             <string>[1] Подготовка департаментов</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[2] Паника от неизвестности</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[3] Открытое противостояние</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item row="1" column="0">
@@ -104,6 +119,26 @@
              <bold>false</bold>
             </font>
            </property>
+           <item>
+            <property name="text">
+             <string>[1] Департамент в неведении</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[2] Некоторые люди подозревают что-то</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[3] Почти все уверены</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[4] Департамент осведомлён</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item row="2" column="0">
@@ -115,7 +150,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Тип приказа:</string>
+            <string>Тип приказа: (только вн)</string>
            </property>
           </widget>
          </item>
@@ -127,6 +162,26 @@
              <bold>false</bold>
             </font>
            </property>
+           <item>
+            <property name="text">
+             <string>[1] Поднять П.О.</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[2] Получить очки знаний</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[3] Увеличить ресурсы</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[4] Прокачать сотрудников</string>
+            </property>
+           </item>
           </widget>
          </item>
          <item row="3" column="0">
@@ -138,7 +193,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Клетка приказа:</string>
+            <string>Клетка приказа: (тлк патр)</string>
            </property>
           </widget>
          </item>
@@ -150,110 +205,166 @@
              <bold>false</bold>
             </font>
            </property>
+           <item>
+            <property name="text">
+             <string>[0] Любая</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[1] Жилой район (бедный)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[2] Жилой район (богатый)</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[3] Заводской район</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[4] Коммерческий район</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[5] Научный район</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[6] Фермерский район</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[7] Дикая природа</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>[д] Департамент</string>
+            </property>
+           </item>
           </widget>
          </item>
-         <item row="4" column="0">
-          <widget class="QCheckBox" name="checkBox_8">
+         <item row="4" column="0" colspan="2">
+          <widget class="QGroupBox" name="groupBox_20">
            <property name="font">
             <font>
              <weight>50</weight>
              <bold>false</bold>
             </font>
            </property>
-           <property name="text">
-            <string>Благополучие клетки:</string>
+           <property name="title">
+            <string>Благополучие клетки</string>
            </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QComboBox" name="comboBox_6">
-           <property name="enabled">
+           <property name="checkable">
             <bool>false</bool>
            </property>
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
+           <property name="checked">
+            <bool>false</bool>
            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>2</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>2</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QCheckBox" name="checkBox_5">
+              <property name="text">
+               <string>Процветающая</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_6">
+              <property name="text">
+               <string>Обычная</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_7">
+              <property name="text">
+               <string>Захламлённая</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_9">
+              <property name="text">
+               <string>Разруха</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBox_10">
+              <property name="text">
+               <string>Заброшенная</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item row="5" column="0">
-          <widget class="QCheckBox" name="checkBox_7">
+          <widget class="QLabel" name="label_26">
            <property name="font">
             <font>
              <weight>50</weight>
              <bold>false</bold>
             </font>
            </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;quot;Точно да&amp;quot; - очевидно дело о вампирах&lt;br/&gt;&amp;quot;Точно нет&amp;quot; - гражданская ситуация, о вампирах ни упоминания&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
-            <string>Предыдущий квест:</string>
+            <string>Упоминаются ли вампиры:</string>
            </property>
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QComboBox" name="comboBox_19">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
+          <widget class="QComboBox" name="comboBox_20">
            <property name="font">
             <font>
              <weight>50</weight>
              <bold>false</bold>
             </font>
            </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QCheckBox" name="checkBox_6">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
+           <property name="toolTip">
+            <string/>
            </property>
-           <property name="text">
-            <string>Необходимое исследование:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QComboBox" name="comboBox_9">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QCheckBox" name="checkBox_5">
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Необходимое условие:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QComboBox" name="comboBox_10">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
+           <item>
+            <property name="text">
+             <string>Точно да</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Неоднозначно</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Точно нет</string>
+            </property>
+           </item>
           </widget>
          </item>
         </layout>
@@ -261,9 +372,9 @@
        <widget class="QGroupBox" name="groupBox_2">
         <property name="geometry">
          <rect>
-          <x>520</x>
-          <y>250</y>
-          <width>261</width>
+          <x>550</x>
+          <y>390</y>
+          <width>251</width>
           <height>151</height>
          </rect>
         </property>
@@ -380,100 +491,13 @@
          </item>
         </layout>
        </widget>
-       <widget class="QGroupBox" name="groupBox_3">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>594</y>
-          <width>1111</width>
-          <height>101</height>
-         </rect>
-        </property>
-        <property name="title">
-         <string>Статистика приказа</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_7">
-         <property name="topMargin">
-          <number>2</number>
-         </property>
-         <property name="bottomMargin">
-          <number>2</number>
-         </property>
-         <property name="verticalSpacing">
-          <number>2</number>
-         </property>
-         <item row="1" column="1">
-          <widget class="QLabel" name="label_27">
-           <property name="text">
-            <string>Количество концовок: 0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>Упоминаний слова &quot;вампир&quot;: 0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QLabel" name="label_33">
-           <property name="text">
-            <string>Среднее количество исходов для варианта: 0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Количество исходов: 0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLabel" name="label_29">
-           <property name="text">
-            <string>Игрок примет решений: 0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>Количество этапов: 0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="3">
-          <widget class="QLabel" name="label_16">
-           <property name="text">
-            <string>Упоминаний слова &quot;кровь&quot;: 0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QLabel" name="label_30">
-           <property name="text">
-            <string>Среднее количество вариантов для этапа: 0</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QPushButton" name="pushButton_16">
-           <property name="text">
-            <string>Обновить</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
        <widget class="QGroupBox" name="groupBox_4">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>400</y>
-          <width>771</width>
-          <height>181</height>
+          <y>540</y>
+          <width>791</width>
+          <height>161</height>
          </rect>
         </property>
         <property name="font">
@@ -509,7 +533,7 @@ p, li { white-space: pre-wrap; }
         <property name="geometry">
          <rect>
           <x>990</x>
-          <y>540</y>
+          <y>660</y>
           <width>131</width>
           <height>31</height>
          </rect>
@@ -521,10 +545,10 @@ p, li { white-space: pre-wrap; }
        <widget class="QGroupBox" name="groupBox_9">
         <property name="geometry">
          <rect>
-          <x>790</x>
-          <y>250</y>
-          <width>331</width>
-          <height>271</height>
+          <x>810</x>
+          <y>390</y>
+          <width>311</width>
+          <height>251</height>
          </rect>
         </property>
         <property name="font">
@@ -555,25 +579,12 @@ p, li { white-space: pre-wrap; }
          </item>
         </layout>
        </widget>
-       <widget class="Line" name="line">
-        <property name="geometry">
-         <rect>
-          <x>-10</x>
-          <y>580</y>
-          <width>1161</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
        <widget class="QGroupBox" name="groupBox_18">
         <property name="geometry">
          <rect>
-          <x>520</x>
+          <x>550</x>
           <y>50</y>
-          <width>601</width>
+          <width>571</width>
           <height>201</height>
          </rect>
         </property>
@@ -609,11 +620,27 @@ p, li { white-space: pre-wrap; }
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>575</width>
+              <width>545</width>
               <height>118</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="checkBox_4">
+               <property name="text">
+                <string>Есть хотя бы</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QComboBox" name="comboBox_18">
+               <item>
+                <property name="text">
+                 <string>заражённые</string>
+                </property>
+               </item>
+              </widget>
+             </item>
              <item row="0" column="3">
               <spacer name="horizontalSpacer_2">
                <property name="orientation">
@@ -627,26 +654,10 @@ p, li { white-space: pre-wrap; }
                </property>
               </spacer>
              </item>
-             <item row="0" column="2">
-              <widget class="QComboBox" name="comboBox_18">
-               <item>
-                <property name="text">
-                 <string>заражённые</string>
-                </property>
-               </item>
-              </widget>
-             </item>
              <item row="0" column="1">
               <widget class="QSpinBox" name="spinBox_5"/>
              </item>
-             <item row="0" column="0">
-              <widget class="QCheckBox" name="checkBox_4">
-               <property name="text">
-                <string>Есть хотя бы</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
+             <item row="2" column="2">
               <spacer name="verticalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
@@ -658,6 +669,13 @@ p, li { white-space: pre-wrap; }
                 </size>
                </property>
               </spacer>
+             </item>
+             <item row="1" column="0">
+              <widget class="QRadioButton" name="radioButton">
+               <property name="text">
+                <string>Психологическое состояние сотр</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -810,6 +828,126 @@ p, li { white-space: pre-wrap; }
           <string>внутренний приказ</string>
          </property>
         </item>
+       </widget>
+       <widget class="QLabel" name="label_31">
+        <property name="geometry">
+         <rect>
+          <x>480</x>
+          <y>13</y>
+          <width>501</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Тут описание что делает патруль этого департамента</string>
+        </property>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_21">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>410</y>
+          <width>461</width>
+          <height>101</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="title">
+         <string>Требуются ресурсы</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <property name="spacing">
+          <number>4</number>
+         </property>
+         <property name="leftMargin">
+          <number>9</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>9</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="checkBox_8">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Процветающая</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_11">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Обычная</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_12">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Захламлённая</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_13">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Разруха</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_14">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Заброшенная</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
       <widget class="QWidget" name="tab_2">
@@ -2192,7 +2330,15 @@ p, li { white-space: pre-wrap; }
     <addaction name="action_save"/>
     <addaction name="action_saveAndExit"/>
    </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Дополнительно</string>
+    </property>
+    <addaction name="action"/>
+    <addaction name="action_2"/>
+   </widget>
    <addaction name="menu"/>
+   <addaction name="menu_2"/>
   </widget>
   <action name="action_save">
    <property name="text">
@@ -2205,6 +2351,16 @@ p, li { white-space: pre-wrap; }
   <action name="action_saveAndExit">
    <property name="text">
     <string>Сохранить и выйти</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>Статистика</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>Помощь</string>
    </property>
   </action>
  </widget>

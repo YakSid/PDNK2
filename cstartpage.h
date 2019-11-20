@@ -23,8 +23,7 @@ public slots:
     void databaseConnected(bool connected);
 
 signals:
-    // TODO: изменить типа параметра на QDir здесь и  в слоте в CDatabaseManager
-    void s_connectDatabase(QString pathDatabase);
+    void s_connectDatabase();
 
 private slots:
     void on_pb_connectDatabase_clicked();

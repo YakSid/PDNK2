@@ -34,6 +34,7 @@ SOURCES += \
         coutcome.cpp \
         cstage.cpp \
         cstartpage.cpp \
+        cstatisticspage.cpp \
         main.cpp \
         mainwindow.cpp
 
@@ -47,12 +48,14 @@ HEADERS += \
         coutcome.h \
         cstage.h \
         cstartpage.h \
+        cstatisticspage.h \
         mainwindow.h
 
 FORMS += \
         caddingoutcomedialog.ui \
         corderspage.ui \
         cstartpage.ui \
+        cstatisticspage.ui \
         mainwindow.ui
 
 # Default rules for deployment.

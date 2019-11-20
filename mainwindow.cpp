@@ -3,6 +3,9 @@
 
 #include <QDebug>
 
+// TODO: назвать все ui элементы
+// TODO: Окна продумать: требуются ресурсы, требуются сотрудники
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     auto m_startPage = new CStartPage();
@@ -41,6 +44,12 @@ void MainWindow::on_action_saveAndExit_triggered()
 {
     on_action_save_triggered();
     // и выйти
+}
+
+void MainWindow::updateWindow()
+{
+    //
+    // TODO: показывать условия приказа соответствующие типу вн или птр
 }
 
 void MainWindow::init()

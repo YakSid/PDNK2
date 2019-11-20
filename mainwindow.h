@@ -24,6 +24,8 @@ private slots:
 
     void on_action_saveAndExit_triggered();
 
+    void updateWindow();
+
 private:
     Ui::MainWindow *ui;
     CDatabaseManager *m_databaseManager;

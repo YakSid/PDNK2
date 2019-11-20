@@ -13,7 +13,7 @@ CStartPage::~CStartPage()
 
 void CStartPage::databaseConnected(bool connected)
 {
-    QPixmap pixConnection; //("/pictures/success.png");
+    QPixmap pixConnection;
     if (connected) {
         ui->lbl_connected->setText("БД подключена успешно");
         pixConnection.load(":/pictures/pictures/success.png");
@@ -26,7 +26,7 @@ void CStartPage::databaseConnected(bool connected)
 
 void CStartPage::on_pb_connectDatabase_clicked()
 {
-    emit s_connectDatabase(ui->ln_dbPath->text());
+    emit s_connectDatabase();
 }
 
 void CStartPage::on_pb_create_new_order_clicked()

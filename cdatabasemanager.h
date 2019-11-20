@@ -22,7 +22,10 @@ signals:
     void s_databaseConnected(bool connected);
 
 public slots:
-    void connectDatabase(QString pathDatabase);
+    void connectDatabase();
+
+private:
+    void init();
 };
 
 #endif // CDATABASEMANAGER_H
