@@ -11,15 +11,22 @@ CStartPage::~CStartPage()
     delete ui;
 }
 
+void CStartPage::init()
+{
+    emit s_connectDatabase();
+}
+
 void CStartPage::databaseConnected(bool connected)
 {
     QPixmap pixConnection;
     if (connected) {
         ui->lbl_connected->setText("БД подключена успешно");
         pixConnection.load(":/pictures/pictures/success.png");
+        ui->pb_connectDatabase->setEnabled(false);
     } else {
         ui->lbl_connected->setText("Подключение не удалось");
         pixConnection.load(":/pictures/pictures/error.png");
+        ui->pb_connectDatabase->setEnabled(true);
     }
     ui->pic_connection->setPixmap(pixConnection);
 }

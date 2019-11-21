@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     m_databaseManager = new CDatabaseManager();
     connect(m_startPage, &CStartPage::s_connectDatabase, m_databaseManager, &CDatabaseManager::connectDatabase);
     connect(m_databaseManager, &CDatabaseManager::s_databaseConnected, m_startPage, &CStartPage::databaseConnected);
+    m_startPage->init();
     m_startPage->setModal(true);
     m_startPage->exec();
     switch (m_startPage->closeMode) {

@@ -3,7 +3,12 @@
 
 #include <QDialog>
 
-/// Класс стартового окна. Организует будущую работу, осуществляет авторизацию и настройку базы данных.
+/** @class class CStartPage
+ * Класс стартового окна.
+ *
+ * Организует будущую работу.
+ * Осуществляет авторизацию и настройку базы данных.
+ */
 
 namespace Ui {
 class CStartPage;
@@ -16,6 +21,7 @@ class CStartPage : public QDialog
 public:
     explicit CStartPage(QWidget *parent = nullptr);
     ~CStartPage();
+    void init();
 
     qint8 closeMode { 0 };
 

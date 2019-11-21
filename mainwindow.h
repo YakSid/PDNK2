@@ -5,7 +5,9 @@
 #include "cdatabasemanager.h"
 #include "cstartpage.h"
 
-/// Класс основного рабочего окна.
+/** @class class MainWindow
+ * Класс основного рабочего окна.
+ */
 
 namespace Ui {
 class MainWindow;

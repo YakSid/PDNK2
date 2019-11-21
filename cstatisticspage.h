@@ -1,9 +1,13 @@
 #ifndef CSTATISTICSPAGE_H
 #define CSTATISTICSPAGE_H
 
-/// Класс окна статистики. Отображает статистику по приказу.
-
 #include <QDialog>
+
+/** @class class CStatisticsPage
+ * Класс окна статистики.
+ *
+ * Отображает статистику по приказу.
+ */
 
 namespace Ui {
 class CStatisticsPage;
