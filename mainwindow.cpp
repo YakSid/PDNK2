@@ -3,8 +3,14 @@
 
 #include <QDebug>
 
-// TODO: назвать все ui элементы
-// TODO: Окна продумать: требуются ресурсы, требуются сотрудники
+// TODO: назвать все ui элементы в mainwindow
+// TODO: реализовать механику всех элементов в mainwindow
+// TODO: продумать ui этапов
+// TODO: продумать механику этапов
+// TODO: продумать ui исходов
+// TODO: продумать механику исходов
+// TODO: назвать все ui элементы в этапах и исходах
+// TODO: реализовать механику этапов и исходов
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
