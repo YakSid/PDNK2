@@ -28,11 +28,27 @@ private slots:
 
     void updateWindow();
 
+    void on_cmb_type_currentIndexChanged(int index);
+
+    void on_spb_first_rank_valueChanged(int arg1);
+
+    void on_spb_second_rank_valueChanged(int arg1);
+
+    void on_spb_third_rank_valueChanged(int arg1);
+
+    void on_spb_common_valueChanged(int arg1);
+
+    void on_grp_req_resources_toggled(bool arg1);
+
+    void on_cmb_department_currentIndexChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     CDatabaseManager *m_databaseManager;
 
-    void init();
+    void _prepareView();
+
+    void _changeGrpNumberStaffTitle();
 };
 
 #endif // MAINWINDOW_H

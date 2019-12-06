@@ -3,7 +3,6 @@
 
 #include <QDebug>
 
-// TODO: назвать все ui элементы в mainwindow
 // TODO: реализовать механику всех элементов в mainwindow
 // TODO: продумать ui этапов
 // TODO: продумать механику этапов
@@ -26,15 +25,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         exit(0);
     case 1:
         // Создать новый приказ
-        // Подготовить главное меню
-        init(); // Пока ничего не делает
+        ui->setupUi(this);
+        _prepareView();
         break;
     case 2:
         // Редактировать старый приказ
         // запустить COrdersPage
+        ui->setupUi(this);
         break;
     }
-    ui->setupUi(this);
 }
 
 MainWindow::~MainWindow()
@@ -59,7 +58,68 @@ void MainWindow::updateWindow()
     // TODO: показывать условия приказа соответствующие типу вн или птр
 }
 
-void MainWindow::init()
+void MainWindow::_prepareView()
 {
-    //
+    ui->cmb_type->setCurrentIndex(0);
+    ui->swgt_order_type->setCurrentWidget(ui->wgt_inner_order);
+}
+
+void MainWindow::_changeGrpNumberStaffTitle()
+{
+    qint32 numberStaff = ui->spb_first_rank->value() + ui->spb_second_rank->value() + ui->spb_third_rank->value()
+            + ui->spb_common->value();
+    ui->grp_number_staff->setTitle("Необходимо сотрудников: " + QString::number(numberStaff));
+}
+
+void MainWindow::on_cmb_type_currentIndexChanged(int index)
+{
+    switch (index) {
+    case 0:
+        // Если выбран внутренний приказ (0)
+        ui->swgt_order_type->setCurrentWidget(ui->wgt_inner_order);
+        break;
+    case 1:
+        // Если выбран внешний приказ (патруль) (1)
+        ui->swgt_order_type->setCurrentWidget(ui->wgt_patrol_order);
+        break;
+    }
+}
+
+void MainWindow::on_spb_first_rank_valueChanged(int arg1)
+{
+    Q_UNUSED(arg1);
+    _changeGrpNumberStaffTitle();
+}
+
+void MainWindow::on_spb_second_rank_valueChanged(int arg1)
+{
+    Q_UNUSED(arg1);
+    _changeGrpNumberStaffTitle();
+}
+
+void MainWindow::on_spb_third_rank_valueChanged(int arg1)
+{
+    Q_UNUSED(arg1);
+    _changeGrpNumberStaffTitle();
+}
+
+void MainWindow::on_spb_common_valueChanged(int arg1)
+{
+    Q_UNUSED(arg1);
+    _changeGrpNumberStaffTitle();
+}
+
+void MainWindow::on_grp_req_resources_toggled(bool arg1)
+{
+    if (!arg1) {
+        ui->spb_money->setValue(0);
+        ui->spb_first_res->setValue(0);
+        ui->spb_second_res->setValue(0);
+        ui->spb_third_res->setValue(0);
+    }
+}
+
+void MainWindow::on_cmb_department_currentIndexChanged(int index)
+{
+    // TODO: вписать значения и энумы сделать
 }
