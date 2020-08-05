@@ -15,7 +15,8 @@ CDatabaseManager::~CDatabaseManager()
 
 void CDatabaseManager::connectDatabase()
 {
-    if (!QSqlDatabase::isDriverAvailable("QPSQL")) {
+    // NOTE: отключил пока не пользуемся бд
+    /*if (!QSqlDatabase::isDriverAvailable("QPSQL")) {
         QMessageBox msg;
         msg.setText("Драйвер PostgreSQL не установлен");
         msg.setWindowTitle("Ошибка");
@@ -41,5 +42,5 @@ void CDatabaseManager::connectDatabase()
         msg.exec();
     }
 
-    emit s_databaseConnected(dbConnected);
+    emit s_databaseConnected(dbConnected);*/
 }

@@ -25,13 +25,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        caddingoutcomedialog.cpp \
         cdatabasemanager.cpp \
         cmapmanager.cpp \
         cnode.cpp \
         corder.cpp \
         corderspage.cpp \
         coutcome.cpp \
+        coutcomewidget.cpp \
         cstage.cpp \
         cstartpage.cpp \
         cstatisticspage.cpp \
@@ -39,21 +39,21 @@ SOURCES += \
         mainwindow.cpp
 
 HEADERS += \
-        caddingoutcomedialog.h \
         cdatabasemanager.h \
         cmapmanager.h \
         cnode.h \
         corder.h \
         corderspage.h \
         coutcome.h \
+        coutcomewidget.h \
         cstage.h \
         cstartpage.h \
         cstatisticspage.h \
         mainwindow.h
 
 FORMS += \
-        caddingoutcomedialog.ui \
         corderspage.ui \
+        coutcomewidget.ui \
         cstartpage.ui \
         cstatisticspage.ui \
         mainwindow.ui

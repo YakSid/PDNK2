@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QDebug>
+#include <coutcomewidget.h>
 
 // TODO: реализовать механику всех элементов в mainwindow
 // TODO: продумать ui этапов
@@ -71,6 +72,27 @@ void MainWindow::_changeGrpNumberStaffTitle()
     ui->grp_number_staff->setTitle("Необходимо сотрудников: " + QString::number(numberStaff));
 }
 
+void MainWindow::_createOutcome()
+{
+    //Невизуальная часть
+
+    //Визуальная часть
+    auto wgt = new COutcomeWidget;
+    auto item = new QListWidgetItem(ui->lw_outcomes);
+    item->setSizeHint(wgt->sizeHint());
+    ui->lw_outcomes->setItemWidget(item, wgt);
+}
+
+void MainWindow::_deleteOutcome(QListWidgetItem *item)
+{
+    //Невизуальная часть
+
+    //Визуальная часть
+    auto wgt = ui->lw_outcomes->itemWidget(item);
+    ui->lw_outcomes->takeItem(ui->lw_outcomes->row(item));
+    delete wgt;
+}
+
 void MainWindow::on_cmb_type_currentIndexChanged(int index)
 {
     switch (index) {
@@ -122,4 +144,30 @@ void MainWindow::on_grp_req_resources_toggled(bool arg1)
 void MainWindow::on_cmb_department_currentIndexChanged(int index)
 {
     // TODO: вписать значения и энумы сделать
+}
+
+void MainWindow::on_pb_addOutcome_clicked()
+{
+    // TODO: предусмотреть добавление результатов
+    _createOutcome();
+    QString outcomesCountText = "У этого варианта сейчас %1 исходов";
+    outcomesCountText.arg(QString::number(ui->lw_outcomes->count())); // TODO: подставить значение
+    ui->lb_outcomesCount->setText(outcomesCountText);
+}
+
+void MainWindow::on_pb_deleteOutcome_clicked()
+{
+    _deleteOutcome(ui->lw_outcomes->currentItem());
+    QString outcomesCountText = "У этого варианта сейчас %1 исходов";
+    outcomesCountText.arg(QString::number(ui->lw_outcomes->count())); // TODO: подставить значение
+    ui->lb_outcomesCount->setText(outcomesCountText);
+}
+
+void MainWindow::on_lw_outcomes_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
+{
+    if (!current) {
+        ui->pb_deleteOutcome->setEnabled(false);
+    } else {
+        ui->pb_deleteOutcome->setEnabled(true);
+    }
 }
