@@ -43,6 +43,8 @@ private slots:
     void on_stackedWidget_currentChanged(int arg1);
     void on_pb_addVariant_clicked();
     void on_pb_deleteVariant_clicked();
+    void on_pb_setFinal_clicked();
+    void on_pb_showRewardGroup_clicked();
 
 private:
     void _prepareView();

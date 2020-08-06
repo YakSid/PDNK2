@@ -5,14 +5,6 @@
 #include "coutcomewidget.h"
 #include "cconstants.h"
 
-// TODO: реализовать механику всех элементов в mainwindow
-// TODO: продумать ui этапов
-// TODO: продумать механику этапов
-// TODO: продумать ui исходов
-// TODO: продумать механику исходов
-// TODO: назвать все ui элементы в этапах и исходах
-// TODO: реализовать механику этапов и исходов
-
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     auto m_startPage = new CStartPage();
@@ -76,6 +68,8 @@ void MainWindow::_prepareView()
 {
     ui->cmb_type->setCurrentIndex(0);
     ui->swgt_order_type->setCurrentWidget(ui->wgt_inner_order);
+    ui->cb_time->addItems(TIME_PERIODS);
+    ui->grp_stageReward->setVisible(false);
 }
 
 void MainWindow::_changeGrpNumberStaffTitle()
@@ -161,19 +155,12 @@ void MainWindow::on_cmb_department_currentIndexChanged(int index)
 
 void MainWindow::on_pb_addOutcome_clicked()
 {
-    // TODO: предусмотреть добавление результатов
     _createOutcome();
-    QString outcomesCountText = "У этого варианта сейчас %1 исходов";
-    outcomesCountText.arg(QString::number(ui->lw_outcomes->count())); // TODO: подставить значение
-    ui->lb_outcomesCount->setText(outcomesCountText);
 }
 
 void MainWindow::on_pb_deleteOutcome_clicked()
 {
     _deleteOutcome(ui->lw_outcomes->currentItem());
-    QString outcomesCountText = "У этого варианта сейчас %1 исходов";
-    outcomesCountText.arg(QString::number(ui->lw_outcomes->count())); // TODO: подставить значение
-    ui->lb_outcomesCount->setText(outcomesCountText);
 }
 
 void MainWindow::on_lw_outcomes_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
@@ -302,5 +289,39 @@ void MainWindow::on_pb_deleteVariant_clicked()
 
     if (!ui->lw_variants->count()) {
         ui->pb_deleteVariant->setEnabled(false);
+    }
+}
+
+void MainWindow::on_pb_setFinal_clicked()
+{
+    if (ui->pb_setFinal->text() == "Сделать финальным") {
+        //Сделать финальным
+        ui->pb_setFinal->setText("Сделать обычным");
+        ui->groupVariants->setTitle("Результаты приказа");
+        ui->lw_variants->setVisible(false);
+        ui->pb_addVariant->setVisible(false);
+        ui->pb_deleteVariant->setVisible(false);
+        ui->groupStageDescription->setTitle("Описание результатов приказа");
+    } else {
+        //Сделать обычным
+        ui->pb_setFinal->setText("Сделать финальным");
+        ui->groupVariants->setTitle("Варианты действий");
+        ui->lw_variants->setVisible(true);
+        ui->pb_addVariant->setVisible(true);
+        ui->pb_deleteVariant->setVisible(true);
+        ui->groupStageDescription->setTitle("Описание этапа");
+    }
+}
+// TODO: СЕЙЧАС доделать окно результатов(наград)
+void MainWindow::on_pb_showRewardGroup_clicked()
+{
+    if (ui->grp_stageReward->isVisible()) {
+        //Скрыть
+        ui->grp_stageReward->setVisible(false);
+        ui->pb_showRewardGroup->setText("Добавить результат(награду)");
+    } else {
+        //Отобразить
+        ui->grp_stageReward->setVisible(true);
+        ui->pb_showRewardGroup->setText("Убрать результат(награду)");
     }
 }

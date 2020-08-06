@@ -32,6 +32,7 @@ SOURCES += \
         corderspage.cpp \
         coutcome.cpp \
         coutcomewidget.cpp \
+        crewardwidget.cpp \
         cstage.cpp \
         cstartpage.cpp \
         cstatisticspage.cpp \
@@ -47,6 +48,7 @@ HEADERS += \
         corderspage.h \
         coutcome.h \
         coutcomewidget.h \
+        crewardwidget.h \
         cstage.h \
         cstartpage.h \
         cstatisticspage.h \
@@ -55,6 +57,7 @@ HEADERS += \
 FORMS += \
         corderspage.ui \
         coutcomewidget.ui \
+        crewardwidget.ui \
         cstartpage.ui \
         cstatisticspage.ui \
         mainwindow.ui
