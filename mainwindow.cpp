@@ -2,7 +2,8 @@
 #include "ui_mainwindow.h"
 
 #include <QDebug>
-#include <coutcomewidget.h>
+#include "coutcomewidget.h"
+#include "cconstants.h"
 
 // TODO: реализовать механику всех элементов в mainwindow
 // TODO: продумать ui этапов
@@ -40,6 +41,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::needReqResToggled(bool checked)
+{
+    if (auto ch = qobject_cast<QCheckBox *>(sender())) {
+        if (auto cmb = ch->parent()->findChild<QComboBox *>()) {
+            cmb->setVisible(checked);
+        }
+        if (auto spin = ch->parent()->findChild<QSpinBox *>()) {
+            spin->setVisible(checked);
+        }
+    }
 }
 
 void MainWindow::on_action_save_triggered()
@@ -169,5 +182,125 @@ void MainWindow::on_lw_outcomes_currentItemChanged(QListWidgetItem *current, QLi
         ui->pb_deleteOutcome->setEnabled(false);
     } else {
         ui->pb_deleteOutcome->setEnabled(true);
+    }
+}
+
+void MainWindow::on_pb_addTerm_clicked()
+{
+    auto wgt = new QWidget;
+    auto font = wgt->font();
+    font.setPointSize(12);
+    font.setBold(false);
+    wgt->setFont(font);
+    auto layout = new QHBoxLayout;
+    auto spin = new QSpinBox;
+    spin->setMinimum(1);
+    spin->setMaximumWidth(45);
+    layout->addWidget(spin);
+    auto cmb = new QComboBox;
+    cmb->addItems(TRAITS);
+    layout->addWidget(cmb);
+    wgt->setLayout(layout);
+    layout->setMargin(6);
+    layout->setSpacing(2);
+    wgt->setMaximumHeight(55);
+
+    auto item = new QListWidgetItem(ui->lw_terms);
+    item->setSizeHint(wgt->sizeHint());
+    ui->lw_terms->setItemWidget(item, wgt);
+
+    if (!ui->pb_deleteTerm->isEnabled()) {
+        ui->pb_deleteTerm->setEnabled(true);
+    }
+}
+
+void MainWindow::on_pb_deleteTerm_clicked()
+{
+    if (!ui->lw_terms->currentItem())
+        return;
+
+    auto wgt = ui->lw_terms->itemWidget(ui->lw_terms->currentItem());
+    ui->lw_terms->takeItem(ui->lw_terms->row(ui->lw_terms->currentItem()));
+    delete wgt;
+
+    if (!ui->lw_terms->count()) {
+        ui->pb_deleteTerm->setEnabled(false);
+    }
+}
+
+void MainWindow::on_stackedWidget_currentChanged(int arg1)
+{
+    if (arg1 == 0) {
+        //Переключаемся к табу этапа
+        ui->gb_stagesOutcomes->setTitle("Этап с выбором");
+    } else {
+        //Переключаемся к табу исхода
+        ui->gb_stagesOutcomes->setTitle("Исходы выбора");
+    }
+}
+
+void MainWindow::on_pb_addVariant_clicked()
+{
+    auto wgt = new QWidget;
+    auto font = wgt->font();
+    font.setBold(false);
+    wgt->setFont(font);
+
+    auto layoutHigh = new QHBoxLayout;
+    auto te = new QTextEdit;
+    te->setMinimumHeight(55);
+    te->setMaximumHeight(55);
+    layoutHigh->addWidget(te);
+    auto btn = new QPushButton("К исходам...");
+    btn->setMinimumWidth(105);
+    layoutHigh->addWidget(btn);
+    layoutHigh->setSpacing(4);
+
+    auto layoutBottom = new QHBoxLayout;
+    auto ch = new QCheckBox("Требуются ресурсы");
+    ch->setChecked(true);
+    connect(ch, &QCheckBox::toggled, this, &MainWindow::needReqResToggled);
+    layoutBottom->addWidget(ch);
+    auto cmb = new QComboBox;
+    cmb->addItems(REQ_RESOURCES);
+    layoutBottom->addWidget(cmb);
+    auto spin = new QSpinBox;
+    spin->setMinimum(1);
+    spin->setMaximum(99999);
+    spin->setMinimumWidth(65);
+    layoutBottom->addWidget(spin);
+    layoutBottom->addStretch();
+    layoutBottom->setSpacing(4);
+
+    auto layoutGeneral = new QVBoxLayout;
+    layoutGeneral->setContentsMargins(6, 6, 6, 6);
+    layoutGeneral->setSpacing(4);
+    layoutGeneral->addLayout(layoutHigh);
+    layoutGeneral->addLayout(layoutBottom);
+    wgt->setLayout(layoutGeneral);
+
+    auto item = new QListWidgetItem(ui->lw_variants);
+    item->setSizeHint(QSize(200, 100));
+    ui->lw_variants->setItemWidget(item, wgt);
+
+    ch->setMinimumHeight(31);
+    ch->setChecked(false);
+
+    if (!ui->pb_deleteVariant->isEnabled()) {
+        ui->pb_deleteVariant->setEnabled(true);
+    }
+}
+
+void MainWindow::on_pb_deleteVariant_clicked()
+{
+    if (!ui->lw_variants->currentItem())
+        return;
+
+    auto wgt = ui->lw_variants->itemWidget(ui->lw_variants->currentItem());
+    ui->lw_variants->takeItem(ui->lw_variants->row(ui->lw_variants->currentItem()));
+    delete wgt;
+
+    if (!ui->lw_variants->count()) {
+        ui->pb_deleteVariant->setEnabled(false);
     }
 }

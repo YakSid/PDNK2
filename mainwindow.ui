@@ -26,7 +26,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_main_options">
        <attribute name="title">
@@ -938,7 +938,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Первый ресурс</string>
+              <string>Оружие</string>
              </property>
             </widget>
            </item>
@@ -951,7 +951,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Второй ресурс</string>
+              <string>Серебро</string>
              </property>
             </widget>
            </item>
@@ -964,7 +964,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Третий ресурс</string>
+              <string>Опиум</string>
              </property>
             </widget>
            </item>
@@ -1012,107 +1012,12 @@
             <number>6</number>
            </property>
            <item>
-            <widget class="QScrollArea" name="sa_staff_conditions">
-             <property name="font">
-              <font>
-               <weight>50</weight>
-               <bold>false</bold>
-              </font>
-             </property>
-             <property name="widgetResizable">
-              <bool>true</bool>
-             </property>
-             <widget class="QWidget" name="scrollAreaWidgetContents_3">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>524</width>
-                <height>169</height>
-               </rect>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_6">
-               <item row="0" column="2">
-                <spacer name="horizontalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="1" column="1">
-                <spacer name="verticalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="0" column="0">
-                <widget class="QSpinBox" name="spb_count_condition_1"/>
-               </item>
-               <item row="0" column="1">
-                <widget class="QComboBox" name="cmb_condition_1">
-                 <item>
-                  <property name="text">
-                   <string>заражённый</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>раненый</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>с отрицательным п. состоянием (-2)</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>с отрицательным п. состоянием (-1)</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>с положительным п. состоянием (+1)</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>с положительным п. состоянием (+2)</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>осведомлённый на 100%</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>не осведомлённый на 100%</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </widget>
+            <widget class="QListWidget" name="lw_terms"/>
            </item>
            <item>
             <layout class="QHBoxLayout" name="layout_buttons">
              <item>
-              <widget class="QPushButton" name="pb_add_condition">
+              <widget class="QPushButton" name="pb_addTerm">
                <property name="font">
                 <font>
                  <weight>50</weight>
@@ -1120,12 +1025,12 @@
                 </font>
                </property>
                <property name="text">
-                <string>Добавить условие</string>
+                <string>Добавить</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pb_del_condition">
+              <widget class="QPushButton" name="pb_deleteTerm">
                <property name="enabled">
                 <bool>false</bool>
                </property>
@@ -1136,7 +1041,7 @@
                 </font>
                </property>
                <property name="text">
-                <string>Удалить выбранное условие</string>
+                <string>Удалить</string>
                </property>
               </widget>
              </item>
@@ -1232,7 +1137,7 @@ p, li { white-space: pre-wrap; }
        </attribute>
        <layout class="QGridLayout" name="gridLayout_11">
         <item row="0" column="0" rowspan="2">
-         <widget class="QGroupBox" name="groupBox_10">
+         <widget class="QGroupBox" name="gb_stagesOutcomes">
           <property name="minimumSize">
            <size>
             <width>650</width>
@@ -1267,336 +1172,209 @@ p, li { white-space: pre-wrap; }
            <item>
             <widget class="QStackedWidget" name="stackedWidget">
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="pageStage">
-              <widget class="QGroupBox" name="groupBox_6">
-               <property name="geometry">
-                <rect>
-                 <x>9</x>
-                 <y>50</y>
-                 <width>641</width>
-                 <height>141</height>
-                </rect>
-               </property>
-               <property name="font">
-                <font>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="title">
-                <string>Описание этапа</string>
-               </property>
-               <layout class="QGridLayout" name="gridLayout_2">
-                <property name="leftMargin">
-                 <number>9</number>
-                </property>
-                <property name="topMargin">
-                 <number>2</number>
-                </property>
-                <property name="rightMargin">
-                 <number>9</number>
-                </property>
-                <property name="bottomMargin">
-                 <number>9</number>
-                </property>
-                <property name="horizontalSpacing">
-                 <number>6</number>
-                </property>
-                <item row="0" column="0">
-                 <widget class="QTextEdit" name="textEdit_2">
-                  <property name="font">
-                   <font>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
+              <layout class="QVBoxLayout" name="verticalLayout_8">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <item>
+                  <widget class="QPushButton" name="pushButton_13">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>31</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <weight>50</weight>
+                     <bold>false</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Вернуться к исходу</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_2">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_15">
+                 <property name="font">
+                  <font>
+                   <weight>50</weight>
+                   <italic>true</italic>
+                   <bold>false</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>&quot;Отряд победил вампиров&quot;</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_6">
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>175</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="title">
+                  <string>Описание этапа</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_2">
+                  <property name="leftMargin">
+                   <number>9</number>
                   </property>
-                  <property name="html">
-                   <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+                  <property name="topMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>9</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>9</number>
+                  </property>
+                  <property name="horizontalSpacing">
+                   <number>6</number>
+                  </property>
+                  <item row="0" column="0">
+                   <widget class="QTextEdit" name="textEdit_2">
+                    <property name="font">
+                     <font>
+                      <weight>50</weight>
+                      <bold>false</bold>
+                     </font>
+                    </property>
+                    <property name="html">
+                     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Чувствуется, что вы выбрали правильных ребят, Джек сразу понял, что к чему на районе.&lt;br /&gt;Патруль идёт по улице &amp;quot;бентон брайт&amp;quot;, Джон замечает движение в кустах и шепчет об этом отряду.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_8">
+                 <property name="title">
+                  <string>Варианты действий</string>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_2">
+                  <property name="topMargin">
+                   <number>2</number>
                   </property>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QGroupBox" name="groupBox_8">
-               <property name="geometry">
-                <rect>
-                 <x>9</x>
-                 <y>196</y>
-                 <width>641</width>
-                 <height>461</height>
-                </rect>
-               </property>
-               <property name="title">
-                <string>Варианты решений</string>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_2">
-                <property name="topMargin">
-                 <number>2</number>
-                </property>
-                <item>
-                 <widget class="QScrollArea" name="scrollArea">
-                  <property name="font">
-                   <font>
-                    <weight>50</weight>
-                    <bold>false</bold>
-                   </font>
-                  </property>
-                  <property name="widgetResizable">
-                   <bool>true</bool>
-                  </property>
-                  <widget class="QWidget" name="scrollAreaWidgetContents">
-                   <property name="geometry">
-                    <rect>
-                     <x>0</x>
-                     <y>0</y>
-                     <width>615</width>
-                     <height>341</height>
-                    </rect>
-                   </property>
-                   <widget class="QPushButton" name="pushButton_2">
-                    <property name="geometry">
-                     <rect>
-                      <x>510</x>
-                      <y>10</y>
-                      <width>91</width>
-                      <height>41</height>
-                     </rect>
+                  <item>
+                   <widget class="QListWidget" name="lw_variants">
+                    <property name="font">
+                     <font>
+                      <pointsize>11</pointsize>
+                     </font>
                     </property>
-                    <property name="text">
-                     <string>к исходам</string>
+                    <property name="editTriggers">
+                     <set>QAbstractItemView::NoEditTriggers</set>
+                    </property>
+                    <property name="showDropIndicator" stdset="0">
+                     <bool>false</bool>
                     </property>
                    </widget>
-                   <widget class="QTextEdit" name="textEdit_3">
-                    <property name="geometry">
-                     <rect>
-                      <x>49</x>
-                      <y>9</y>
-                      <width>451</width>
-                      <height>51</height>
-                     </rect>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_11">
+                    <property name="title">
+                     <string>Панель управления</string>
                     </property>
-                    <property name="html">
-                     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Попытаться напугать предположительного противника со свистом и поднятыми дубинками ринувшись в атаку&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                    </property>
-                   </widget>
-                   <widget class="QPushButton" name="pushButton_3">
-                    <property name="geometry">
-                     <rect>
-                      <x>510</x>
-                      <y>70</y>
-                      <width>91</width>
-                      <height>41</height>
-                     </rect>
-                    </property>
-                    <property name="text">
-                     <string>к исходам</string>
-                    </property>
-                   </widget>
-                   <widget class="QPushButton" name="pushButton_4">
-                    <property name="geometry">
-                     <rect>
-                      <x>510</x>
-                      <y>130</y>
-                      <width>91</width>
-                      <height>41</height>
-                     </rect>
-                    </property>
-                    <property name="text">
-                     <string>к исходам</string>
-                    </property>
-                   </widget>
-                   <widget class="QTextEdit" name="textEdit_4">
-                    <property name="geometry">
-                     <rect>
-                      <x>50</x>
-                      <y>70</y>
-                      <width>451</width>
-                      <height>51</height>
-                     </rect>
-                    </property>
-                    <property name="html">
-                     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Сделать вид, что ничего не заметили пройдя мимо и старательно отворачиваясь&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                    </property>
-                   </widget>
-                   <widget class="QTextEdit" name="textEdit_5">
-                    <property name="geometry">
-                     <rect>
-                      <x>50</x>
-                      <y>130</y>
-                      <width>451</width>
-                      <height>51</height>
-                     </rect>
-                    </property>
-                    <property name="html">
-                     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:12pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Приказать сержантам окружить с тыльной стороны дома, а самому приказть нелюдям выйти из кустов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                    </property>
-                   </widget>
-                   <widget class="QCheckBox" name="checkBox">
-                    <property name="geometry">
-                     <rect>
-                      <x>10</x>
-                      <y>20</y>
-                      <width>31</width>
-                      <height>31</height>
-                     </rect>
-                    </property>
-                    <property name="text">
-                     <string>1</string>
-                    </property>
-                   </widget>
-                   <widget class="QCheckBox" name="checkBox_2">
-                    <property name="geometry">
-                     <rect>
-                      <x>10</x>
-                      <y>80</y>
-                      <width>31</width>
-                      <height>31</height>
-                     </rect>
-                    </property>
-                    <property name="text">
-                     <string>2</string>
-                    </property>
-                   </widget>
-                   <widget class="QCheckBox" name="checkBox_3">
-                    <property name="geometry">
-                     <rect>
-                      <x>10</x>
-                      <y>140</y>
-                      <width>31</width>
-                      <height>31</height>
-                     </rect>
-                    </property>
-                    <property name="text">
-                     <string>3</string>
-                    </property>
-                   </widget>
-                  </widget>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QGroupBox" name="groupBox_11">
-                  <property name="title">
-                   <string>Панель инструментов добавления</string>
-                  </property>
-                  <layout class="QHBoxLayout" name="horizontalLayout">
-                   <property name="spacing">
-                    <number>9</number>
-                   </property>
-                   <property name="leftMargin">
-                    <number>9</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>5</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>9</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>9</number>
-                   </property>
-                   <item>
-                    <widget class="QPushButton" name="pushButton_6">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>31</height>
-                      </size>
+                    <layout class="QHBoxLayout" name="horizontalLayout">
+                     <property name="spacing">
+                      <number>4</number>
                      </property>
-                     <property name="font">
-                      <font>
-                       <weight>50</weight>
-                       <bold>false</bold>
-                      </font>
+                     <property name="leftMargin">
+                      <number>2</number>
                      </property>
-                     <property name="text">
-                      <string>Добавить вариант</string>
+                     <property name="topMargin">
+                      <number>2</number>
                      </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="pushButton_10">
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>31</height>
-                      </size>
+                     <property name="rightMargin">
+                      <number>2</number>
                      </property>
-                     <property name="font">
-                      <font>
-                       <weight>50</weight>
-                       <bold>false</bold>
-                      </font>
+                     <property name="bottomMargin">
+                      <number>2</number>
                      </property>
-                     <property name="text">
-                      <string>Удалить выбранные варианты</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </item>
-               </layout>
-              </widget>
-              <widget class="QPushButton" name="pushButton_13">
-               <property name="geometry">
-                <rect>
-                 <x>10</x>
-                 <y>2</y>
-                 <width>161</width>
-                 <height>31</height>
-                </rect>
-               </property>
-               <property name="font">
-                <font>
-                 <weight>50</weight>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>Вернуться к исходу</string>
-               </property>
-              </widget>
-              <widget class="QLabel" name="label_15">
-               <property name="geometry">
-                <rect>
-                 <x>140</x>
-                 <y>40</y>
-                 <width>501</width>
-                 <height>21</height>
-                </rect>
-               </property>
-               <property name="font">
-                <font>
-                 <weight>50</weight>
-                 <italic>true</italic>
-                 <bold>false</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>&quot;Отряд победил вампиров&quot;</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
+                     <item>
+                      <widget class="QPushButton" name="pb_addVariant">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>31</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Добавить вариант</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pb_deleteVariant">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>31</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Удалить вариант</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
              </widget>
              <widget class="QWidget" name="pageOutcome">
               <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -1617,7 +1395,7 @@ p, li { white-space: pre-wrap; }
                     </font>
                    </property>
                    <property name="text">
-                    <string>Вернуться к этапу с вариантами</string>
+                    <string>Вернуться к этапу-родителю</string>
                    </property>
                   </widget>
                  </item>
@@ -1686,9 +1464,9 @@ p, li { white-space: pre-wrap; }
                     <property name="title">
                      <string>Панель управления</string>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_3">
+                    <layout class="QHBoxLayout" name="horizontalLayout_2">
                      <property name="spacing">
-                      <number>2</number>
+                      <number>4</number>
                      </property>
                      <property name="leftMargin">
                       <number>2</number>
@@ -1703,40 +1481,45 @@ p, li { white-space: pre-wrap; }
                       <number>2</number>
                      </property>
                      <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_2">
-                       <property name="spacing">
-                        <number>4</number>
+                      <widget class="QPushButton" name="pb_addOutcome">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>31</height>
+                        </size>
                        </property>
-                       <item>
-                        <widget class="QPushButton" name="pb_addOutcome">
-                         <property name="font">
-                          <font>
-                           <weight>50</weight>
-                           <bold>false</bold>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>Добавить проверку</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QPushButton" name="pb_deleteOutcome">
-                         <property name="enabled">
-                          <bool>false</bool>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <weight>50</weight>
-                           <bold>false</bold>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>Удалить проверку</string>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
+                       <property name="font">
+                        <font>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Добавить проверку</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="pb_deleteOutcome">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>31</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="text">
+                        <string>Удалить проверку</string>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </widget>

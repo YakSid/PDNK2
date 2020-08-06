@@ -39,6 +39,7 @@ SOURCES += \
         mainwindow.cpp
 
 HEADERS += \
+        cconstants.h \
         cdatabasemanager.h \
         cmapmanager.h \
         cnode.h \

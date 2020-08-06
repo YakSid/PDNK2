@@ -22,6 +22,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void needReqResToggled(bool checked);
 
 private slots:
     void on_action_save_triggered();
@@ -37,6 +38,11 @@ private slots:
     void on_pb_addOutcome_clicked();
     void on_pb_deleteOutcome_clicked();
     void on_lw_outcomes_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+    void on_pb_addTerm_clicked();
+    void on_pb_deleteTerm_clicked();
+    void on_stackedWidget_currentChanged(int arg1);
+    void on_pb_addVariant_clicked();
+    void on_pb_deleteVariant_clicked();
 
 private:
     void _prepareView();
