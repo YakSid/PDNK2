@@ -23,6 +23,9 @@ public:
     explicit CRewardWidget(QWidget *parent = nullptr);
     ~CRewardWidget();
 
+private slots:
+    void on_cb_rewardType_currentIndexChanged(int index);
+
 private:
     Ui::CRewardWidget *ui;
 };

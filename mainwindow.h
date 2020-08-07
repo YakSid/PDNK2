@@ -45,6 +45,11 @@ private slots:
     void on_pb_deleteVariant_clicked();
     void on_pb_setFinal_clicked();
     void on_pb_showRewardGroup_clicked();
+    void on_pb_createQuest_clicked();
+    void on_pb_toParentStage_clicked();
+    void on_pb_toParentOutcome_clicked();
+    void on_pb_addReward_clicked();
+    void on_pb_deleteReward_clicked();
 
 private:
     void _prepareView();

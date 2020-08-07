@@ -26,9 +26,9 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="tab_main_options">
+      <widget class="QWidget" name="tab_mainOptions">
        <attribute name="title">
         <string>Основные параметры приказа</string>
        </attribute>
@@ -1114,7 +1114,7 @@ p, li { white-space: pre-wrap; }
          </widget>
         </item>
         <item row="4" column="2">
-         <widget class="QPushButton" name="pb_to_creation">
+         <widget class="QPushButton" name="pb_createQuest">
           <property name="minimumSize">
            <size>
             <width>121</width>
@@ -1179,7 +1179,7 @@ p, li { white-space: pre-wrap; }
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_3">
                  <item>
-                  <widget class="QPushButton" name="pushButton_13">
+                  <widget class="QPushButton" name="pb_toParentOutcome">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1193,7 +1193,7 @@ p, li { white-space: pre-wrap; }
                     </font>
                    </property>
                    <property name="text">
-                    <string>Вернуться к исходу</string>
+                    <string>Вернуться к исходу-родителю</string>
                    </property>
                   </widget>
                  </item>
@@ -1339,7 +1339,7 @@ p, li { white-space: pre-wrap; }
                <item>
                 <widget class="QGroupBox" name="grp_stageReward">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -1348,6 +1348,12 @@ p, li { white-space: pre-wrap; }
                   <size>
                    <width>0</width>
                    <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>125</height>
                   </size>
                  </property>
                  <property name="title">
@@ -1364,7 +1370,7 @@ p, li { white-space: pre-wrap; }
                    <number>2</number>
                   </property>
                   <item>
-                   <widget class="QListWidget" name="listWidget">
+                   <widget class="QListWidget" name="lw_rewards">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                       <horstretch>0</horstretch>
@@ -1374,7 +1380,7 @@ p, li { white-space: pre-wrap; }
                     <property name="maximumSize">
                      <size>
                       <width>16777215</width>
-                      <height>100</height>
+                      <height>16777215</height>
                      </size>
                     </property>
                     <property name="font">
@@ -1387,6 +1393,9 @@ p, li { white-space: pre-wrap; }
                     <property name="verticalScrollMode">
                      <enum>QAbstractItemView::ScrollPerPixel</enum>
                     </property>
+                    <property name="spacing">
+                     <number>2</number>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -1395,7 +1404,7 @@ p, li { white-space: pre-wrap; }
                      <number>4</number>
                     </property>
                     <item>
-                     <widget class="QPushButton" name="pushButton">
+                     <widget class="QPushButton" name="pb_addReward">
                       <property name="minimumSize">
                        <size>
                         <width>170</width>
@@ -1414,7 +1423,10 @@ p, li { white-space: pre-wrap; }
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pushButton_2">
+                     <widget class="QPushButton" name="pb_deleteReward">
+                      <property name="enabled">
+                       <bool>false</bool>
+                      </property>
                       <property name="minimumSize">
                        <size>
                         <width>170</width>
@@ -1453,7 +1465,7 @@ p, li { white-space: pre-wrap; }
                <item>
                 <widget class="QGroupBox" name="groupVariants">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -1483,10 +1495,19 @@ p, li { white-space: pre-wrap; }
                     <property name="verticalScrollMode">
                      <enum>QAbstractItemView::ScrollPerPixel</enum>
                     </property>
+                    <property name="spacing">
+                     <number>2</number>
+                    </property>
                    </widget>
                   </item>
                   <item>
                    <widget class="QGroupBox" name="groupBox_11">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="title">
                      <string>Панель управления</string>
                     </property>
@@ -1625,7 +1646,7 @@ p, li { white-space: pre-wrap; }
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_4">
                  <item>
-                  <widget class="QPushButton" name="pushButton_5">
+                  <widget class="QPushButton" name="pb_toParentStage">
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
@@ -1826,6 +1847,25 @@ p, li { white-space: pre-wrap; }
           <property name="title">
            <string>Дополнительная панель</string>
           </property>
+          <widget class="QPushButton" name="pushButton_3">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>30</y>
+             <width>231</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Предварительный просмотр</string>
+           </property>
+          </widget>
          </widget>
         </item>
        </layout>

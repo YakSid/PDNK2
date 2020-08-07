@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include "coutcomewidget.h"
+#include "crewardwidget.h"
 #include "cconstants.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -61,7 +62,7 @@ void MainWindow::on_action_saveAndExit_triggered()
 void MainWindow::updateWindow()
 {
     //
-    // TODO: показывать условия приказа соответствующие типу вн или птр
+    // TODO: позже: показывать условия приказа соответствующие типу вн или птр
 }
 
 void MainWindow::_prepareView()
@@ -70,6 +71,7 @@ void MainWindow::_prepareView()
     ui->swgt_order_type->setCurrentWidget(ui->wgt_inner_order);
     ui->cb_time->addItems(TIME_PERIODS);
     ui->grp_stageReward->setVisible(false);
+    // ui->tab_quest->setVisible(false); // NOTE: закомментированно на время разработки
 }
 
 void MainWindow::_changeGrpNumberStaffTitle()
@@ -150,7 +152,7 @@ void MainWindow::on_grp_req_resources_toggled(bool arg1)
 
 void MainWindow::on_cmb_department_currentIndexChanged(int index)
 {
-    // TODO: вписать значения и энумы сделать
+    // TODO: позже: вписать значения и энумы сделать
 }
 
 void MainWindow::on_pb_addOutcome_clicked()
@@ -188,7 +190,7 @@ void MainWindow::on_pb_addTerm_clicked()
     cmb->addItems(TRAITS);
     layout->addWidget(cmb);
     wgt->setLayout(layout);
-    layout->setMargin(6);
+    layout->setContentsMargins(15, 6, 6, 6);
     layout->setSpacing(2);
     wgt->setMaximumHeight(55);
 
@@ -233,6 +235,7 @@ void MainWindow::on_pb_addVariant_clicked()
     font.setBold(false);
     wgt->setFont(font);
 
+    // TODO: позже: возможно сюда можно добавить линии сверху и снизу, как в исходах
     auto layoutHigh = new QHBoxLayout;
     auto te = new QTextEdit;
     te->setMinimumHeight(55);
@@ -249,7 +252,7 @@ void MainWindow::on_pb_addVariant_clicked()
     connect(ch, &QCheckBox::toggled, this, &MainWindow::needReqResToggled);
     layoutBottom->addWidget(ch);
     auto cmb = new QComboBox;
-    cmb->addItems(REQ_RESOURCES);
+    cmb->addItems(RESOURCE_TYPES);
     layoutBottom->addWidget(cmb);
     auto spin = new QSpinBox;
     spin->setMinimum(1);
@@ -312,7 +315,8 @@ void MainWindow::on_pb_setFinal_clicked()
         ui->groupStageDescription->setTitle("Описание этапа");
     }
 }
-// TODO: СЕЙЧАС доделать окно результатов(наград)
+// TODO: чуть позже: настроить sizePolice expanding и прочее на окне этапов
+// TODO: СЕЙЧАС доделать виджет результатов(наград)
 void MainWindow::on_pb_showRewardGroup_clicked()
 {
     if (ui->grp_stageReward->isVisible()) {
@@ -323,5 +327,53 @@ void MainWindow::on_pb_showRewardGroup_clicked()
         //Отобразить
         ui->grp_stageReward->setVisible(true);
         ui->pb_showRewardGroup->setText("Убрать результат(награду)");
+    }
+}
+
+void MainWindow::on_pb_createQuest_clicked()
+{
+    if (ui->tab_quest->isVisible()) {
+        //Создание квеста уже было произведено, нужно просто перейти
+        ui->tabWidget->setCurrentIndex(1);
+    } else {
+        //Нажимается впервые, нужно создать квест
+        // ui->tab_quest->setVisible(true); // NOTE: закомментированно на время разработки
+        // TODO: первичное создание квеста
+    }
+}
+
+void MainWindow::on_pb_toParentStage_clicked()
+{
+    // NOTE: тут ещё доделать
+    ui->stackedWidget->setCurrentIndex(0);
+    //
+}
+
+void MainWindow::on_pb_toParentOutcome_clicked()
+{
+    // NOTE: тут ещё доделать
+    ui->stackedWidget->setCurrentIndex(1);
+    //
+}
+
+void MainWindow::on_pb_addReward_clicked()
+{
+    auto wgt = new CRewardWidget;
+    auto item = new QListWidgetItem(ui->lw_rewards);
+    item->setSizeHint(wgt->sizeHint());
+    ui->lw_rewards->setItemWidget(item, wgt);
+}
+
+void MainWindow::on_pb_deleteReward_clicked()
+{
+    if (!ui->lw_rewards->currentItem())
+        return;
+
+    auto wgt = ui->lw_rewards->itemWidget(ui->lw_rewards->currentItem());
+    ui->lw_rewards->takeItem(ui->lw_rewards->row(ui->lw_rewards->currentItem()));
+    delete wgt;
+
+    if (!ui->lw_rewards->count()) {
+        ui->pb_deleteReward->setEnabled(false);
     }
 }
