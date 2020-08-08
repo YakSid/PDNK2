@@ -18,18 +18,21 @@ void CRewardWidget::on_cb_rewardType_currentIndexChanged(int index)
 {
     ui->cb_object->clear();
     ui->cb_object->setVisible(true);
+    ui->cb_psyState->setVisible(false);
+    ui->sp_rewardCount->setVisible(true);
+    ui->sp_rewardCount->setMinimum(1);
+    ui->sp_rewardCount->setMaximum(99999);
 
     if (index != 0 && index != 2 && index != 7 && index != 8) {
-        // TODO: сделать доп.окно для записей о нынешних сотрудниках, кто через что прошёл и кто есть
+        // TODO: позже сделать доп.окно для записей о нынешних сотрудниках, кто через что прошёл и кто есть
         //Может потом записывать в историю сотрудников в godot, через что они прошли? Да
-        // TODO: уточнить сколько сотрудников сейчас выбрано
+        // TODO: позже уточнить сколько сотрудников сейчас выбрано
         ui->cb_object->addItems(CHARACTERS_MALE);
     } else if (index == 0) {
         ui->cb_object->addItems(RESOURCE_TYPES);
     } else if (index == 2) {
         ui->cb_object->setVisible(false);
     }
-    // TODO: СЕЙЧАС продолжить с case 3
 
     switch (index) {
     case 0:
@@ -43,21 +46,33 @@ void CRewardWidget::on_cb_rewardType_currentIndexChanged(int index)
         break;
     case 3:
         //Изменение психологического состояния
+        ui->cb_psyState->addItems(PSY_CHANGES);
+        ui->cb_psyState->setVisible(true);
+        ui->sp_rewardCount->setVisible(false);
         break;
     case 4:
         //Ранение
+        ui->sp_rewardCount->setVisible(false);
         break;
     case 5:
         //Тяжёлое ранение
+        ui->sp_rewardCount->setVisible(false);
         break;
     case 6:
         //Смерть
+        ui->sp_rewardCount->setVisible(false);
         break;
     case 7:
         //Продвижение по сюжету
+        ui->cb_object->addItem("Основной сюжет");
+        ui->sp_rewardCount->setVisible(false);
         break;
     case 8:
         //Изменение благополучия клетки
+        ui->cb_object->addItems({ "Изменилось на", "Изменилось до" });
+        ui->sp_rewardCount->setMinimum(-100);
+        ui->sp_rewardCount->setMaximum(100);
+        // TODO: позже добавить предупреждение, что нельзя указать "Изменилось до отрицательного числа"
         break;
     }
 }

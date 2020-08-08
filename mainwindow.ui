@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1157</width>
-    <height>780</height>
+    <height>838</height>
    </rect>
   </property>
   <property name="font">
@@ -26,7 +26,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_mainOptions">
        <attribute name="title">
@@ -1213,23 +1213,6 @@ p, li { white-space: pre-wrap; }
                 </layout>
                </item>
                <item>
-                <widget class="QLabel" name="label_15">
-                 <property name="font">
-                  <font>
-                   <weight>50</weight>
-                   <italic>true</italic>
-                   <bold>false</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>&quot;Отряд победил вампиров&quot;</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QWidget" name="widgetTime" native="true">
                  <property name="font">
                   <font>
@@ -1268,7 +1251,7 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
-                      <width>465</width>
+                      <width>40</width>
                       <height>20</height>
                      </size>
                     </property>
@@ -1339,7 +1322,7 @@ p, li { white-space: pre-wrap; }
                <item>
                 <widget class="QGroupBox" name="grp_stageReward">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -1353,7 +1336,7 @@ p, li { white-space: pre-wrap; }
                  <property name="maximumSize">
                   <size>
                    <width>16777215</width>
-                   <height>125</height>
+                   <height>135</height>
                   </size>
                  </property>
                  <property name="title">
@@ -1361,13 +1344,13 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_10">
                   <property name="spacing">
-                   <number>2</number>
+                   <number>4</number>
                   </property>
                   <property name="topMargin">
                    <number>2</number>
                   </property>
                   <property name="bottomMargin">
-                   <number>2</number>
+                   <number>4</number>
                   </property>
                   <item>
                    <widget class="QListWidget" name="lw_rewards">
@@ -1496,7 +1479,7 @@ p, li { white-space: pre-wrap; }
                      <enum>QAbstractItemView::ScrollPerPixel</enum>
                     </property>
                     <property name="spacing">
-                     <number>2</number>
+                     <number>4</number>
                     </property>
                    </widget>
                   </item>

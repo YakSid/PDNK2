@@ -51,6 +51,8 @@ private slots:
     void on_pb_addReward_clicked();
     void on_pb_deleteReward_clicked();
 
+    void on_lw_rewards_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+
 private:
     void _prepareView();
     void _changeGrpNumberStaffTitle();

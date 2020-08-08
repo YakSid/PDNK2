@@ -167,6 +167,7 @@ void MainWindow::on_pb_deleteOutcome_clicked()
 
 void MainWindow::on_lw_outcomes_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
 {
+    Q_UNUSED(previous);
     if (!current) {
         ui->pb_deleteOutcome->setEnabled(false);
     } else {
@@ -243,6 +244,7 @@ void MainWindow::on_pb_addVariant_clicked()
     layoutHigh->addWidget(te);
     auto btn = new QPushButton("К исходам...");
     btn->setMinimumWidth(105);
+    btn->setMinimumHeight(te->height());
     layoutHigh->addWidget(btn);
     layoutHigh->setSpacing(4);
 
@@ -262,15 +264,26 @@ void MainWindow::on_pb_addVariant_clicked()
     layoutBottom->addStretch();
     layoutBottom->setSpacing(4);
 
+    // NOTE: позже у виджета варианта поправить верхнюю границу, чтобы совпадала с линией
     auto layoutGeneral = new QVBoxLayout;
-    layoutGeneral->setContentsMargins(6, 6, 6, 6);
+    auto topLine = new QFrame;
+    topLine->setFrameShape(QFrame::HLine);
+    topLine->setFrameShadow(QFrame::Raised);
+    topLine->setMidLineWidth(1);
+    layoutGeneral->addWidget(topLine);
+    layoutGeneral->setContentsMargins(0, 6, 6, 0);
     layoutGeneral->setSpacing(4);
     layoutGeneral->addLayout(layoutHigh);
     layoutGeneral->addLayout(layoutBottom);
+    auto bottomLine = new QFrame;
+    bottomLine->setFrameShape(QFrame::HLine);
+    bottomLine->setFrameShadow(QFrame::Raised);
+    bottomLine->setMidLineWidth(1);
+    layoutGeneral->addWidget(bottomLine);
     wgt->setLayout(layoutGeneral);
 
     auto item = new QListWidgetItem(ui->lw_variants);
-    item->setSizeHint(QSize(200, 100));
+    item->setSizeHint(QSize(200, 110));
     ui->lw_variants->setItemWidget(item, wgt);
 
     ch->setMinimumHeight(31);
@@ -300,11 +313,12 @@ void MainWindow::on_pb_setFinal_clicked()
     if (ui->pb_setFinal->text() == "Сделать финальным") {
         //Сделать финальным
         ui->pb_setFinal->setText("Сделать обычным");
-        ui->groupVariants->setTitle("Результаты приказа");
+        ui->groupVariants->setTitle("");
         ui->lw_variants->setVisible(false);
         ui->pb_addVariant->setVisible(false);
         ui->pb_deleteVariant->setVisible(false);
         ui->groupStageDescription->setTitle("Описание результатов приказа");
+        ui->grp_stageReward->setMaximumHeight(16777215);
     } else {
         //Сделать обычным
         ui->pb_setFinal->setText("Сделать финальным");
@@ -313,10 +327,10 @@ void MainWindow::on_pb_setFinal_clicked()
         ui->pb_addVariant->setVisible(true);
         ui->pb_deleteVariant->setVisible(true);
         ui->groupStageDescription->setTitle("Описание этапа");
+        ui->grp_stageReward->setMaximumHeight(135);
     }
 }
-// TODO: чуть позже: настроить sizePolice expanding и прочее на окне этапов
-// TODO: СЕЙЧАС доделать виджет результатов(наград)
+
 void MainWindow::on_pb_showRewardGroup_clicked()
 {
     if (ui->grp_stageReward->isVisible()) {
@@ -375,5 +389,15 @@ void MainWindow::on_pb_deleteReward_clicked()
 
     if (!ui->lw_rewards->count()) {
         ui->pb_deleteReward->setEnabled(false);
+    }
+}
+
+void MainWindow::on_lw_rewards_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
+{
+    Q_UNUSED(previous);
+    if (!current) {
+        ui->pb_deleteReward->setEnabled(false);
+    } else {
+        ui->pb_deleteReward->setEnabled(true);
     }
 }
