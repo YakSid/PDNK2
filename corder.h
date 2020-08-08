@@ -16,19 +16,23 @@
 
 class COrder
 {
-public:
-    enum EType { eInner, ePatrol };
-
-    EType type;
 
 public:
     COrder();
     ~COrder();
+    void saveOrder(QString path);
+
+    void addOutcome();
+    void addStage();
+
+private:
+    // Основные параметры приказа
+    enum EType { eInner, ePatrol };
+    EType type;
 
 private:
     QMap<qint32, COutcome *> m_outcomes;
     QMap<qint32, CStage *> m_stages;
-    /// Основные параметры приказа
 };
 
 #endif // CORDER_H

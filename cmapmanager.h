@@ -10,10 +10,33 @@
  * то есть данные CStage или COutcome.
  */
 
-class CMapManager
+#include <QWidget>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include "cnode.h"
+
+class CMapManager : public QGraphicsView
 {
+    Q_OBJECT
 public:
-    CMapManager();
+    explicit CMapManager(QWidget *parent = nullptr);
+    ~CMapManager();
+    void addFirstNode();
+    void addNode(qint32 parentId);
+
+signals:
+    void s_newNodeSelected(qint32 id);
+
+private slots:
+    void slotNodeClicked(qint32 id);
+
+private:
+    void setSelected(qint32 selectedId);
+
+private:
+    QGraphicsScene *m_scene;
+    QMap<qint32, CNode *> m_nodes;
+    qint32 m_selectedNodeId { -1 };
 };
 
 #endif // CMAPMANAGER_H

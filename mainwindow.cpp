@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 MainWindow::~MainWindow()
 {
+    delete m_order;
     delete ui;
 }
 
@@ -46,6 +47,11 @@ void MainWindow::needReqResToggled(bool checked)
             spin->setVisible(checked);
         }
     }
+}
+
+void MainWindow::slotNewNodeSelected(qint32 id)
+{
+    // TODO: найти какой этап или исход выбран и в зависимости от этого вызвать один из двух методов для подготовки ui
 }
 
 void MainWindow::on_action_save_triggered()
@@ -71,7 +77,36 @@ void MainWindow::_prepareView()
     ui->swgt_order_type->setCurrentWidget(ui->wgt_inner_order);
     ui->cb_time->addItems(TIME_PERIODS);
     ui->grp_stageReward->setVisible(false);
-    // ui->tab_quest->setVisible(false); // NOTE: закомментированно на время разработки
+    ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget->tabBar()->setTabEnabled(1, false);
+}
+
+void MainWindow::_prepareFirstOutcomeUi()
+{
+    ui->stackedWidget->setCurrentIndex(1);
+    ui->gb_stagesOutcomes->setTitle("Исходы выбора сотрудников");
+    ui->pb_toParentStage->setVisible(false);
+    ui->lb_briefReminder->setText("Стартовые проверки");
+    ui->lw_outcomes->clear();
+}
+
+void MainWindow::_prepareOutcomeUi()
+{
+    //
+}
+
+void MainWindow::_prepateStageUi()
+{
+    //
+}
+
+void MainWindow::_prepareOutcomeUi(qint32 id)
+{
+    //
+}
+void MainWindow::_prepateStageUi(qint32 id)
+{
+    //
 }
 
 void MainWindow::_changeGrpNumberStaffTitle()
@@ -97,9 +132,19 @@ void MainWindow::_deleteOutcome(QListWidgetItem *item)
     //Невизуальная часть
 
     //Визуальная часть
-    auto wgt = ui->lw_outcomes->itemWidget(item);
     ui->lw_outcomes->takeItem(ui->lw_outcomes->row(item));
-    delete wgt;
+}
+
+void MainWindow::_addOutcome()
+{
+    //Добавить в COrder
+    //Добавить в CMapManager
+}
+
+void MainWindow::_addStage()
+{
+    //Добавить в COrder
+    //Добавить в CMapManager
 }
 
 void MainWindow::on_cmb_type_currentIndexChanged(int index)
@@ -343,17 +388,23 @@ void MainWindow::on_pb_showRewardGroup_clicked()
         ui->pb_showRewardGroup->setText("Убрать результат(награду)");
     }
 }
-
+// TODO: СЕЙЧАС остановился на участке алгоритма (Нажимает "К ЭТАПУ")
 void MainWindow::on_pb_createQuest_clicked()
 {
-    if (ui->tab_quest->isVisible()) {
-        //Создание квеста уже было произведено, нужно просто перейти
-        ui->tabWidget->setCurrentIndex(1);
+    if (ui->tabWidget->tabBar()->isTabEnabled(1)) {
+        //Создание квеста уже было произведено, нужно просто перейти на первый этап
     } else {
         //Нажимается впервые, нужно создать квест
-        // ui->tab_quest->setVisible(true); // NOTE: закомментированно на время разработки
-        // TODO: первичное создание квеста
+        ui->tabWidget->tabBar()->setTabEnabled(1, true);
+        m_order = new COrder();
+        // TODO: чуть позже записать основные параметры квеста в сордер
+        m_mapManager = new CMapManager();
+        connect(m_mapManager, &CMapManager::s_newNodeSelected, this, &MainWindow::slotNewNodeSelected);
+        ui->gb_map->layout()->addWidget(m_mapManager);
+        m_mapManager->addFirstNode();
     }
+    ui->tabWidget->setCurrentIndex(1);
+    _prepareFirstOutcomeUi();
 }
 
 void MainWindow::on_pb_toParentStage_clicked()

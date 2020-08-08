@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QListWidgetItem>
 #include "cdatabasemanager.h"
+#include "cmapmanager.h"
 #include "cstartpage.h"
 #include "corder.h"
 
@@ -23,6 +24,9 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void needReqResToggled(bool checked);
+
+public slots:
+    void slotNewNodeSelected(qint32 id);
 
 private slots:
     void on_action_save_triggered();
@@ -50,18 +54,34 @@ private slots:
     void on_pb_toParentOutcome_clicked();
     void on_pb_addReward_clicked();
     void on_pb_deleteReward_clicked();
-
     void on_lw_rewards_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
 private:
     void _prepareView();
+    //! Подготовить виджет исхода для создания первого
+    void _prepareFirstOutcomeUi();
+    //! Подготовить виджет исхода для создания нового
+    void _prepareOutcomeUi();
+    //! Подготовить виджет этапа для создания нового
+    void _prepateStageUi();
+    //! Подготовить виджет исхода и заполнить данными из COrder
+    void _prepareOutcomeUi(qint32 id);
+    //! Подготовить виджет этапа и заполнить данными из COrder
+    void _prepateStageUi(qint32 id);
+
     void _changeGrpNumberStaffTitle();
     void _createOutcome();
     void _deleteOutcome(QListWidgetItem *item);
 
+    void _addOutcome();
+    void _addStage();
+
 private:
     Ui::MainWindow *ui;
     CDatabaseManager *m_databaseManager;
+    CMapManager *m_mapManager;
+    //! Текущий приказ
+    COrder *m_order;
 };
 
 #endif // MAINWINDOW_H
