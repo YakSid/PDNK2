@@ -1,6 +1,6 @@
 #include "coutcome.h"
 
-COutcome::COutcome()
+COutcome::COutcome(qint32 id)
 {
-
+    m_id = id;
 }

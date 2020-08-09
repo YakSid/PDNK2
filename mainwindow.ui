@@ -1741,7 +1741,7 @@ p, li { white-space: pre-wrap; }
                       <number>2</number>
                      </property>
                      <item>
-                      <widget class="QPushButton" name="pb_addOutcome">
+                      <widget class="QPushButton" name="pb_addCheck">
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
@@ -1760,7 +1760,7 @@ p, li { white-space: pre-wrap; }
                       </widget>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="pb_deleteOutcome">
+                      <widget class="QPushButton" name="pb_deleteCheck">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>

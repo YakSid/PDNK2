@@ -20,7 +20,10 @@ class COutcomeWidget : public QWidget
 
 public:
     explicit COutcomeWidget(QWidget *parent = nullptr);
+    COutcomeWidget(qint32 id);
     ~COutcomeWidget();
+    void setId(qint32 id) { m_id = id; }
+    qint32 getId() const { return m_id; }
 
 private slots:
     void on_cb_type_currentIndexChanged(int index);
@@ -30,6 +33,7 @@ private slots:
 
 private:
     Ui::COutcomeWidget *ui;
+    qint32 m_id;
 };
 
 #endif // COUTCOMEWIDGET_H

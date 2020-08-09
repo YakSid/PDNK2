@@ -49,9 +49,13 @@ void MainWindow::needReqResToggled(bool checked)
     }
 }
 
-void MainWindow::slotNewNodeSelected(qint32 id)
+void MainWindow::slotNewNodeSelected(qint32 id, ENodeType type)
 {
-    // TODO: найти какой этап или исход выбран и в зависимости от этого вызвать один из двух методов для подготовки ui
+    if (type == eOutcome) {
+        _prepareOutcomeUi(id);
+    } else {
+        _prepateStageUi(id);
+    }
 }
 
 void MainWindow::on_action_save_triggered()
@@ -88,6 +92,7 @@ void MainWindow::_prepareFirstOutcomeUi()
     ui->pb_toParentStage->setVisible(false);
     ui->lb_briefReminder->setText("Стартовые проверки");
     ui->lw_outcomes->clear();
+    // TODO: если есть данные, то заполнить из сордер из саутком с айди 0
 }
 
 void MainWindow::_prepareOutcomeUi()
@@ -102,11 +107,22 @@ void MainWindow::_prepateStageUi()
 
 void MainWindow::_prepareOutcomeUi(qint32 id)
 {
-    //
+    ui->stackedWidget->setCurrentIndex(1);
+    ui->gb_stagesOutcomes->setTitle("Исходы выбора");
+    ui->pb_toParentStage->setVisible(true);
+    ui->lb_briefReminder->setText("краткое описание");
+    ui->lw_outcomes->clear();
+    // TODO: если есть данные, то заполнить из сордер из саутком
+    // TODO: есохранять их ещё когда-то надо
 }
 void MainWindow::_prepateStageUi(qint32 id)
 {
-    //
+    ui->stackedWidget->setCurrentIndex(0);
+    ui->gb_stagesOutcomes->setTitle("Этап с выбором");
+    ui->pb_toParentOutcome->setVisible(true);
+    ui->lb_briefReminder->setText("краткое описание");
+    ui->lw_variants->clear();
+    // TODO: если есть данные, то заполнить из сордер из сстейдж
 }
 
 void MainWindow::_changeGrpNumberStaffTitle()
@@ -116,35 +132,26 @@ void MainWindow::_changeGrpNumberStaffTitle()
     ui->grp_number_staff->setTitle("Необходимо сотрудников: " + QString::number(numberStaff));
 }
 
-void MainWindow::_createOutcome()
+qint32 MainWindow::_createOutcome()
 {
     //Невизуальная часть
+    qint32 id = m_order->addOutcome();
 
-    //Визуальная часть
-    auto wgt = new COutcomeWidget;
-    auto item = new QListWidgetItem(ui->lw_outcomes);
-    item->setSizeHint(wgt->sizeHint());
-    ui->lw_outcomes->setItemWidget(item, wgt);
+    //Визуальная часть map
+    m_mapManager->addNode(id, eOutcome);
+
+    return id;
 }
 
-void MainWindow::_deleteOutcome(QListWidgetItem *item)
+qint32 MainWindow::_createStage()
 {
     //Невизуальная часть
+    qint32 id = m_order->addStage();
 
-    //Визуальная часть
-    ui->lw_outcomes->takeItem(ui->lw_outcomes->row(item));
-}
+    //Визуальная часть map
+    m_mapManager->addNode(id, eStage);
 
-void MainWindow::_addOutcome()
-{
-    //Добавить в COrder
-    //Добавить в CMapManager
-}
-
-void MainWindow::_addStage()
-{
-    //Добавить в COrder
-    //Добавить в CMapManager
+    return id;
 }
 
 void MainWindow::on_cmb_type_currentIndexChanged(int index)
@@ -200,23 +207,36 @@ void MainWindow::on_cmb_department_currentIndexChanged(int index)
     // TODO: позже: вписать значения и энумы сделать
 }
 
-void MainWindow::on_pb_addOutcome_clicked()
+void MainWindow::on_pb_addCheck_clicked()
 {
-    _createOutcome();
+    qint32 stageId = _createStage();
+
+    //Визуальная часть ui
+    auto wgt = new COutcomeWidget();
+    wgt->setId(stageId); // NOTE: тут должен быть другой id, если он вообще нужен
+    auto item = new QListWidgetItem(ui->lw_outcomes);
+    item->setSizeHint(wgt->sizeHint());
+    ui->lw_outcomes->setItemWidget(item, wgt);
 }
 
-void MainWindow::on_pb_deleteOutcome_clicked()
+void MainWindow::on_pb_deleteCheck_clicked()
 {
-    _deleteOutcome(ui->lw_outcomes->currentItem());
+    //Невизуальная часть
+    // TODO: чуть позже запустить удаление всех следующих?
+
+    //Визуальная часть ui
+    ui->lw_outcomes->takeItem(ui->lw_outcomes->currentRow());
+
+    //Визуальная часть map
 }
 
 void MainWindow::on_lw_outcomes_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
 {
     Q_UNUSED(previous);
     if (!current) {
-        ui->pb_deleteOutcome->setEnabled(false);
+        ui->pb_deleteCheck->setEnabled(false);
     } else {
-        ui->pb_deleteOutcome->setEnabled(true);
+        ui->pb_deleteCheck->setEnabled(true);
     }
 }
 
@@ -388,11 +408,12 @@ void MainWindow::on_pb_showRewardGroup_clicked()
         ui->pb_showRewardGroup->setText("Убрать результат(награду)");
     }
 }
-// TODO: СЕЙЧАС остановился на участке алгоритма (Нажимает "К ЭТАПУ")
+
 void MainWindow::on_pb_createQuest_clicked()
 {
     if (ui->tabWidget->tabBar()->isTabEnabled(1)) {
         //Создание квеста уже было произведено, нужно просто перейти на первый этап
+        m_mapManager->setSelected(0);
     } else {
         //Нажимается впервые, нужно создать квест
         ui->tabWidget->tabBar()->setTabEnabled(1, true);

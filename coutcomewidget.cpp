@@ -1,5 +1,6 @@
 #include "coutcomewidget.h"
 #include "ui_coutcomewidget.h"
+#include <QDebug>
 
 COutcomeWidget::COutcomeWidget(QWidget *parent) : QWidget(parent), ui(new Ui::COutcomeWidget)
 {

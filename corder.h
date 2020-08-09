@@ -12,6 +12,7 @@
 
 #include "coutcome.h"
 #include "cstage.h"
+#include "cconstants.h"
 #include <QMap>
 
 class COrder
@@ -22,17 +23,19 @@ public:
     ~COrder();
     void saveOrder(QString path);
 
-    void addOutcome();
-    void addStage();
+    qint32 addOutcome();
+    qint32 addStage();
 
 private:
-    // Основные параметры приказа
-    enum EType { eInner, ePatrol };
-    EType type;
+    //! Пройтись по всем нодам указанного типа и вернуть минимальный незанятый id
+    qint32 _makeMinId(ENodeType type);
 
 private:
     QMap<qint32, COutcome *> m_outcomes;
     QMap<qint32, CStage *> m_stages;
+    // Основные параметры приказа
+    enum EType { eInner, ePatrol };
+    EType locationType;
 };
 
 #endif // CORDER_H

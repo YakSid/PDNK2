@@ -11,28 +11,35 @@ CMapManager::~CMapManager() {}
 
 void CMapManager::addFirstNode()
 {
-    auto node = new CNode(0, 0, 0);
+    auto node = new CNode(0, eOutcome, 0, 0);
+    node->setParentId(-1);
+    node->setLayer(0);
     connect(node, &CNode::s_clicked, this, &CMapManager::slotNodeClicked);
     m_scene->addItem(node);
     m_nodes.insert(node->getId(), node);
     slotNodeClicked(node->getId());
 }
 
-void CMapManager::addNode(qint32 parentId)
+void CMapManager::addNode(qint32 id, ENodeType type)
 {
-    //Рассчитать из данных родителя, где разместить нод
-    auto node = new CNode();
+    auto parentId = m_selectedNodeId;
+    auto parentNode = m_nodes.find(m_selectedNodeId).value();
+    parentNode->addChild(id);
+    quint16 layer = parentNode->getLayer() + 1;
+    qreal x, y;
+    // TODO: позже алгоритм размещения нода на мапе
+    x = 25 * layer;
+    y = 20 * (parentNode->getChildrenCount() - 1);
+    //! т.к. в СОрдер два разных мапа для этапов и исходов, а в мапМенеджере один, то
+    //! здесь всем айдишникам нодов типа этап прибавляется миллион, чтобы избежать совпадающих айди с исходами
+    if (type == eStage)
+        id += 1000000;
+    auto node = new CNode(id, type, x, y); // NOTE: коррдинаты норм потом сделать
+    node->setParentId(parentId);
+    node->setLayer(layer);
     connect(node, &CNode::s_clicked, this, &CMapManager::slotNodeClicked);
     m_scene->addItem(node);
-}
-
-void CMapManager::slotNodeClicked(qint32 id)
-{
-    if (id != m_selectedNodeId) {
-        qDebug() << "Node" << id << "was clicked";
-        setSelected(id);
-        emit s_newNodeSelected(id);
-    }
+    m_nodes.insert(id, node);
 }
 
 void CMapManager::setSelected(qint32 selectedId)
@@ -47,6 +54,19 @@ void CMapManager::setSelected(qint32 selectedId)
         it.value()->setSelected(false);
     }
     m_selectedNodeId = selectedId;
+}
+
+void CMapManager::slotNodeClicked(qint32 id)
+{
+    if (id != m_selectedNodeId) {
+        qDebug() << "Node" << id << "was clicked";
+        setSelected(id);
+        if (id > 1000000) {
+            emit s_newNodeSelected(id - 1000000, eStage);
+        } else {
+            emit s_newNodeSelected(id, eOutcome);
+        }
+    }
 }
 
 // QPen penBlack(Qt::black);

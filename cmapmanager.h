@@ -22,16 +22,14 @@ public:
     explicit CMapManager(QWidget *parent = nullptr);
     ~CMapManager();
     void addFirstNode();
-    void addNode(qint32 parentId);
+    void addNode(qint32 id, ENodeType type);
+    void setSelected(qint32 selectedId);
 
 signals:
-    void s_newNodeSelected(qint32 id);
+    void s_newNodeSelected(qint32 id, ENodeType type);
 
 private slots:
     void slotNodeClicked(qint32 id);
-
-private:
-    void setSelected(qint32 selectedId);
 
 private:
     QGraphicsScene *m_scene;

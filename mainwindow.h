@@ -26,7 +26,7 @@ public:
     void needReqResToggled(bool checked);
 
 public slots:
-    void slotNewNodeSelected(qint32 id);
+    void slotNewNodeSelected(qint32 id, ENodeType type);
 
 private slots:
     void on_action_save_triggered();
@@ -39,8 +39,8 @@ private slots:
     void on_spb_common_valueChanged(int arg1);
     void on_grp_req_resources_toggled(bool arg1);
     void on_cmb_department_currentIndexChanged(int index);
-    void on_pb_addOutcome_clicked();
-    void on_pb_deleteOutcome_clicked();
+    void on_pb_addCheck_clicked();
+    void on_pb_deleteCheck_clicked();
     void on_lw_outcomes_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
     void on_pb_addTerm_clicked();
     void on_pb_deleteTerm_clicked();
@@ -70,11 +70,12 @@ private:
     void _prepateStageUi(qint32 id);
 
     void _changeGrpNumberStaffTitle();
-    void _createOutcome();
-    void _deleteOutcome(QListWidgetItem *item);
-
-    void _addOutcome();
-    void _addStage();
+    qint32 _createOutcome();
+    qint32 _createStage();
+    // TODO: СЕЙЧАС привязать создание этапа к кнопкам НА сауткомвиджете, а не к клавише создания проверок,
+    //      также сделать для исходов. Потом сделать сохранение данных в аутком и стейдж, алгоритм открытия чекбоксов на
+    //      сауткомвиджете, наладить алгоритмы размещения/рисовки, рисовку линий, перемещение по кнопке "к родителю",
+    //      удаление
 
 private:
     Ui::MainWindow *ui;

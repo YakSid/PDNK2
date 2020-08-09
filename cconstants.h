@@ -3,6 +3,8 @@
 
 #include <QStringList>
 
+enum ENodeType { eOutcome, eStage };
+
 const QStringList TRAITS = { "Заражённый",
                              "Раненый",
                              "С отрицательным психологическим состоянием (-2)",
