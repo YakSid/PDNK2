@@ -1,6 +1,8 @@
 #include "cmapmanager.h"
 #include <QDebug>
 
+const qint32 MILLION = 1000000;
+
 CMapManager::CMapManager(QWidget *parent) : QGraphicsView(parent)
 {
     m_scene = new QGraphicsScene();
@@ -33,7 +35,7 @@ void CMapManager::addNode(qint32 id, ENodeType type)
     //! т.к. в СОрдер два разных мапа для этапов и исходов, а в мапМенеджере один, то
     //! здесь всем айдишникам нодов типа этап прибавляется миллион, чтобы избежать совпадающих айди с исходами
     if (type == eStage)
-        id += 1000000;
+        id += MILLION;
     auto node = new CNode(id, type, x, y); // NOTE: коррдинаты норм потом сделать
     node->setParentId(parentId);
     node->setLayer(layer);
@@ -42,10 +44,14 @@ void CMapManager::addNode(qint32 id, ENodeType type)
     m_nodes.insert(id, node);
 }
 
-void CMapManager::setSelected(qint32 selectedId)
+void CMapManager::setSelected(qint32 selectedId, ENodeType type)
 {
     if (selectedId == -1)
         return;
+
+    if (type == eStage) {
+        selectedId += MILLION;
+    }
 
     auto it = m_nodes.find(selectedId);
     it.value()->setSelected(true);
@@ -60,10 +66,11 @@ void CMapManager::slotNodeClicked(qint32 id)
 {
     if (id != m_selectedNodeId) {
         qDebug() << "Node" << id << "was clicked";
-        setSelected(id);
-        if (id > 1000000) {
-            emit s_newNodeSelected(id - 1000000, eStage);
+        if (id > MILLION) {
+            setSelected(id, eStage);
+            emit s_newNodeSelected(id - MILLION, eStage);
         } else {
+            setSelected(id, eOutcome);
             emit s_newNodeSelected(id, eOutcome);
         }
     }

@@ -7,15 +7,45 @@ COutcomeWidget::COutcomeWidget(QWidget *parent) : QWidget(parent), ui(new Ui::CO
     ui->setupUi(this);
     ui->cb_trait->setVisible(false);
     ui->pb_toTrait->setVisible(false);
-    ui->pb_tofailStageOrAuto->setVisible(false);
+    ui->pb_toFailStageOrAuto->setVisible(false);
     ui->ch_success->setChecked(false);
     ui->ch_positive->setChecked(false);
     ui->ch_barely->setChecked(false);
+    m_buttons.append(
+            { ui->pb_toTrait, ui->pb_toSuccess, ui->pb_toPositive, ui->pb_toBarely, ui->pb_toFailStageOrAuto });
+    for (auto btn : m_buttons) {
+        connect(btn, &QPushButton::clicked, this, &COutcomeWidget::on_checkBoxToStageClicked);
+    }
 }
 
 COutcomeWidget::~COutcomeWidget()
 {
     delete ui;
+}
+
+void COutcomeWidget::setStageIdForNewButton(qint32 id)
+{
+    auto it = m_stageIdButton.find(-1);
+    m_stageIdButton.insert(id, it.value());
+    m_stageIdButton.remove(-1);
+}
+
+void COutcomeWidget::on_checkBoxToStageClicked()
+{
+    auto btnSender = qobject_cast<QPushButton *>(sender());
+    if (m_stageIdButton.isEmpty()) {
+        m_stageIdButton.insert(-1, btnSender);
+        emit s_createStageClicked();
+    } else {
+        for (auto it = m_stageIdButton.begin(); it != m_stageIdButton.end(); it++) {
+            if (it.value() == btnSender) {
+                emit s_toStageClicked(it.key());
+                break;
+            }
+        }
+        m_stageIdButton.insert(-1, btnSender);
+        emit s_createStageClicked();
+    }
 }
 
 void COutcomeWidget::on_cb_type_currentIndexChanged(int index)
@@ -28,9 +58,9 @@ void COutcomeWidget::on_cb_type_currentIndexChanged(int index)
         ui->pb_toTrait->setVisible(false);
     }
     if (index == 4 || index == 5) {
-        ui->pb_tofailStageOrAuto->setVisible(true);
+        ui->pb_toFailStageOrAuto->setVisible(true);
     } else {
-        ui->pb_tofailStageOrAuto->setVisible(false);
+        ui->pb_toFailStageOrAuto->setVisible(false);
     }
     if (index < 3) {
         ui->ch_success->setVisible(true);

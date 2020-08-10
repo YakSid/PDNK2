@@ -9,6 +9,8 @@
  */
 
 #include <QWidget>
+#include <QPushButton>
+#include <QMap>
 
 namespace Ui {
 class COutcomeWidget;
@@ -24,6 +26,14 @@ public:
     ~COutcomeWidget();
     void setId(qint32 id) { m_id = id; }
     qint32 getId() const { return m_id; }
+    void setStageIdForNewButton(qint32 id);
+
+public slots:
+    void on_checkBoxToStageClicked();
+
+signals:
+    void s_createStageClicked();
+    void s_toStageClicked(qint32 id);
 
 private slots:
     void on_cb_type_currentIndexChanged(int index);
@@ -34,6 +44,10 @@ private slots:
 private:
     Ui::COutcomeWidget *ui;
     qint32 m_id;
+    //! Мап с указанием к какому этапу ведёт какая кнопка (-1 только у только что добавленных кнопок)
+    QMap<qint32, QPushButton *> m_stageIdButton;
+    //! Лист всех кнопок на виджете (все "к этапу...")
+    QList<QPushButton *> m_buttons;
 };
 
 #endif // COUTCOMEWIDGET_H

@@ -23,7 +23,7 @@ public:
     ~CMapManager();
     void addFirstNode();
     void addNode(qint32 id, ENodeType type);
-    void setSelected(qint32 selectedId);
+    void setSelected(qint32 selectedId, ENodeType type);
 
 signals:
     void s_newNodeSelected(qint32 id, ENodeType type);

@@ -58,6 +58,21 @@ void MainWindow::slotNewNodeSelected(qint32 id, ENodeType type)
     }
 }
 
+void MainWindow::slotToStageClicked(qint32 id)
+{
+    m_mapManager->setSelected(id, eStage);
+    _prepateStageUi(id);
+}
+
+void MainWindow::slotCreateStageClicked()
+{
+    qint32 id = _createStage();
+    auto wgt = qobject_cast<COutcomeWidget *>(sender());
+    wgt->setStageIdForNewButton(id);
+    m_mapManager->setSelected(id, eStage);
+    _prepateStageUi(id);
+}
+
 void MainWindow::on_action_save_triggered()
 {
     // Сохранить всё в базу
@@ -114,6 +129,7 @@ void MainWindow::_prepareOutcomeUi(qint32 id)
     ui->lw_outcomes->clear();
     // TODO: если есть данные, то заполнить из сордер из саутком
     // TODO: есохранять их ещё когда-то надо
+    //а ещё очистить предыдущие значения ауткома
 }
 void MainWindow::_prepateStageUi(qint32 id)
 {
@@ -123,6 +139,7 @@ void MainWindow::_prepateStageUi(qint32 id)
     ui->lb_briefReminder->setText("краткое описание");
     ui->lw_variants->clear();
     // TODO: если есть данные, то заполнить из сордер из сстейдж
+    //а ещё очистить предыдущие значения стейджа
 }
 
 void MainWindow::_changeGrpNumberStaffTitle()
@@ -209,11 +226,11 @@ void MainWindow::on_cmb_department_currentIndexChanged(int index)
 
 void MainWindow::on_pb_addCheck_clicked()
 {
-    qint32 stageId = _createStage();
-
     //Визуальная часть ui
     auto wgt = new COutcomeWidget();
-    wgt->setId(stageId); // NOTE: тут должен быть другой id, если он вообще нужен
+    connect(wgt, &COutcomeWidget::s_createStageClicked, this, &MainWindow::slotCreateStageClicked);
+    connect(wgt, &COutcomeWidget::s_toStageClicked, this, &MainWindow::slotToStageClicked);
+    wgt->setId(0); // TODO: тут должен быть другой id, если он вообще нужен
     auto item = new QListWidgetItem(ui->lw_outcomes);
     item->setSizeHint(wgt->sizeHint());
     ui->lw_outcomes->setItemWidget(item, wgt);
@@ -413,7 +430,7 @@ void MainWindow::on_pb_createQuest_clicked()
 {
     if (ui->tabWidget->tabBar()->isTabEnabled(1)) {
         //Создание квеста уже было произведено, нужно просто перейти на первый этап
-        m_mapManager->setSelected(0);
+        m_mapManager->setSelected(0, eOutcome);
     } else {
         //Нажимается впервые, нужно создать квест
         ui->tabWidget->tabBar()->setTabEnabled(1, true);

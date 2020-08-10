@@ -26,7 +26,11 @@ public:
     void needReqResToggled(bool checked);
 
 public slots:
+    //! На карте выбран другой нод
     void slotNewNodeSelected(qint32 id, ENodeType type);
+    //! Нажата кнопка "К этапу..." на coutomewidget
+    void slotToStageClicked(qint32 id);
+    void slotCreateStageClicked();
 
 private slots:
     void on_action_save_triggered();
@@ -72,8 +76,8 @@ private:
     void _changeGrpNumberStaffTitle();
     qint32 _createOutcome();
     qint32 _createStage();
-    // TODO: СЕЙЧАС привязать создание этапа к кнопкам НА сауткомвиджете, а не к клавише создания проверок,
-    //      также сделать для исходов. Потом сделать сохранение данных в аутком и стейдж, алгоритм открытия чекбоксов на
+    // TODO: СЕЙЧАС для исходов привязать добавление к кнопкам "К исходу..." на варианте в стейдже. Потом сделать
+    // сохранение данных в аутком и стейдж, алгоритм открытия чекбоксов на
     //      сауткомвиджете, наладить алгоритмы размещения/рисовки, рисовку линий, перемещение по кнопке "к родителю",
     //      удаление
 
