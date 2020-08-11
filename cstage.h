@@ -13,7 +13,7 @@
 class CStage
 {
 public:
-    CStage(qint32 id);
+    CStage(qint32 id) { m_id = id; }
     ~CStage();
     qint32 getId() const { return m_id; }
     void setParentId(qint32 parentId) { m_parentId = parentId; }

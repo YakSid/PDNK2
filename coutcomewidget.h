@@ -2,6 +2,7 @@
 #define COUTCOMEWIDGET_H
 
 /** @class class COutcomeWidget
+ * (На самом деле по логике это класс проверки, а не исхода)
  * Класс виджета исхода для главного окна.
  *
  * Содержит информацию о необходимых навыках и шансах успешного и не успешного прохождения родительского этапа.
@@ -24,9 +25,12 @@ public:
     explicit COutcomeWidget(QWidget *parent = nullptr);
     COutcomeWidget(qint32 id);
     ~COutcomeWidget();
-    void setId(qint32 id) { m_id = id; }
-    qint32 getId() const { return m_id; }
     void setStageIdForNewButton(qint32 id);
+    qint32 getType();
+    qint32 getTrait();
+    QList<qint32> getSpinValues();
+    QList<qint32> getStagesId();
+    void updateData(qint32 type, qint32 trait, QList<qint32> spinValues, QList<qint32> stagesId);
 
 public slots:
     void on_checkBoxToStageClicked();
@@ -43,7 +47,6 @@ private slots:
 
 private:
     Ui::COutcomeWidget *ui;
-    qint32 m_id;
     //! Мап с указанием к какому этапу ведёт какая кнопка (-1 только у только что добавленных кнопок)
     QMap<qint32, QPushButton *> m_stageIdButton;
     //! Лист всех кнопок на виджете (все "к этапу...")

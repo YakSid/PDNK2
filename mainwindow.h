@@ -12,6 +12,32 @@
  * Класс основного рабочего окна.
  */
 
+struct SCurrentNode {
+    qint32 id;
+    ENodeType type;
+
+    void update(qint32 newId, ENodeType newType)
+    {
+        id = newId;
+        type = newType;
+    }
+};
+//! Визуальное отображение проверки и все данные
+struct SCheck {
+    //Если значение -1, значит отсутствует
+    qint32 type { -1 };
+    qint32 trait { -1 };
+    //! Значения спинбоксов, если есть
+    QList<qint32> spinValues;
+    //! К каким этапам ведёт кнопка. По порядку сверху вниз
+    QList<qint32> stagesId;
+};
+
+//! Визуальное отображение варианта и все данные
+struct SVariant {
+    //
+};
+
 namespace Ui {
 class MainWindow;
 }
@@ -31,6 +57,9 @@ public slots:
     //! Нажата кнопка "К этапу..." на coutomewidget
     void slotToStageClicked(qint32 id);
     void slotCreateStageClicked();
+    //! Нажата кнопка "К исходам..." на виджете варианта
+    void slotToOutcomeClicked(qint32 id);
+    void slotCreateOutcomeClicked();
 
 private slots:
     void on_action_save_triggered();
@@ -64,22 +93,22 @@ private:
     void _prepareView();
     //! Подготовить виджет исхода для создания первого
     void _prepareFirstOutcomeUi();
-    //! Подготовить виджет исхода для создания нового
-    void _prepareOutcomeUi();
-    //! Подготовить виджет этапа для создания нового
-    void _prepateStageUi();
     //! Подготовить виджет исхода и заполнить данными из COrder
     void _prepareOutcomeUi(qint32 id);
     //! Подготовить виджет этапа и заполнить данными из COrder
-    void _prepateStageUi(qint32 id);
+    void _prepareStageUi(qint32 id);
 
     void _changeGrpNumberStaffTitle();
     qint32 _createOutcome();
     qint32 _createStage();
-    // TODO: СЕЙЧАС для исходов привязать добавление к кнопкам "К исходу..." на варианте в стейдже. Потом сделать
-    // сохранение данных в аутком и стейдж, алгоритм открытия чекбоксов на
-    //      сауткомвиджете, наладить алгоритмы размещения/рисовки, рисовку линий, перемещение по кнопке "к родителю",
-    //      удаление
+    // TODO: СЕЙЧАС на вариантах привязать добавление ауткомов по кнопкам "К исходу...". Потом
+    // сделать алгоритм открытия чекбоксов на сауткомвиджете, наладить алгоритмы размещения/рисовки, рисовку линий,
+    // перемещение по кнопке "к родителю" ?уже ж сделал?, удаление, сохранение в файл и загрузку из файла, загрузку
+    // файла на выбор.
+    //! Сохранить данные текущего ауткома, перейти к стейджу и подготовить его ui
+    void _saveOutcomeLoadStage(qint32 stageId);
+    //! Сохранить данные текущего стейджа, перейти к ауткому и подготовить его ui
+    void _saveStageLoadOutcome(qint32 outcomeId);
 
 private:
     Ui::MainWindow *ui;
@@ -87,6 +116,12 @@ private:
     CMapManager *m_mapManager;
     //! Текущий приказ
     COrder *m_order;
+    //! Текущий нод
+    SCurrentNode m_currentNode;
+    //! Отношение всех номеров ауткомов со всеми наборами проверок
+    QMap<qint32, QList<SCheck *>> m_checksPacks;
+    //! Отношение всех номеров стейджей со всеми наборами вариантов
+    QMap<qint32, QList<SVariant *>> m_variantsPacks;
 };
 
 #endif // MAINWINDOW_H

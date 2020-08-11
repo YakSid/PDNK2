@@ -24,7 +24,11 @@ public:
     void saveOrder(QString path);
 
     qint32 addOutcome();
+    void updateOutcome(qint32 id);
     qint32 addStage();
+    void updateStage(qint32 id);
+    //! Узнать id родителя по id и типу сына
+    qint32 getParentId(qint32 id, ENodeType type);
 
 private:
     //! Пройтись по всем нодам указанного типа и вернуть минимальный незанятый id

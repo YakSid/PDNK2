@@ -54,14 +54,13 @@ void MainWindow::slotNewNodeSelected(qint32 id, ENodeType type)
     if (type == eOutcome) {
         _prepareOutcomeUi(id);
     } else {
-        _prepateStageUi(id);
+        _prepareStageUi(id);
     }
 }
 
 void MainWindow::slotToStageClicked(qint32 id)
 {
-    m_mapManager->setSelected(id, eStage);
-    _prepateStageUi(id);
+    _saveOutcomeLoadStage(id);
 }
 
 void MainWindow::slotCreateStageClicked()
@@ -69,8 +68,22 @@ void MainWindow::slotCreateStageClicked()
     qint32 id = _createStage();
     auto wgt = qobject_cast<COutcomeWidget *>(sender());
     wgt->setStageIdForNewButton(id);
-    m_mapManager->setSelected(id, eStage);
-    _prepateStageUi(id);
+    _saveOutcomeLoadStage(id);
+}
+
+void MainWindow::slotToOutcomeClicked(qint32 id)
+{
+    _saveStageLoadOutcome(id);
+    // TODO: СЕЙЧАС подключить эти два слота, частично методы наподобие верхних сделаны
+}
+
+void MainWindow::slotCreateOutcomeClicked()
+{
+    qint32 id = _createOutcome();
+    // auto wgt = qobject_cast<COutcomeWidget *>(sender());
+    // wgt->setStageIdForNewButton(id);
+    // TODO: подключить эти два слота и доделать
+    _saveStageLoadOutcome(id);
 }
 
 void MainWindow::on_action_save_triggered()
@@ -107,17 +120,8 @@ void MainWindow::_prepareFirstOutcomeUi()
     ui->pb_toParentStage->setVisible(false);
     ui->lb_briefReminder->setText("Стартовые проверки");
     ui->lw_outcomes->clear();
+    m_currentNode.update(0, eOutcome);
     // TODO: если есть данные, то заполнить из сордер из саутком с айди 0
-}
-
-void MainWindow::_prepareOutcomeUi()
-{
-    //
-}
-
-void MainWindow::_prepateStageUi()
-{
-    //
 }
 
 void MainWindow::_prepareOutcomeUi(qint32 id)
@@ -127,19 +131,32 @@ void MainWindow::_prepareOutcomeUi(qint32 id)
     ui->pb_toParentStage->setVisible(true);
     ui->lb_briefReminder->setText("краткое описание");
     ui->lw_outcomes->clear();
-    // TODO: если есть данные, то заполнить из сордер из саутком
-    // TODO: есохранять их ещё когда-то надо
-    //а ещё очистить предыдущие значения ауткома
+    m_currentNode.update(id, eOutcome);
+    ui->lw_outcomes->clear();
+    auto it = m_checksPacks.find(id);
+    if (it != m_checksPacks.end()) {
+        //Подготовить ui данными из it
+        for (auto check : it.value()) {
+            on_pb_addCheck_clicked();
+            auto wgt = qobject_cast<COutcomeWidget *>(
+                    ui->lw_outcomes->itemWidget(ui->lw_outcomes->item(ui->lw_outcomes->count() - 1)));
+            wgt->updateData(check->type, check->trait, check->spinValues, check->stagesId);
+        }
+    }
 }
-void MainWindow::_prepateStageUi(qint32 id)
+void MainWindow::_prepareStageUi(qint32 id)
 {
     ui->stackedWidget->setCurrentIndex(0);
     ui->gb_stagesOutcomes->setTitle("Этап с выбором");
     ui->pb_toParentOutcome->setVisible(true);
     ui->lb_briefReminder->setText("краткое описание");
     ui->lw_variants->clear();
-    // TODO: если есть данные, то заполнить из сордер из сстейдж
-    //а ещё очистить предыдущие значения стейджа
+    m_currentNode.update(id, eStage);
+    ui->lw_variants->clear();
+    auto it = m_variantsPacks.find(id);
+    if (it != m_variantsPacks.end()) {
+        // TODO: Подготовить ui данными из it, как выше
+    }
 }
 
 void MainWindow::_changeGrpNumberStaffTitle()
@@ -169,6 +186,44 @@ qint32 MainWindow::_createStage()
     m_mapManager->addNode(id, eStage);
 
     return id;
+}
+
+void MainWindow::_saveOutcomeLoadStage(qint32 stageId)
+{
+    auto it = m_checksPacks.find(m_currentNode.id);
+    if (it != m_checksPacks.end()) {
+        //Удалить старые данные этого ауткома
+        m_checksPacks.remove(m_currentNode.id);
+    }
+    QList<SCheck *> checksPack;
+    //Создать набор проверок и сохранить
+    for (int i = 0; i < ui->lw_outcomes->count(); i++) {
+        auto wgt = qobject_cast<COutcomeWidget *>(ui->lw_outcomes->itemWidget(ui->lw_outcomes->item(i)));
+        auto check = new SCheck;
+        check->type = wgt->getType();
+        check->trait = wgt->getTrait();
+        check->spinValues = wgt->getSpinValues();
+        check->stagesId = wgt->getStagesId();
+        checksPack.append(check);
+    }
+    m_checksPacks.insert(m_currentNode.id, checksPack);
+
+    m_mapManager->setSelected(stageId, eStage);
+    _prepareStageUi(stageId);
+}
+
+void MainWindow::_saveStageLoadOutcome(qint32 outcomeId)
+{
+    auto it = m_variantsPacks.find(m_currentNode.id);
+    if (it != m_variantsPacks.end()) {
+        //Удалить старые данные этого этапа
+        m_variantsPacks.remove(m_currentNode.id);
+    }
+    //Создать набор проверок и сохранить
+    // TODO: повторить, как для метода выше
+
+    m_mapManager->setSelected(outcomeId, eOutcome);
+    _prepareOutcomeUi(outcomeId);
 }
 
 void MainWindow::on_cmb_type_currentIndexChanged(int index)
@@ -230,7 +285,6 @@ void MainWindow::on_pb_addCheck_clicked()
     auto wgt = new COutcomeWidget();
     connect(wgt, &COutcomeWidget::s_createStageClicked, this, &MainWindow::slotCreateStageClicked);
     connect(wgt, &COutcomeWidget::s_toStageClicked, this, &MainWindow::slotToStageClicked);
-    wgt->setId(0); // TODO: тут должен быть другой id, если он вообще нужен
     auto item = new QListWidgetItem(ui->lw_outcomes);
     item->setSizeHint(wgt->sizeHint());
     ui->lw_outcomes->setItemWidget(item, wgt);
@@ -447,16 +501,14 @@ void MainWindow::on_pb_createQuest_clicked()
 
 void MainWindow::on_pb_toParentStage_clicked()
 {
-    // NOTE: тут ещё доделать
-    ui->stackedWidget->setCurrentIndex(0);
-    //
+    auto parentId = m_order->getParentId(m_currentNode.id, m_currentNode.type);
+    _saveStageLoadOutcome(parentId);
 }
 
 void MainWindow::on_pb_toParentOutcome_clicked()
 {
-    // NOTE: тут ещё доделать
-    ui->stackedWidget->setCurrentIndex(1);
-    //
+    auto parentId = m_order->getParentId(m_currentNode.id, m_currentNode.type);
+    _saveOutcomeLoadStage(parentId);
 }
 
 void MainWindow::on_pb_addReward_clicked()

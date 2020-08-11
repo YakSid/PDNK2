@@ -49,7 +49,7 @@ void CMapManager::setSelected(qint32 selectedId, ENodeType type)
     if (selectedId == -1)
         return;
 
-    if (type == eStage) {
+    if (type == eStage && selectedId < MILLION) {
         selectedId += MILLION;
     }
 

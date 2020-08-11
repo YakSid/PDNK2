@@ -13,7 +13,7 @@
 class COutcome
 {
 public:
-    COutcome(qint32 id);
+    COutcome(qint32 id) { m_id = id; }
     ~COutcome();
     qint32 getId() const { return m_id; }
     void setParentId(qint32 parentId) { m_parentId = parentId; }

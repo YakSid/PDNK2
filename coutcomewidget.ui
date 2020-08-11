@@ -147,38 +147,7 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="4">
-    <widget class="QComboBox" name="cb_type">
-     <item>
-      <property name="text">
-       <string>Физическая проверка</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Умственная проверка</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Командная проверка</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Проверка на наличие особенности</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Провал</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Проверки не нужны</string>
-      </property>
-     </item>
-    </widget>
+    <widget class="QComboBox" name="cb_type"/>
    </item>
    <item row="5" column="0">
     <widget class="QCheckBox" name="ch_barely">
@@ -240,18 +209,20 @@
    <item row="2" column="0" colspan="4">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QComboBox" name="cb_trait">
-       <item>
-        <property name="text">
-         <string>Есть местный</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Есть заражённый</string>
-        </property>
-       </item>
+      <widget class="QLabel" name="lb_trait">
+       <property name="maximumSize">
+        <size>
+         <width>35</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Есть</string>
+       </property>
       </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cb_trait"/>
      </item>
      <item>
       <widget class="QPushButton" name="pb_toTrait">

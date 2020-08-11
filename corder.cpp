@@ -16,11 +16,34 @@ qint32 COrder::addOutcome()
     return outcome->getId();
 }
 
+void COrder::updateOutcome(qint32 id)
+{
+    // TODO: обновить уже при сохранении видимо?
+}
+
 qint32 COrder::addStage()
 {
     auto stage = new CStage(_makeMinId(eStage));
     m_stages.insert(stage->getId(), stage);
     return stage->getId();
+}
+
+void COrder::updateStage(qint32 id)
+{
+    //
+}
+
+qint32 COrder::getParentId(qint32 id, ENodeType type)
+{
+    qint32 result;
+    if (type == eOutcome) {
+        auto it = m_outcomes.find(id);
+        result = it.value()->getParentId();
+    } else {
+        auto it = m_stages.find(id);
+        result = it.value()->getParentId();
+    }
+    return result;
 }
 
 qint32 COrder::_makeMinId(ENodeType type)
