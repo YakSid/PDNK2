@@ -169,7 +169,7 @@ void MainWindow::_changeGrpNumberStaffTitle()
 qint32 MainWindow::_createOutcome()
 {
     //Невизуальная часть
-    qint32 id = m_order->addOutcome();
+    qint32 id = m_order->addOutcome(m_currentNode.id);
 
     //Визуальная часть map
     m_mapManager->addNode(id, eOutcome);
@@ -180,7 +180,7 @@ qint32 MainWindow::_createOutcome()
 qint32 MainWindow::_createStage()
 {
     //Невизуальная часть
-    qint32 id = m_order->addStage();
+    qint32 id = m_order->addStage(m_currentNode.id);
 
     //Визуальная часть map
     m_mapManager->addNode(id, eStage);
@@ -188,6 +188,7 @@ qint32 MainWindow::_createStage()
     return id;
 }
 
+// FIXME: СЕЙЧАС данные иногда не сохраняются или не загружаются при переходе между нодами
 void MainWindow::_saveOutcomeLoadStage(qint32 stageId)
 {
     auto it = m_checksPacks.find(m_currentNode.id);
@@ -502,13 +503,13 @@ void MainWindow::on_pb_createQuest_clicked()
 void MainWindow::on_pb_toParentStage_clicked()
 {
     auto parentId = m_order->getParentId(m_currentNode.id, m_currentNode.type);
-    _saveStageLoadOutcome(parentId);
+    _saveOutcomeLoadStage(parentId);
 }
 
 void MainWindow::on_pb_toParentOutcome_clicked()
 {
     auto parentId = m_order->getParentId(m_currentNode.id, m_currentNode.type);
-    _saveOutcomeLoadStage(parentId);
+    _saveStageLoadOutcome(parentId);
 }
 
 void MainWindow::on_pb_addReward_clicked()

@@ -23,9 +23,9 @@ public:
     ~COrder();
     void saveOrder(QString path);
 
-    qint32 addOutcome();
+    qint32 addOutcome(qint32 parentId);
     void updateOutcome(qint32 id);
-    qint32 addStage();
+    qint32 addStage(qint32 parentId);
     void updateStage(qint32 id);
     //! Узнать id родителя по id и типу сына
     qint32 getParentId(qint32 id, ENodeType type);

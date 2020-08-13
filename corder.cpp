@@ -9,9 +9,10 @@ COrder::~COrder() {}
 
 void COrder::saveOrder(QString path) {}
 
-qint32 COrder::addOutcome()
+qint32 COrder::addOutcome(qint32 parentId)
 {
     auto outcome = new COutcome(_makeMinId(eOutcome));
+    outcome->setParentId(parentId);
     m_outcomes.insert(outcome->getId(), outcome);
     return outcome->getId();
 }
@@ -21,9 +22,10 @@ void COrder::updateOutcome(qint32 id)
     // TODO: обновить уже при сохранении видимо?
 }
 
-qint32 COrder::addStage()
+qint32 COrder::addStage(qint32 parentId)
 {
     auto stage = new CStage(_makeMinId(eStage));
+    stage->setParentId(parentId);
     m_stages.insert(stage->getId(), stage);
     return stage->getId();
 }

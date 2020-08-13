@@ -106,7 +106,8 @@ void COutcomeWidget::updateData(qint32 type, qint32 trait, QList<qint32> spinVal
         ui->sp_positiveLow->setValue(spinValues.last());
         spinValues.removeLast();
         [[clang::fallthrough]];
-    case 1:
+    case 2:
+        spinValues.removeLast();
         ui->ch_success->setChecked(true);
         ui->sp_successLow->setValue(spinValues.last());
         spinValues.removeLast();
