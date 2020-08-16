@@ -36,6 +36,7 @@ SOURCES += \
         cstage.cpp \
         cstartpage.cpp \
         cstatisticspage.cpp \
+        cvariantwidget.cpp \
         main.cpp \
         mainwindow.cpp
 
@@ -52,6 +53,7 @@ HEADERS += \
         cstage.h \
         cstartpage.h \
         cstatisticspage.h \
+        cvariantwidget.h \
         mainwindow.h
 
 FORMS += \
@@ -60,6 +62,7 @@ FORMS += \
         crewardwidget.ui \
         cstartpage.ui \
         cstatisticspage.ui \
+        cvariantwidget.ui \
         mainwindow.ui
 
 # Default rules for deployment.

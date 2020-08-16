@@ -18,7 +18,7 @@ COutcomeWidget::COutcomeWidget(QWidget *parent) : QWidget(parent), ui(new Ui::CO
     m_buttons.append(
             { ui->pb_toTrait, ui->pb_toSuccess, ui->pb_toPositive, ui->pb_toBarely, ui->pb_toFailStageOrAuto });
     for (auto btn : m_buttons) {
-        connect(btn, &QPushButton::clicked, this, &COutcomeWidget::on_checkBoxToStageClicked);
+        connect(btn, &QPushButton::clicked, this, &COutcomeWidget::slotToStageClicked);
     }
 }
 
@@ -87,19 +87,23 @@ QList<qint32> COutcomeWidget::getStagesId()
 
 void COutcomeWidget::updateData(qint32 type, qint32 trait, QList<qint32> spinValues, QList<qint32> stagesId)
 {
+    // TODO: СЕЙЧАС сделать обновление данных кнопок
     ui->cb_type->setCurrentIndex(type);
     if (trait != -1) {
         ui->cb_trait->setCurrentIndex(trait);
     }
     switch (spinValues.count()) {
-    case 5:
+    case 6:
         ui->ch_barely->setChecked(true);
         ui->sp_barelyHigh->setValue(spinValues.last());
         spinValues.removeLast();
         ui->sp_barelyLow->setValue(spinValues.last());
         spinValues.removeLast();
+        /*m_stageIdButton.remove(stagesId.last());
+        m_stageIdButton.insert(stagesId.last(), m_buttons[3]);
+        stagesId.removeLast();*/
         [[clang::fallthrough]];
-    case 3:
+    case 4:
         ui->ch_positive->setChecked(true);
         ui->sp_positiveHigh->setValue(spinValues.last());
         spinValues.removeLast();
@@ -119,7 +123,7 @@ void COutcomeWidget::updateData(qint32 type, qint32 trait, QList<qint32> spinVal
     }
 }
 
-void COutcomeWidget::on_checkBoxToStageClicked()
+void COutcomeWidget::slotToStageClicked()
 {
     auto btnSender = qobject_cast<QPushButton *>(sender());
     if (m_stageIdButton.isEmpty()) {

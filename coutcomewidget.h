@@ -5,8 +5,7 @@
  * (На самом деле по логике это класс проверки, а не исхода)
  * Класс виджета исхода для главного окна.
  *
- * Содержит информацию о необходимых навыках и шансах успешного и не успешного прохождения родительского этапа.
- * Хранит id этапов или ссылки на них и на родительский этап.
+ * Хранит id этапов на них и на родительский этап.
  */
 
 #include <QWidget>
@@ -33,7 +32,7 @@ public:
     void updateData(qint32 type, qint32 trait, QList<qint32> spinValues, QList<qint32> stagesId);
 
 public slots:
-    void on_checkBoxToStageClicked();
+    void slotToStageClicked();
 
 signals:
     void s_createStageClicked();

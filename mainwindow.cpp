@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include "coutcomewidget.h"
+#include "cvariantwidget.h"
 #include "crewardwidget.h"
 #include "cconstants.h"
 
@@ -74,15 +75,13 @@ void MainWindow::slotCreateStageClicked()
 void MainWindow::slotToOutcomeClicked(qint32 id)
 {
     _saveStageLoadOutcome(id);
-    // TODO: СЕЙЧАС подключить эти два слота, частично методы наподобие верхних сделаны
 }
 
 void MainWindow::slotCreateOutcomeClicked()
 {
     qint32 id = _createOutcome();
-    // auto wgt = qobject_cast<COutcomeWidget *>(sender());
-    // wgt->setStageIdForNewButton(id);
-    // TODO: подключить эти два слота и доделать
+    auto wgt = qobject_cast<CVariantWidget *>(sender());
+    wgt->setOutcomeId(id);
     _saveStageLoadOutcome(id);
 }
 
@@ -121,7 +120,15 @@ void MainWindow::_prepareFirstOutcomeUi()
     ui->lb_briefReminder->setText("Стартовые проверки");
     ui->lw_outcomes->clear();
     m_currentNode.update(0, eOutcome);
-    // TODO: если есть данные, то заполнить из сордер из саутком с айди 0
+    // Заполнение данных в ui
+    auto it = m_checksPacks.find(0);
+    if (it != m_checksPacks.end())
+        for (auto check : it.value()) {
+            on_pb_addCheck_clicked();
+            auto wgt = qobject_cast<COutcomeWidget *>(
+                    ui->lw_outcomes->itemWidget(ui->lw_outcomes->item(ui->lw_outcomes->count() - 1)));
+            wgt->updateData(check->type, check->trait, check->spinValues, check->stagesId);
+        }
 }
 
 void MainWindow::_prepareOutcomeUi(qint32 id)
@@ -135,7 +142,6 @@ void MainWindow::_prepareOutcomeUi(qint32 id)
     ui->lw_outcomes->clear();
     auto it = m_checksPacks.find(id);
     if (it != m_checksPacks.end()) {
-        //Подготовить ui данными из it
         for (auto check : it.value()) {
             on_pb_addCheck_clicked();
             auto wgt = qobject_cast<COutcomeWidget *>(
@@ -155,7 +161,12 @@ void MainWindow::_prepareStageUi(qint32 id)
     ui->lw_variants->clear();
     auto it = m_variantsPacks.find(id);
     if (it != m_variantsPacks.end()) {
-        // TODO: Подготовить ui данными из it, как выше
+        for (auto variant : it.value()) {
+            on_pb_addVariant_clicked();
+            auto wgt = qobject_cast<CVariantWidget *>(
+                    ui->lw_variants->itemWidget(ui->lw_variants->item(ui->lw_variants->count() - 1)));
+            wgt->updateData(variant->text, variant->outcomeId, variant->resource, variant->resourceCount);
+        }
     }
 }
 
@@ -188,7 +199,6 @@ qint32 MainWindow::_createStage()
     return id;
 }
 
-// FIXME: СЕЙЧАС данные иногда не сохраняются или не загружаются при переходе между нодами
 void MainWindow::_saveOutcomeLoadStage(qint32 stageId)
 {
     auto it = m_checksPacks.find(m_currentNode.id);
@@ -220,8 +230,18 @@ void MainWindow::_saveStageLoadOutcome(qint32 outcomeId)
         //Удалить старые данные этого этапа
         m_variantsPacks.remove(m_currentNode.id);
     }
+    QList<SVariant *> variantsPack;
     //Создать набор проверок и сохранить
-    // TODO: повторить, как для метода выше
+    for (int i = 0; i < ui->lw_variants->count(); i++) {
+        auto wgt = qobject_cast<CVariantWidget *>(ui->lw_variants->itemWidget(ui->lw_variants->item(i)));
+        auto variant = new SVariant;
+        variant->text = wgt->getText();
+        variant->outcomeId = wgt->getOutcomeId();
+        variant->resource = wgt->getResource();
+        variant->resourceCount = wgt->getResourceCount();
+        variantsPack.append(variant);
+    }
+    m_variantsPacks.insert(m_currentNode.id, variantsPack);
 
     m_mapManager->setSelected(outcomeId, eOutcome);
     _prepareOutcomeUi(outcomeId);
@@ -368,63 +388,13 @@ void MainWindow::on_stackedWidget_currentChanged(int arg1)
 
 void MainWindow::on_pb_addVariant_clicked()
 {
-    auto wgt = new QWidget;
-    auto font = wgt->font();
-    font.setBold(false);
-    wgt->setFont(font);
-
-    // TODO: позже: возможно сюда можно добавить линии сверху и снизу, как в исходах
-    auto layoutHigh = new QHBoxLayout;
-    auto te = new QTextEdit;
-    te->setMinimumHeight(55);
-    te->setMaximumHeight(55);
-    layoutHigh->addWidget(te);
-    auto btn = new QPushButton("К исходам...");
-    btn->setMinimumWidth(105);
-    btn->setMinimumHeight(te->height());
-    layoutHigh->addWidget(btn);
-    layoutHigh->setSpacing(4);
-
-    auto layoutBottom = new QHBoxLayout;
-    auto ch = new QCheckBox("Требуются ресурсы");
-    ch->setChecked(true);
-    connect(ch, &QCheckBox::toggled, this, &MainWindow::needReqResToggled);
-    layoutBottom->addWidget(ch);
-    auto cmb = new QComboBox;
-    cmb->addItems(RESOURCE_TYPES);
-    layoutBottom->addWidget(cmb);
-    auto spin = new QSpinBox;
-    spin->setMinimum(1);
-    spin->setMaximum(99999);
-    spin->setMinimumWidth(65);
-    layoutBottom->addWidget(spin);
-    layoutBottom->addStretch();
-    layoutBottom->setSpacing(4);
-
-    // NOTE: позже у виджета варианта поправить верхнюю границу, чтобы совпадала с линией
-    auto layoutGeneral = new QVBoxLayout;
-    auto topLine = new QFrame;
-    topLine->setFrameShape(QFrame::HLine);
-    topLine->setFrameShadow(QFrame::Raised);
-    topLine->setMidLineWidth(1);
-    layoutGeneral->addWidget(topLine);
-    layoutGeneral->setContentsMargins(0, 6, 6, 0);
-    layoutGeneral->setSpacing(4);
-    layoutGeneral->addLayout(layoutHigh);
-    layoutGeneral->addLayout(layoutBottom);
-    auto bottomLine = new QFrame;
-    bottomLine->setFrameShape(QFrame::HLine);
-    bottomLine->setFrameShadow(QFrame::Raised);
-    bottomLine->setMidLineWidth(1);
-    layoutGeneral->addWidget(bottomLine);
-    wgt->setLayout(layoutGeneral);
-
+    //Визуальная часть ui
+    auto wgt = new CVariantWidget();
+    connect(wgt, &CVariantWidget::s_createOutcomeClicked, this, &MainWindow::slotCreateOutcomeClicked);
+    connect(wgt, &CVariantWidget::s_toOutcomeClicked, this, &MainWindow::slotToOutcomeClicked);
     auto item = new QListWidgetItem(ui->lw_variants);
-    item->setSizeHint(QSize(200, 110));
+    item->setSizeHint(wgt->sizeHint());
     ui->lw_variants->setItemWidget(item, wgt);
-
-    ch->setMinimumHeight(31);
-    ch->setChecked(false);
 
     if (!ui->pb_deleteVariant->isEnabled()) {
         ui->pb_deleteVariant->setEnabled(true);
