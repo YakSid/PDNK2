@@ -2,8 +2,6 @@
 #include "ui_mainwindow.h"
 
 #include <QDebug>
-#include "coutcomewidget.h"
-#include "cvariantwidget.h"
 #include "crewardwidget.h"
 #include "cconstants.h"
 
@@ -52,6 +50,13 @@ void MainWindow::needReqResToggled(bool checked)
 
 void MainWindow::slotNewNodeSelected(qint32 id, ENodeType type)
 {
+    //Сохраняем текущий нод
+    if (m_currentNode.type == eOutcome) {
+        _saveCurrentOutcome();
+    } else {
+        _saveCurrentStage();
+    }
+    //Загружаем выбранный
     if (type == eOutcome) {
         _prepareOutcomeUi(id);
     } else {
@@ -64,11 +69,11 @@ void MainWindow::slotToStageClicked(qint32 id)
     _saveOutcomeLoadStage(id);
 }
 
-void MainWindow::slotCreateStageClicked()
+void MainWindow::slotCreateStageClicked(COutcomeWidget::EOutcomeButton btn)
 {
     qint32 id = _createStage();
     auto wgt = qobject_cast<COutcomeWidget *>(sender());
-    wgt->setStageIdForNewButton(id);
+    wgt->setStageIdForNewButton(id, btn);
     _saveOutcomeLoadStage(id);
 }
 
@@ -199,7 +204,7 @@ qint32 MainWindow::_createStage()
     return id;
 }
 
-void MainWindow::_saveOutcomeLoadStage(qint32 stageId)
+void MainWindow::_saveCurrentOutcome()
 {
     auto it = m_checksPacks.find(m_currentNode.id);
     if (it != m_checksPacks.end()) {
@@ -218,12 +223,9 @@ void MainWindow::_saveOutcomeLoadStage(qint32 stageId)
         checksPack.append(check);
     }
     m_checksPacks.insert(m_currentNode.id, checksPack);
-
-    m_mapManager->setSelected(stageId, eStage);
-    _prepareStageUi(stageId);
 }
 
-void MainWindow::_saveStageLoadOutcome(qint32 outcomeId)
+void MainWindow::_saveCurrentStage()
 {
     auto it = m_variantsPacks.find(m_currentNode.id);
     if (it != m_variantsPacks.end()) {
@@ -242,6 +244,19 @@ void MainWindow::_saveStageLoadOutcome(qint32 outcomeId)
         variantsPack.append(variant);
     }
     m_variantsPacks.insert(m_currentNode.id, variantsPack);
+}
+
+void MainWindow::_saveOutcomeLoadStage(qint32 stageId)
+{
+    _saveCurrentOutcome();
+
+    m_mapManager->setSelected(stageId, eStage);
+    _prepareStageUi(stageId);
+}
+
+void MainWindow::_saveStageLoadOutcome(qint32 outcomeId)
+{
+    _saveCurrentStage();
 
     m_mapManager->setSelected(outcomeId, eOutcome);
     _prepareOutcomeUi(outcomeId);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>273</width>
-    <height>96</height>
+    <width>294</width>
+    <height>118</height>
    </rect>
   </property>
   <property name="font">
@@ -61,6 +61,12 @@
      </item>
      <item>
       <widget class="QPushButton" name="pb_toStage">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>55</height>
+        </size>
+       </property>
        <property name="text">
         <string>К исходам...</string>
        </property>

@@ -5,6 +5,11 @@
 CVariantWidget::CVariantWidget(QWidget *parent) : QWidget(parent), ui(new Ui::CVariantWidget)
 {
     ui->setupUi(this);
+    auto font = this->font();
+    font.setPointSize(12);
+    font.setBold(false);
+    this->setFont(font);
+    ui->ch_needResource->setMinimumHeight(35);
     ui->cb_resources->addItems(RESOURCE_TYPES);
     ui->cb_resources->setVisible(false);
     ui->sp_resourceCount->setVisible(false);

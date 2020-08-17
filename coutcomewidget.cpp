@@ -15,8 +15,11 @@ COutcomeWidget::COutcomeWidget(QWidget *parent) : QWidget(parent), ui(new Ui::CO
     ui->ch_positive->setChecked(false);
     ui->ch_barely->setChecked(false);
     ui->cb_type->addItems(CHECK_TYPES);
-    m_buttons.append(
-            { ui->pb_toTrait, ui->pb_toSuccess, ui->pb_toPositive, ui->pb_toBarely, ui->pb_toFailStageOrAuto });
+    m_buttons.insert(EOutcomeButton::trait, ui->pb_toTrait);
+    m_buttons.insert(EOutcomeButton::success, ui->pb_toSuccess);
+    m_buttons.insert(EOutcomeButton::positive, ui->pb_toPositive);
+    m_buttons.insert(EOutcomeButton::barely, ui->pb_toBarely);
+    m_buttons.insert(EOutcomeButton::failStageOrAuto, ui->pb_toFailStageOrAuto);
     for (auto btn : m_buttons) {
         connect(btn, &QPushButton::clicked, this, &COutcomeWidget::slotToStageClicked);
     }
@@ -26,12 +29,14 @@ COutcomeWidget::~COutcomeWidget()
 {
     delete ui;
 }
-
-void COutcomeWidget::setStageIdForNewButton(qint32 id)
+// TODO: позже предусмотреть удаление и изменение id этапов к кнопкам
+void COutcomeWidget::setStageIdForNewButton(qint32 stageId, EOutcomeButton btn)
 {
-    auto it = m_stageIdButton.find(-1);
-    m_stageIdButton.insert(id, it.value());
-    m_stageIdButton.remove(-1);
+    auto it = m_stages.find(btn);
+    if (it != m_stages.end()) {
+        m_stages.remove(it.key());
+    }
+    m_stages.insert(btn, stageId);
 }
 
 qint32 COutcomeWidget::getType()
@@ -65,29 +70,14 @@ QList<qint32> COutcomeWidget::getSpinValues()
     return result;
 }
 
-QList<qint32> COutcomeWidget::getStagesId()
+QMap<COutcomeWidget::EOutcomeButton, qint32> COutcomeWidget::getStagesId()
 {
-    QList<qint32> result;
-    bool found;
-    for (auto btn : m_buttons) {
-        for (auto it = m_stageIdButton.begin(); it != m_stageIdButton.end(); it++) {
-            found = false;
-            if (it.value() == btn) {
-                result.append(it.key());
-                found = true;
-                break;
-            }
-            if (!found) {
-                result.append(-1);
-            }
-        }
-    }
-    return result;
+    return m_stages;
 }
 
-void COutcomeWidget::updateData(qint32 type, qint32 trait, QList<qint32> spinValues, QList<qint32> stagesId)
+void COutcomeWidget::updateData(qint32 type, qint32 trait, QList<qint32> spinValues,
+                                QMap<COutcomeWidget::EOutcomeButton, qint32> stagesId)
 {
-    // TODO: СЕЙЧАС сделать обновление данных кнопок
     ui->cb_type->setCurrentIndex(type);
     if (trait != -1) {
         ui->cb_trait->setCurrentIndex(trait);
@@ -99,9 +89,6 @@ void COutcomeWidget::updateData(qint32 type, qint32 trait, QList<qint32> spinVal
         spinValues.removeLast();
         ui->sp_barelyLow->setValue(spinValues.last());
         spinValues.removeLast();
-        /*m_stageIdButton.remove(stagesId.last());
-        m_stageIdButton.insert(stagesId.last(), m_buttons[3]);
-        stagesId.removeLast();*/
         [[clang::fallthrough]];
     case 4:
         ui->ch_positive->setChecked(true);
@@ -121,23 +108,27 @@ void COutcomeWidget::updateData(qint32 type, qint32 trait, QList<qint32> spinVal
     default:
         return;
     }
+
+    m_stages.clear();
+    m_stages = stagesId;
 }
 
 void COutcomeWidget::slotToStageClicked()
 {
     auto btnSender = qobject_cast<QPushButton *>(sender());
-    if (m_stageIdButton.isEmpty()) {
-        m_stageIdButton.insert(-1, btnSender);
-        emit s_createStageClicked();
-    } else {
-        for (auto it = m_stageIdButton.begin(); it != m_stageIdButton.end(); it++) {
-            if (it.value() == btnSender) {
-                emit s_toStageClicked(it.key());
-                break;
-            }
+    EOutcomeButton clickedButton;
+    for (auto it = m_buttons.begin(); it != m_buttons.end(); it++) {
+        if (it.value() == btnSender) {
+            clickedButton = it.key();
+            break;
         }
-        m_stageIdButton.insert(-1, btnSender);
-        emit s_createStageClicked();
+    }
+
+    auto it = m_stages.find(clickedButton);
+    if (it == m_stages.end()) {
+        emit s_createStageClicked(clickedButton);
+    } else {
+        emit s_toStageClicked(it.value());
     }
 }
 

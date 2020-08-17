@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QListWidgetItem>
+#include "coutcomewidget.h"
+#include "cvariantwidget.h"
 #include "cdatabasemanager.h"
 #include "cmapmanager.h"
 #include "cstartpage.h"
@@ -30,7 +32,7 @@ struct SCheck {
     //! Значения спинбоксов, если есть
     QList<qint32> spinValues;
     //! К каким этапам ведёт кнопка. По порядку сверху вниз
-    QList<qint32> stagesId;
+    QMap<COutcomeWidget::EOutcomeButton, qint32> stagesId;
 };
 
 //! Визуальное отображение варианта и все данные
@@ -59,7 +61,7 @@ public slots:
     void slotNewNodeSelected(qint32 id, ENodeType type);
     //! Нажата кнопка "К этапу..." на coutomewidget
     void slotToStageClicked(qint32 id);
-    void slotCreateStageClicked();
+    void slotCreateStageClicked(COutcomeWidget::EOutcomeButton btn);
     //! Нажата кнопка "К исходам..." на виджете варианта
     void slotToOutcomeClicked(qint32 id);
     void slotCreateOutcomeClicked();
@@ -107,6 +109,8 @@ private:
     // TODO: СЕЙЧАС наладить алгоритмы размещения/рисовки,
     // рисовку линий, перемещение по кнопке "к родителю" ?уже ж сделал?, удаление, сохранение в файл и загрузку из
     // файла, загрузку файла на выбор.
+    void _saveCurrentOutcome();
+    void _saveCurrentStage();
     //! Сохранить данные текущего ауткома, перейти к стейджу и подготовить его ui
     void _saveOutcomeLoadStage(qint32 stageId);
     //! Сохранить данные текущего стейджа, перейти к ауткому и подготовить его ui
