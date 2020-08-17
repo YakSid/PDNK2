@@ -19,7 +19,7 @@ qint32 COrder::addOutcome(qint32 parentId)
 
 void COrder::updateOutcome(qint32 id)
 {
-    // TODO: обновить уже при сохранении видимо?
+    // TODO: чуть позже обновить уже при сохранении видимо?
 }
 
 qint32 COrder::addStage(qint32 parentId)

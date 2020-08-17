@@ -315,6 +315,7 @@ void MainWindow::on_cmb_department_currentIndexChanged(int index)
     // TODO: позже: вписать значения и энумы сделать
 }
 
+// TODO: позже сделать алгоритм автоматического появления проверки "неудача", если есть одна из треёх первых и этой нет
 void MainWindow::on_pb_addCheck_clicked()
 {
     //Визуальная часть ui
@@ -322,7 +323,9 @@ void MainWindow::on_pb_addCheck_clicked()
     connect(wgt, &COutcomeWidget::s_createStageClicked, this, &MainWindow::slotCreateStageClicked);
     connect(wgt, &COutcomeWidget::s_toStageClicked, this, &MainWindow::slotToStageClicked);
     auto item = new QListWidgetItem(ui->lw_outcomes);
-    item->setSizeHint(wgt->sizeHint());
+    auto wgtSize = wgt->sizeHint();
+    wgtSize.setHeight(121);
+    item->setSizeHint(wgtSize);
     ui->lw_outcomes->setItemWidget(item, wgt);
 }
 

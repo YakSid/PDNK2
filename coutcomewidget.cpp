@@ -11,10 +11,8 @@ COutcomeWidget::COutcomeWidget(QWidget *parent) : QWidget(parent), ui(new Ui::CO
     ui->cb_trait->addItems(TRAITS);
     ui->pb_toTrait->setVisible(false);
     ui->pb_toFailStageOrAuto->setVisible(false);
-    ui->ch_success->setChecked(false);
-    ui->ch_positive->setChecked(false);
-    ui->ch_barely->setChecked(false);
     ui->cb_type->addItems(CHECK_TYPES);
+    ui->ch_positive->setChecked(false);
     m_buttons.insert(EOutcomeButton::trait, ui->pb_toTrait);
     m_buttons.insert(EOutcomeButton::success, ui->pb_toSuccess);
     m_buttons.insert(EOutcomeButton::positive, ui->pb_toPositive);
@@ -134,6 +132,20 @@ void COutcomeWidget::slotToStageClicked()
 
 void COutcomeWidget::on_cb_type_currentIndexChanged(int index)
 {
+    if (index < 3) {
+        ui->sp_successLow->setVisible(true);
+        ui->lb_andMore->setVisible(true);
+        ui->pb_toSuccess->setVisible(true);
+        ui->ch_success->setVisible(true);
+        ui->ch_positive->setVisible(true);
+        ui->ch_positive->setChecked(false);
+    } else {
+        ui->sp_successLow->setVisible(false);
+        ui->lb_andMore->setVisible(false);
+        ui->pb_toSuccess->setVisible(false);
+        ui->ch_success->setVisible(false);
+        ui->ch_positive->setVisible(false);
+    }
     if (index == 3) {
         ui->cb_trait->setVisible(true);
         ui->lb_trait->setVisible(true);
@@ -148,52 +160,29 @@ void COutcomeWidget::on_cb_type_currentIndexChanged(int index)
     } else {
         ui->pb_toFailStageOrAuto->setVisible(false);
     }
-    if (index < 3) {
-        ui->ch_success->setVisible(true);
-        ui->sp_successLow->setVisible(true);
-        ui->lb_andMore->setVisible(true);
-        ui->pb_toSuccess->setVisible(true);
-        ui->ch_positive->setVisible(true);
-        ui->sp_positiveLow->setVisible(true);
-        ui->sp_positiveHigh->setVisible(true);
-        ui->pb_toPositive->setVisible(true);
-        ui->ch_barely->setVisible(true);
-        ui->sp_barelyLow->setVisible(true);
-        ui->sp_barelyHigh->setVisible(true);
-        ui->pb_toBarely->setVisible(true);
-    } else {
-        ui->ch_success->setVisible(false);
-        ui->sp_successLow->setVisible(false);
-        ui->lb_andMore->setVisible(false);
-        ui->pb_toSuccess->setVisible(false);
-        ui->ch_positive->setVisible(false);
-        ui->sp_positiveLow->setVisible(false);
-        ui->sp_positiveHigh->setVisible(false);
-        ui->pb_toPositive->setVisible(false);
-        ui->ch_barely->setVisible(false);
-        ui->sp_barelyLow->setVisible(false);
-        ui->sp_barelyHigh->setVisible(false);
-        ui->pb_toBarely->setVisible(false);
+}
+
+void COutcomeWidget::on_ch_positive_stateChanged(int arg1)
+{
+    ui->sp_positiveLow->setVisible(arg1);
+    ui->sp_positiveHigh->setVisible(arg1);
+    ui->pb_toPositive->setVisible(arg1);
+
+    if (arg1 == 0) {
+        ui->ch_barely->setChecked(false);
     }
+    ui->ch_barely->setVisible(arg1);
+}
+
+void COutcomeWidget::on_ch_barely_stateChanged(int arg1)
+{
+    ui->sp_barelyLow->setVisible(arg1);
+    ui->sp_barelyHigh->setVisible(arg1);
+    ui->pb_toBarely->setVisible(arg1);
 }
 
 void COutcomeWidget::on_ch_success_toggled(bool checked)
 {
-    ui->sp_successLow->setEnabled(checked);
-    ui->lb_andMore->setEnabled(checked);
-    ui->pb_toSuccess->setEnabled(checked);
-}
-
-void COutcomeWidget::on_ch_positive_toggled(bool checked)
-{
-    ui->sp_positiveLow->setEnabled(checked);
-    ui->sp_positiveHigh->setEnabled(checked);
-    ui->pb_toPositive->setEnabled(checked);
-}
-
-void COutcomeWidget::on_ch_barely_toggled(bool checked)
-{
-    ui->sp_barelyLow->setEnabled(checked);
-    ui->sp_barelyHigh->setEnabled(checked);
-    ui->pb_toBarely->setEnabled(checked);
+    if (!checked)
+        ui->ch_success->setChecked(true);
 }

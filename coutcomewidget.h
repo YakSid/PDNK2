@@ -44,9 +44,9 @@ signals:
 
 private slots:
     void on_cb_type_currentIndexChanged(int index);
+    void on_ch_positive_stateChanged(int arg1);
+    void on_ch_barely_stateChanged(int arg1);
     void on_ch_success_toggled(bool checked);
-    void on_ch_positive_toggled(bool checked);
-    void on_ch_barely_toggled(bool checked);
 
 private:
     Ui::COutcomeWidget *ui;

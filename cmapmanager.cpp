@@ -1,6 +1,8 @@
 #include "cmapmanager.h"
 #include <QDebug>
 
+//! т.к. в СОрдер два разных мапа для этапов и исходов, а в мапМенеджере один, то
+//! всем айдишникам нодов типа этап прибавляется миллион, чтобы избежать совпадающих айди с исходами
 const qint32 MILLION = 1000000;
 
 CMapManager::CMapManager(QWidget *parent) : QGraphicsView(parent)
@@ -22,6 +24,7 @@ void CMapManager::addFirstNode()
     slotNodeClicked(node->getId());
 }
 
+// TODO: СЕЙЧАС улучшить алгоритм размещения нода на мапе
 void CMapManager::addNode(qint32 id, ENodeType type)
 {
     auto parentId = m_selectedNodeId;
@@ -29,11 +32,14 @@ void CMapManager::addNode(qint32 id, ENodeType type)
     parentNode->addChild(id);
     quint16 layer = parentNode->getLayer() + 1;
     qreal x, y;
-    // TODO: позже алгоритм размещения нода на мапе
     x = 25 * layer;
     y = 20 * (parentNode->getChildrenCount() - 1);
-    //! т.к. в СОрдер два разных мапа для этапов и исходов, а в мапМенеджере один, то
-    //! здесь всем айдишникам нодов типа этап прибавляется миллион, чтобы избежать совпадающих айди с исходами
+
+    //Добавление линии
+    /*QPen penBlack(Qt::black);
+    QLineF line(parentNode->x(), parentNode->y(), x, y);
+    m_scene->addLine(line, penBlack);*/
+
     if (type == eStage)
         id += MILLION;
     auto node = new CNode(id, type, x, y); // NOTE: коррдинаты норм потом сделать
@@ -75,6 +81,3 @@ void CMapManager::slotNodeClicked(qint32 id)
         }
     }
 }
-
-// QPen penBlack(Qt::black);
-// m_scene->addLine(20, 20, 50, 50, penBlack);
