@@ -1,6 +1,5 @@
 #include "cnode.h"
-
-const qreal SIZE = 15;
+#include <QDebug>
 
 CNode::CNode(QObject *parent) : QObject(parent), QGraphicsItem() {}
 
@@ -34,9 +33,9 @@ void CNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
 QRectF CNode::boundingRect() const
 {
     if (m_type == eOutcome) {
-        return QRectF(x(), y(), SIZE, SIZE);
+        return QRectF(-NODE_SIZE / 2, -NODE_SIZE / 2, NODE_SIZE, NODE_SIZE);
     } else {
-        return QRectF(x(), y(), SIZE + 10, SIZE);
+        return QRectF(-(NODE_SIZE + 10) / 2, -NODE_SIZE / 2, NODE_SIZE + 10, NODE_SIZE);
     }
 }
 

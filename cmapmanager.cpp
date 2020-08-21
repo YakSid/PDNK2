@@ -9,6 +9,22 @@ CMapManager::CMapManager(QWidget *parent) : QGraphicsView(parent)
 {
     m_scene = new QGraphicsScene();
     setScene(m_scene);
+    // setRenderHint(QPainter::Antialiasing);
+    /*// NOTE: Координатная разметка
+    QPen penGreen(Qt::green);
+    const qint32 LIMIT = 20;
+    for (int i = -LIMIT; i < LIMIT; i++)
+        for (int j = -LIMIT; j < LIMIT; j++) {
+            QLineF line(i * 10, j * 10, i * 10, j * 10 - 1);
+            m_scene->addLine(line, penGreen);
+        }
+    QLineF axisX(0, 0, 100, 0);
+    m_scene->addLine(axisX, QPen(Qt::blue));
+    QLineF axisY(0, -100, 0, 100);
+    m_scene->addLine(axisY, QPen(Qt::blue));
+    QLineF axisRed(60, -100, 60, 100);
+    m_scene->addLine(axisRed, QPen(Qt::red));
+    //*/
 }
 
 CMapManager::~CMapManager() {}
@@ -24,30 +40,47 @@ void CMapManager::addFirstNode()
     slotNodeClicked(node->getId());
 }
 
-// TODO: СЕЙЧАС улучшить алгоритм размещения нода на мапе
+// TODO: чуть позже улучшить алгоритм размещения нодов на мапе
 void CMapManager::addNode(qint32 id, ENodeType type)
 {
     auto parentId = m_selectedNodeId;
     auto parentNode = m_nodes.find(m_selectedNodeId).value();
-    parentNode->addChild(id);
     quint16 layer = parentNode->getLayer() + 1;
-    qreal x, y;
-    x = 25 * layer;
-    y = 20 * (parentNode->getChildrenCount() - 1);
-
-    //Добавление линии
-    /*QPen penBlack(Qt::black);
-    QLineF line(parentNode->x(), parentNode->y(), x, y);
-    m_scene->addLine(line, penBlack);*/
-
-    if (type == eStage)
+    quint16 nodesOnLayer = 0;
+    for (auto it = m_nodes.begin(); it != m_nodes.end(); it++) {
+        if (it.value()->getLayer() == layer)
+            nodesOnLayer++;
+    }
+    if (type == eStage) {
         id += MILLION;
-    auto node = new CNode(id, type, x, y); // NOTE: коррдинаты норм потом сделать
+    }
+    parentNode->addChild(id);
+    qreal x, y;
+    x = (25 + 2 * OWID + (2 * NODE_SIZE + 10) / 2) * layer;
+    y = (20 + NODE_SIZE + 2 * OWID) * nodesOnLayer;
+
+    //Создание нода
+    auto node = new CNode(id, type, x, y);
     node->setParentId(parentId);
     node->setLayer(layer);
     connect(node, &CNode::s_clicked, this, &CMapManager::slotNodeClicked);
     m_scene->addItem(node);
     m_nodes.insert(id, node);
+
+    //Добавление линии
+    QPen penBlack(Qt::black);
+    QLineF line;
+    if (type == eStage) {
+        //родитель - аутком
+        line.setP1(QPointF(parentNode->x() + NODE_SIZE / 2 + OWID, parentNode->y()));
+        line.setP2(QPointF(x - (NODE_SIZE + 10) / 2 - OWID, y));
+    } else {
+        //родитель - стейдж
+        line.setP1(QPointF(parentNode->x() + (NODE_SIZE + 10) / 2 + OWID, parentNode->y()));
+        line.setP2(QPointF(x - NODE_SIZE / 2 - OWID, y));
+    }
+    penBlack.setWidth(2);
+    m_scene->addLine(line, penBlack);
 }
 
 void CMapManager::setSelected(qint32 selectedId, ENodeType type)

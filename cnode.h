@@ -13,6 +13,10 @@
  * Хранит указатель на свой CStage или COutcome.
  */
 
+const qreal NODE_SIZE = 15;
+//! Ширина контура outlineWidth
+const qreal OWID = 2;
+
 class CNode : public QObject, public QGraphicsItem
 {
     Q_OBJECT
