@@ -96,6 +96,7 @@ private slots:
 
 private:
     void _prepareView();
+    void _prepareAllFromLoadedOrder();
     //! Подготовить виджет исхода для создания первого
     void _prepareFirstOutcomeUi();
     //! Подготовить виджет исхода и заполнить данными из COrder
@@ -106,8 +107,8 @@ private:
     void _changeGrpNumberStaffTitle();
     qint32 _createOutcome();
     qint32 _createStage();
-    // TODO: СЕЙЧАС сделать подсветку линий или детей выбранного, сохранение в файл и загрузку из
-    // файла, копирование нода, удаление, загрузку файла на выбор.
+    // TODO: СЕЙЧАС автоматическое добавление проверки?, копирование нода, удаление, сделать подсветку линий или детей
+    // выбранного.
     void _saveCurrentOutcome();
     void _saveCurrentStage();
     //! Сохранить данные текущего ауткома, перейти к стейджу и подготовить его ui

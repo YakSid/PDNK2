@@ -2,6 +2,7 @@
 #define CSTARTPAGE_H
 
 #include <QDialog>
+#include <QFileDialog>
 
 /** @class class CStartPage
  * Класс стартового окна.
@@ -24,6 +25,7 @@ public:
     void init();
 
     qint8 closeMode { 0 };
+    QString jFilename { "" };
 
 public slots:
     void databaseConnected(bool connected);

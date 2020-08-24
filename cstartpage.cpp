@@ -44,6 +44,7 @@ void CStartPage::on_pb_create_new_order_clicked()
 
 void CStartPage::on_pb_edit_order_clicked()
 {
+    jFilename = QFileDialog::getOpenFileName(this, "Выберите приказ", QString(), tr("JSON (*.json)"));
     closeMode = 2;
     CStartPage::close();
 }

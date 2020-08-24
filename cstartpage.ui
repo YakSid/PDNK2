@@ -111,7 +111,7 @@
      <item row="1" column="1">
       <widget class="QPushButton" name="pb_edit_order">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="minimumSize">
         <size>

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QDebug>
+#include <QFile>
 #include "crewardwidget.h"
 #include "cconstants.h"
 
@@ -24,7 +25,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         break;
     case 2:
         // Редактировать старый приказ
-        // запустить COrdersPage
+        // TODO: потом-потом, отобразить список сохранённых приказов с разными метками в corderspage
+        _prepareView();
+        m_order->loadFromJSON(m_startPage->jFilename);
+        _prepareAllFromLoadedOrder();
+
         ui->setupUi(this);
         break;
     }
@@ -93,6 +98,11 @@ void MainWindow::slotCreateOutcomeClicked()
 void MainWindow::on_action_save_triggered()
 {
     // Сохранить всё в базу
+    // TODO: указать имя сохраняемого приказа
+    QString jName = QFileDialog::getSaveFileName(this, "Сохранить приказ", "", "*.json");
+    if (!jName.isEmpty()) {
+        m_order->saveToJSON(jName);
+    }
 }
 
 void MainWindow::on_action_saveAndExit_triggered()
@@ -115,6 +125,11 @@ void MainWindow::_prepareView()
     ui->grp_stageReward->setVisible(false);
     ui->tabWidget->setCurrentIndex(0);
     ui->tabWidget->tabBar()->setTabEnabled(1, false);
+}
+
+void MainWindow::_prepareAllFromLoadedOrder()
+{
+    // TODO: СЕЙЧАС подготовку mw из готового ордера
 }
 
 void MainWindow::_prepareFirstOutcomeUi()

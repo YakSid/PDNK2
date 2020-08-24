@@ -15,13 +15,35 @@
 #include "cconstants.h"
 #include <QMap>
 
+struct SReqToStaff {
+    qint32 count;
+    qint32 req;
+};
+
+struct SMainSettings {
+    qint32 locationType;
+    qint32 department;
+    qint32 threatLevel;
+    qint32 departmentPO;
+    qint32 areVampires;
+    qint32 innerOrderType;
+    bool hexagonType[12] = { false, false, false, false, false, false, false, false, false, false, false, false };
+    bool hexagonWelfare[5] = { false, false, false, false, false };
+    qint32 staff[4] = { 0, 0, 0, 0 };
+    qint32 resources[4] = { 0, 0, 0, 0 };
+    QList<SReqToStaff> staffReq;
+    QString text;
+    QString needToDiscuss;
+};
+
 class COrder
 {
 
 public:
     COrder();
     ~COrder();
-    void saveOrder(QString path);
+    void saveToJSON(QString filename);
+    void loadFromJSON(QString filename);
 
     qint32 addOutcome(qint32 parentId);
     void updateOutcome(qint32 id);
@@ -38,8 +60,7 @@ private:
     QMap<qint32, COutcome *> m_outcomes;
     QMap<qint32, CStage *> m_stages;
     // Основные параметры приказа
-    enum EType { eInner, ePatrol };
-    EType locationType;
+    SMainSettings m_mainSettings;
 };
 
 #endif // CORDER_H
