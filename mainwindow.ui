@@ -26,7 +26,7 @@
        <bool>true</bool>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_mainOptions">
        <attribute name="title">
@@ -54,7 +54,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="cmb_type">
+           <widget class="QComboBox" name="cb_type">
             <property name="minimumSize">
              <size>
               <width>224</width>
@@ -91,7 +91,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="cmb_department">
+           <widget class="QComboBox" name="cb_department">
             <property name="font">
              <font>
               <pointsize>12</pointsize>
@@ -193,7 +193,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QComboBox" name="cmb_threat_level">
+            <widget class="QComboBox" name="cb_threatLevel">
              <property name="font">
               <font>
                <weight>50</weight>
@@ -231,7 +231,7 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QComboBox" name="cmb_awareness_index">
+            <widget class="QComboBox" name="cb_awarenessIndex">
              <property name="font">
               <font>
                <weight>50</weight>
@@ -277,7 +277,7 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QComboBox" name="cmb_are_vampires_mentioned">
+            <widget class="QComboBox" name="cb_vampiresMentioned">
              <property name="font">
               <font>
                <weight>50</weight>
@@ -330,7 +330,7 @@
                 <number>2</number>
                </property>
                <item row="0" column="2">
-                <widget class="QComboBox" name="cmb_inner_type">
+                <widget class="QComboBox" name="cb_innerType">
                  <property name="minimumSize">
                   <size>
                    <width>339</width>

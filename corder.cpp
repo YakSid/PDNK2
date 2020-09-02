@@ -12,27 +12,73 @@ COrder::COrder()
 
 COrder::~COrder() {}
 
-void COrder::saveToJSON(QString filename)
+void COrder::saveToJSON(QString filename, const SMainSettings &settings)
 {
     auto jDoc = new QJsonDocument();
     auto jObjInsideDoc = jDoc->object();
-    // TODO: СЕЙЧАС загрузка и сохранение
     //Заполнение данных
-    /*QJsonObject mainSettings;
-    mainSettings.insert("id", id);
-    mainSettings.insert("name", name);
-    mainSettings.insert("dateStr", date.toString("dd.MM.yyyy"));
-    jObjInsideDoc["mainSettings"] = mainSettings;*/
-    /*QJsonArray jArray;
-    for (auto frag : fragments) {
-        auto jFrag = new QJsonObject();
+    QJsonObject mainSettings;
+    mainSettings.insert("locationType", settings.locationType);
+    mainSettings.insert("department", settings.department);
+    mainSettings.insert("threatLevel", settings.threatLevel);
+    mainSettings.insert("departmentPO", settings.departmentPO);
+    mainSettings.insert("areVampires", settings.areVampires);
+    mainSettings.insert("innerOrderType", settings.innerOrderType);
+    QJsonArray jHexTypeArray;
+    for (auto hexType : settings.hexagonType) {
+        jHexTypeArray.append(hexType);
+    }
+    mainSettings.insert("hexagonType", jHexTypeArray);
+    QJsonArray jHexWelfareArray;
+    for (auto hexWelfare : settings.hexagonWelfare) {
+        jHexWelfareArray.append(hexWelfare);
+    }
+    mainSettings.insert("hexagonWelfare", jHexWelfareArray);
+    QJsonArray jStaff;
+    for (auto staff : settings.staff) {
+        jStaff.append(staff);
+    }
+    mainSettings.insert("staff", jStaff);
+    QJsonArray jRes;
+    for (auto res : settings.resources) {
+        jRes.append(res);
+    }
+    mainSettings.insert("resources", jRes);
+    QJsonArray jStaffReq;
+    for (auto req : settings.staffReq) {
+        auto jObj = new QJsonObject();
+        jObj->insert("count", req.count);
+        jObj->insert("req", req.req);
+        jStaffReq.append(*jObj);
+    }
+    mainSettings.insert("staffReq", jStaffReq);
+    mainSettings.insert("text", settings.text);
+    mainSettings.insert("needToDiscuss", settings.needToDiscuss);
+
+    jObjInsideDoc["mainSettings"] = mainSettings;
+
+    // TODO: СЕЙЧАС загрузка и сохранение
+    /*
+    QJsonArray jOutcomes;
+    for (auto outcome : m_outcomes) {
+        auto jOutcome = new QJsonObject();
         jFrag->insert("text", frag->getText());
         jFrag->insert("Ut", frag->isUt());
-        jArray.append(*jFrag);
+        jOutcomes.append(*jFrag);
     }
-    jObjInsideDoc["fragments"] = jArray;
+    jObjInsideDoc["outcomes"] = jOutcomes;
 
-    jDoc->setObject(jObjInsideDoc);*/
+    QJsonArray jStages;
+    for (auto stage : m_stages) {
+        auto jStage = new QJsonObject();
+        jFrag->insert("text", frag->getText());
+        jFrag->insert("Ut", frag->isUt());
+        jStages.append(*jFrag);
+    }
+    jObjInsideDoc["stages"] = jStages;
+    */
+
+    jDoc->setObject(jObjInsideDoc);
     QFile jFile(filename);
     jFile.open(QFile::WriteOnly);
     jFile.write(jDoc->toJson());

@@ -42,7 +42,7 @@ class COrder
 public:
     COrder();
     ~COrder();
-    void saveToJSON(QString filename);
+    void saveToJSON(QString filename, const SMainSettings &settings);
     void loadFromJSON(QString filename);
 
     qint32 addOutcome(qint32 parentId);
@@ -59,8 +59,6 @@ private:
 private:
     QMap<qint32, COutcome *> m_outcomes;
     QMap<qint32, CStage *> m_stages;
-    // Основные параметры приказа
-    SMainSettings m_mainSettings;
 };
 
 #endif // CORDER_H

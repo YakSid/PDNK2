@@ -101,14 +101,54 @@ void MainWindow::on_action_save_triggered()
     // TODO: указать имя сохраняемого приказа
     QString jName = QFileDialog::getSaveFileName(this, "Сохранить приказ", "", "*.json");
     if (!jName.isEmpty()) {
-        m_order->saveToJSON(jName);
+        SMainSettings settings;
+        settings.locationType = ui->cb_type->currentIndex();
+        settings.department = ui->cb_department->currentIndex();
+        settings.threatLevel = ui->cb_threatLevel->currentIndex();
+        settings.departmentPO = ui->cb_awarenessIndex->currentIndex();
+        settings.areVampires = ui->cb_vampiresMentioned->currentIndex();
+        settings.innerOrderType = ui->cb_innerType->currentIndex();
+        for (int i = 0; i < m_hexCheckBoxes.count(); i++) {
+            if (m_hexCheckBoxes.at(i)->isChecked()) {
+                settings.hexagonType[i] = true;
+            }
+        }
+        for (int i = 0; i < m_welfareCheckBoxes.count(); i++) {
+            if (m_welfareCheckBoxes.at(i)->isChecked()) {
+                settings.hexagonWelfare[i] = true;
+            }
+        }
+        for (int i = 0; i < m_staffSpinBoxes.count(); i++) {
+            settings.staff[i] = m_staffSpinBoxes.at(i)->value();
+        }
+        for (int i = 0; i < m_resSpinBoxes.count(); i++) {
+            settings.resources[i] = m_resSpinBoxes.at(i)->value();
+        }
+        for (auto termsChild : ui->lw_terms->children()) {
+            auto wgt = qobject_cast<QWidget *>(termsChild);
+            SReqToStaff req;
+            for (auto obj : wgt->children()) {
+                if (obj->metaObject()->className() == QSpinBox::staticMetaObject.className()) {
+                    auto spin = qobject_cast<QSpinBox *>(obj);
+                    req.count = spin->value();
+                } else {
+                    auto cb = qobject_cast<QComboBox *>(obj);
+                    req.req = cb->currentIndex();
+                }
+            }
+            settings.staffReq.append(req);
+        }
+        settings.text = ui->te_order_text->toPlainText();
+        settings.needToDiscuss = ui->te_need_to_discuss->toPlainText();
+
+        m_order->saveToJSON(jName, settings);
     }
 }
 
 void MainWindow::on_action_saveAndExit_triggered()
 {
     on_action_save_triggered();
-    // и выйти
+    // TODO: чуть позже: и выйти
 }
 
 void MainWindow::updateWindow()
@@ -119,12 +159,20 @@ void MainWindow::updateWindow()
 
 void MainWindow::_prepareView()
 {
-    ui->cmb_type->setCurrentIndex(0);
+    // TODO: чуть позже привести к начальному значению поля после сохранения или выбора другого приказа
+    ui->cb_type->setCurrentIndex(0);
     ui->swgt_order_type->setCurrentWidget(ui->wgt_inner_order);
     ui->cb_time->addItems(TIME_PERIODS);
     ui->grp_stageReward->setVisible(false);
     ui->tabWidget->setCurrentIndex(0);
     ui->tabWidget->tabBar()->setTabEnabled(1, false);
+    m_hexCheckBoxes.append({ ui->hex_poor_resident, ui->hex_rich_resident, ui->hex_works, ui->hex_commercial,
+                             ui->hex_science, ui->hex_farmer, ui->hex_wild_land, ui->hex_police, ui->hex_church,
+                             ui->hex_medicine, ui->hex_aristocracy, ui->hex_culture });
+    m_welfareCheckBoxes.append({ ui->hex_welfare_prosper, ui->hex_welfare_normal, ui->hex_welfare_cluttered,
+                                 ui->hex_welfare_devastation, ui->hex_welfare_abandoned });
+    m_staffSpinBoxes.append({ ui->spb_common, ui->spb_third_rank, ui->spb_second_rank, ui->spb_first_rank });
+    m_resSpinBoxes.append({ ui->spb_money, ui->spb_first_res, ui->spb_second_res, ui->spb_third_res });
 }
 
 void MainWindow::_prepareAllFromLoadedOrder()

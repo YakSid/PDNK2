@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QListWidgetItem>
+#include <QCheckBox>
+#include <QSpinBox>
 #include "coutcomewidget.h"
 #include "cvariantwidget.h"
 #include "cdatabasemanager.h"
@@ -128,6 +130,11 @@ private:
     QMap<qint32, QList<SCheck *>> m_checksPacks;
     //! Отношение всех номеров стейджей со всеми наборами вариантов
     QMap<qint32, QList<SVariant *>> m_variantsPacks;
+    // Группы чекбоксов
+    QList<QCheckBox *> m_hexCheckBoxes;
+    QList<QCheckBox *> m_welfareCheckBoxes;
+    QList<QSpinBox *> m_staffSpinBoxes;
+    QList<QSpinBox *> m_resSpinBoxes;
 };
 
 #endif // MAINWINDOW_H
