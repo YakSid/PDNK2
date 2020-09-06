@@ -37,7 +37,6 @@ void CMapManager::addFirstNode()
     connect(node, &CNode::s_clicked, this, &CMapManager::slotNodeClicked);
     m_scene->addItem(node);
     m_nodes.insert(node->getId(), node);
-    slotNodeClicked(node->getId());
 }
 
 // TODO: чуть позже улучшить алгоритм размещения нодов на мапе

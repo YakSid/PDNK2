@@ -46,9 +46,11 @@ public:
     void loadFromJSON(QString filename);
 
     qint32 addOutcome(qint32 parentId);
-    void updateOutcome(qint32 id);
+    void updateOutcome(qint32 id, const QList<SCheck *> &checks);
+    const QList<SCheck *> *getOutcomeChecks(qint32 outcomeId);
     qint32 addStage(qint32 parentId);
-    void updateStage(qint32 id);
+    void updateStage(qint32 id, const QList<SVariant *> &variants);
+    const QList<SVariant *> *getStageVariants(qint32 stageId);
     //! Узнать id родителя по id и типу сына
     qint32 getParentId(qint32 id, ENodeType type);
 

@@ -57,26 +57,57 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
 
     jObjInsideDoc["mainSettings"] = mainSettings;
 
-    // TODO: СЕЙЧАС загрузка и сохранение
-    /*
     QJsonArray jOutcomes;
     for (auto outcome : m_outcomes) {
         auto jOutcome = new QJsonObject();
-        jFrag->insert("text", frag->getText());
-        jFrag->insert("Ut", frag->isUt());
-        jOutcomes.append(*jFrag);
+        jOutcome->insert("id", outcome->getId());
+        jOutcome->insert("parentId", outcome->getParentId());
+        auto checks = *outcome->getChecks();
+        QJsonArray jChecks;
+        for (auto check : checks) {
+            auto jCheck = new QJsonObject();
+            jCheck->insert("type", check->type);
+            jCheck->insert("trait", check->trait);
+            QJsonArray jSpinValues;
+            for (auto spinValue : check->spinValues) {
+                jSpinValues.append(spinValue);
+            }
+            jCheck->insert("spinValues", jSpinValues);
+            // Записываю по порядку "номер кнопки", затем сразу "айди", типа: 0,15,1,16,2,46,3,134
+            QJsonArray jStagesId;
+            for (auto it = check->stagesId.begin(); it != check->stagesId.end(); it++) {
+                jStagesId.append(qint32(it.key()));
+                jStagesId.append(it.value());
+            }
+            jCheck->insert("stagesId", jStagesId);
+
+            jChecks.append(*jCheck);
+        }
+        jOutcome->insert("checks", jChecks);
+        jOutcomes.append(*jOutcome);
     }
     jObjInsideDoc["outcomes"] = jOutcomes;
 
     QJsonArray jStages;
     for (auto stage : m_stages) {
         auto jStage = new QJsonObject();
-        jFrag->insert("text", frag->getText());
-        jFrag->insert("Ut", frag->isUt());
-        jStages.append(*jFrag);
+        jStage->insert("id", stage->getId());
+        jStage->insert("parentId", stage->getParentId());
+        auto variants = *stage->getVariants();
+        QJsonArray jVariants;
+        for (auto variant : variants) {
+            auto jVariant = new QJsonObject();
+            jVariant->insert("text", variant->text);
+            jVariant->insert("outcomeId", variant->outcomeId);
+            jVariant->insert("resource", variant->resource);
+            jVariant->insert("resourceCount", variant->resourceCount);
+
+            jVariants.append(*jVariant);
+        }
+        jStage->insert("variants", jVariants);
+        jStages.append(*jStage);
     }
     jObjInsideDoc["stages"] = jStages;
-    */
 
     jDoc->setObject(jObjInsideDoc);
     QFile jFile(filename);
@@ -117,9 +148,19 @@ qint32 COrder::addOutcome(qint32 parentId)
     return outcome->getId();
 }
 
-void COrder::updateOutcome(qint32 id)
+void COrder::updateOutcome(qint32 id, const QList<SCheck *> &checks)
 {
-    // TODO: чуть позже обновить уже при сохранении видимо?
+    auto it = m_outcomes.find(id);
+    if (it != m_outcomes.end())
+        it.value()->update(checks);
+}
+
+const QList<SCheck *> *COrder::getOutcomeChecks(qint32 outcomeId)
+{
+    auto it = m_outcomes.find(outcomeId);
+    if (it != m_outcomes.end())
+        return it.value()->getChecks();
+    return nullptr;
 }
 
 qint32 COrder::addStage(qint32 parentId)
@@ -130,9 +171,19 @@ qint32 COrder::addStage(qint32 parentId)
     return stage->getId();
 }
 
-void COrder::updateStage(qint32 id)
+void COrder::updateStage(qint32 id, const QList<SVariant *> &variants)
 {
-    //
+    auto it = m_stages.find(id);
+    if (it != m_stages.end())
+        it.value()->update(variants);
+}
+
+const QList<SVariant *> *COrder::getStageVariants(qint32 stageId)
+{
+    auto it = m_stages.find(stageId);
+    if (it != m_stages.end())
+        return it.value()->getVariants();
+    return nullptr;
 }
 
 qint32 COrder::getParentId(qint32 id, ENodeType type)
@@ -153,7 +204,7 @@ qint32 COrder::_makeMinId(ENodeType type)
     qint32 minId = 0;
     bool exist;
     if (type == eOutcome) {
-        for (int i = 1; true; i++) {
+        for (int i = 0; true; i++) {
             exist = false;
             for (auto outcome : m_outcomes) {
                 if (outcome->getId() == i)

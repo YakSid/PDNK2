@@ -90,9 +90,16 @@ void MainWindow::slotToOutcomeClicked(qint32 id)
 void MainWindow::slotCreateOutcomeClicked()
 {
     qint32 id = _createOutcome();
-    auto wgt = qobject_cast<CVariantWidget *>(sender());
-    wgt->setOutcomeId(id);
-    _saveStageLoadOutcome(id);
+    if (id == 0) {
+        //Начальный исход
+        m_mapManager->setSelected(0, eOutcome);
+        _prepareOutcomeUi(0);
+        ui->lb_briefReminder->setText("Начальный этап");
+    } else {
+        auto wgt = qobject_cast<CVariantWidget *>(sender());
+        wgt->setOutcomeId(id);
+        _saveStageLoadOutcome(id);
+    }
 }
 
 void MainWindow::on_action_save_triggered()
@@ -127,16 +134,13 @@ void MainWindow::on_action_save_triggered()
         for (auto termsChild : ui->lw_terms->children()) {
             auto wgt = qobject_cast<QWidget *>(termsChild);
             SReqToStaff req;
-            for (auto obj : wgt->children()) {
-                if (obj->metaObject()->className() == QSpinBox::staticMetaObject.className()) {
-                    auto spin = qobject_cast<QSpinBox *>(obj);
-                    req.count = spin->value();
-                } else {
-                    auto cb = qobject_cast<QComboBox *>(obj);
-                    req.req = cb->currentIndex();
-                }
+            auto spin = wgt->findChild<QSpinBox *>("spin");
+            if (spin != nullptr) {
+                req.count = spin->value();
+                auto cb = wgt->findChild<QComboBox *>("cb");
+                req.req = cb->currentIndex();
+                settings.staffReq.append(req);
             }
-            settings.staffReq.append(req);
         }
         settings.text = ui->te_order_text->toPlainText();
         settings.needToDiscuss = ui->te_need_to_discuss->toPlainText();
@@ -180,25 +184,6 @@ void MainWindow::_prepareAllFromLoadedOrder()
     // TODO: СЕЙЧАС подготовку mw из готового ордера
 }
 
-void MainWindow::_prepareFirstOutcomeUi()
-{
-    ui->stackedWidget->setCurrentIndex(1);
-    ui->gb_stagesOutcomes->setTitle("Исходы выбора сотрудников");
-    ui->pb_toParentStage->setVisible(false);
-    ui->lb_briefReminder->setText("Стартовые проверки");
-    ui->lw_outcomes->clear();
-    m_currentNode.update(0, eOutcome);
-    // Заполнение данных в ui
-    auto it = m_checksPacks.find(0);
-    if (it != m_checksPacks.end())
-        for (auto check : it.value()) {
-            on_pb_addCheck_clicked();
-            auto wgt = qobject_cast<COutcomeWidget *>(
-                    ui->lw_outcomes->itemWidget(ui->lw_outcomes->item(ui->lw_outcomes->count() - 1)));
-            wgt->updateData(check->type, check->trait, check->spinValues, check->stagesId);
-        }
-}
-
 void MainWindow::_prepareOutcomeUi(qint32 id)
 {
     ui->stackedWidget->setCurrentIndex(1);
@@ -208,9 +193,9 @@ void MainWindow::_prepareOutcomeUi(qint32 id)
     ui->lw_outcomes->clear();
     m_currentNode.update(id, eOutcome);
     ui->lw_outcomes->clear();
-    auto it = m_checksPacks.find(id);
-    if (it != m_checksPacks.end()) {
-        for (auto check : it.value()) {
+    auto checksList = m_order->getOutcomeChecks(id);
+    if (checksList != nullptr) {
+        for (auto check : *checksList) {
             on_pb_addCheck_clicked();
             auto wgt = qobject_cast<COutcomeWidget *>(
                     ui->lw_outcomes->itemWidget(ui->lw_outcomes->item(ui->lw_outcomes->count() - 1)));
@@ -227,9 +212,9 @@ void MainWindow::_prepareStageUi(qint32 id)
     ui->lw_variants->clear();
     m_currentNode.update(id, eStage);
     ui->lw_variants->clear();
-    auto it = m_variantsPacks.find(id);
-    if (it != m_variantsPacks.end()) {
-        for (auto variant : it.value()) {
+    auto variantsList = m_order->getStageVariants(id);
+    if (variantsList != nullptr) {
+        for (auto variant : *variantsList) {
             on_pb_addVariant_clicked();
             auto wgt = qobject_cast<CVariantWidget *>(
                     ui->lw_variants->itemWidget(ui->lw_variants->item(ui->lw_variants->count() - 1)));
@@ -251,7 +236,11 @@ qint32 MainWindow::_createOutcome()
     qint32 id = m_order->addOutcome(m_currentNode.id);
 
     //Визуальная часть map
-    m_mapManager->addNode(id, eOutcome);
+    if (id == 0) {
+        m_mapManager->addFirstNode();
+    } else {
+        m_mapManager->addNode(id, eOutcome);
+    }
 
     return id;
 }
@@ -269,13 +258,7 @@ qint32 MainWindow::_createStage()
 
 void MainWindow::_saveCurrentOutcome()
 {
-    auto it = m_checksPacks.find(m_currentNode.id);
-    if (it != m_checksPacks.end()) {
-        //Удалить старые данные этого ауткома
-        m_checksPacks.remove(m_currentNode.id);
-    }
-    QList<SCheck *> checksPack;
-    //Создать набор проверок и сохранить
+    QList<SCheck *> checks;
     for (int i = 0; i < ui->lw_outcomes->count(); i++) {
         auto wgt = qobject_cast<COutcomeWidget *>(ui->lw_outcomes->itemWidget(ui->lw_outcomes->item(i)));
         auto check = new SCheck;
@@ -283,20 +266,14 @@ void MainWindow::_saveCurrentOutcome()
         check->trait = wgt->getTrait();
         check->spinValues = wgt->getSpinValues();
         check->stagesId = wgt->getStagesId();
-        checksPack.append(check);
+        checks.append(check);
     }
-    m_checksPacks.insert(m_currentNode.id, checksPack);
+    m_order->updateOutcome(m_currentNode.id, checks);
 }
 
 void MainWindow::_saveCurrentStage()
 {
-    auto it = m_variantsPacks.find(m_currentNode.id);
-    if (it != m_variantsPacks.end()) {
-        //Удалить старые данные этого этапа
-        m_variantsPacks.remove(m_currentNode.id);
-    }
-    QList<SVariant *> variantsPack;
-    //Создать набор проверок и сохранить
+    QList<SVariant *> variants;
     for (int i = 0; i < ui->lw_variants->count(); i++) {
         auto wgt = qobject_cast<CVariantWidget *>(ui->lw_variants->itemWidget(ui->lw_variants->item(i)));
         auto variant = new SVariant;
@@ -304,9 +281,9 @@ void MainWindow::_saveCurrentStage()
         variant->outcomeId = wgt->getOutcomeId();
         variant->resource = wgt->getResource();
         variant->resourceCount = wgt->getResourceCount();
-        variantsPack.append(variant);
+        variants.append(variant);
     }
-    m_variantsPacks.insert(m_currentNode.id, variantsPack);
+    m_order->updateStage(m_currentNode.id, variants);
 }
 
 void MainWindow::_saveOutcomeLoadStage(qint32 stageId)
@@ -325,7 +302,7 @@ void MainWindow::_saveStageLoadOutcome(qint32 outcomeId)
     _prepareOutcomeUi(outcomeId);
 }
 
-void MainWindow::on_cmb_type_currentIndexChanged(int index)
+void MainWindow::on_cb_type_currentIndexChanged(int index)
 {
     switch (index) {
     case 0:
@@ -373,12 +350,12 @@ void MainWindow::on_grp_req_resources_toggled(bool arg1)
     }
 }
 
-void MainWindow::on_cmb_department_currentIndexChanged(int index)
+void MainWindow::on_cb_department_currentIndexChanged(int index)
 {
     // TODO: позже: вписать значения и энумы сделать
 }
 
-// TODO: позже сделать алгоритм автоматического появления проверки "неудача", если есть одна из треёх первых и этой нет
+// TODO: позже сделать алгоритм автоматического появления проверки "неудача", если есть одна из трёх первых и этой нет
 void MainWindow::on_pb_addCheck_clicked()
 {
     //Визуальная часть ui
@@ -422,12 +399,14 @@ void MainWindow::on_pb_addTerm_clicked()
     wgt->setFont(font);
     auto layout = new QHBoxLayout;
     auto spin = new QSpinBox;
+    spin->setObjectName("spin");
     spin->setMinimum(1);
     spin->setMaximumWidth(45);
     layout->addWidget(spin);
-    auto cmb = new QComboBox;
-    cmb->addItems(TRAITS);
-    layout->addWidget(cmb);
+    auto cb = new QComboBox;
+    cb->setObjectName("cb");
+    cb->addItems(TRAITS);
+    layout->addWidget(cb);
     wgt->setLayout(layout);
     layout->setContentsMargins(15, 6, 6, 6);
     layout->setSpacing(2);
@@ -545,10 +524,10 @@ void MainWindow::on_pb_createQuest_clicked()
         m_mapManager = new CMapManager();
         connect(m_mapManager, &CMapManager::s_newNodeSelected, this, &MainWindow::slotNewNodeSelected);
         ui->gb_map->layout()->addWidget(m_mapManager);
-        m_mapManager->addFirstNode();
+        m_currentNode.update(-1, eStage);
+        slotCreateOutcomeClicked();
     }
     ui->tabWidget->setCurrentIndex(1);
-    _prepareFirstOutcomeUi();
 }
 
 void MainWindow::on_pb_toParentStage_clicked()

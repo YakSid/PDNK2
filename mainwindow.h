@@ -5,8 +5,6 @@
 #include <QListWidgetItem>
 #include <QCheckBox>
 #include <QSpinBox>
-#include "coutcomewidget.h"
-#include "cvariantwidget.h"
 #include "cdatabasemanager.h"
 #include "cmapmanager.h"
 #include "cstartpage.h"
@@ -25,24 +23,6 @@ struct SCurrentNode {
         id = newId;
         type = newType;
     }
-};
-//! Визуальное отображение проверки и все данные
-struct SCheck {
-    //Если значение -1, значит отсутствует
-    qint32 type { -1 };
-    qint32 trait { -1 };
-    //! Значения спинбоксов, если есть
-    QList<qint32> spinValues;
-    //! К каким этапам ведёт кнопка. По порядку сверху вниз
-    QMap<COutcomeWidget::EOutcomeButton, qint32> stagesId;
-};
-
-//! Визуальное отображение варианта и все данные
-struct SVariant {
-    QString text;
-    qint32 outcomeId { -1 };
-    qint32 resource { -1 };
-    qint32 resourceCount { -1 };
 };
 
 namespace Ui {
@@ -72,13 +52,13 @@ private slots:
     void on_action_save_triggered();
     void on_action_saveAndExit_triggered();
     void updateWindow();
-    void on_cmb_type_currentIndexChanged(int index);
+    void on_cb_type_currentIndexChanged(int index);
     void on_spb_first_rank_valueChanged(int arg1);
     void on_spb_second_rank_valueChanged(int arg1);
     void on_spb_third_rank_valueChanged(int arg1);
     void on_spb_common_valueChanged(int arg1);
     void on_grp_req_resources_toggled(bool arg1);
-    void on_cmb_department_currentIndexChanged(int index);
+    void on_cb_department_currentIndexChanged(int index);
     void on_pb_addCheck_clicked();
     void on_pb_deleteCheck_clicked();
     void on_lw_outcomes_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
@@ -99,8 +79,6 @@ private slots:
 private:
     void _prepareView();
     void _prepareAllFromLoadedOrder();
-    //! Подготовить виджет исхода для создания первого
-    void _prepareFirstOutcomeUi();
     //! Подготовить виджет исхода и заполнить данными из COrder
     void _prepareOutcomeUi(qint32 id);
     //! Подготовить виджет этапа и заполнить данными из COrder
@@ -126,10 +104,6 @@ private:
     COrder *m_order;
     //! Текущий нод
     SCurrentNode m_currentNode;
-    //! Отношение всех номеров ауткомов со всеми наборами проверок
-    QMap<qint32, QList<SCheck *>> m_checksPacks;
-    //! Отношение всех номеров стейджей со всеми наборами вариантов
-    QMap<qint32, QList<SVariant *>> m_variantsPacks;
     // Группы чекбоксов
     QList<QCheckBox *> m_hexCheckBoxes;
     QList<QCheckBox *> m_welfareCheckBoxes;
