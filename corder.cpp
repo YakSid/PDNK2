@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
+#include <QtDebug>
 
 COrder::COrder()
 {
@@ -88,6 +89,7 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
     }
     jObjInsideDoc["outcomes"] = jOutcomes;
 
+    // TODO: СЕЙЧАС добавить инфу стейджа и награды
     QJsonArray jStages;
     for (auto stage : m_stages) {
         auto jStage = new QJsonObject();
@@ -171,11 +173,22 @@ qint32 COrder::addStage(qint32 parentId)
     return stage->getId();
 }
 
-void COrder::updateStage(qint32 id, const QList<SVariant *> &variants)
+void COrder::updateStage(qint32 id, const QList<SVariant *> &variants, qint32 time, QString text,
+                         const QList<SReward *> rewards)
 {
     auto it = m_stages.find(id);
     if (it != m_stages.end())
-        it.value()->update(variants);
+        it.value()->updateInfo(variants, time, text, rewards);
+}
+
+void COrder::setStageFinal(qint32 id, bool final)
+{
+    auto it = m_stages.find(id);
+    if (it != m_stages.end())
+        it.value()->setFinal(final);
+    else {
+        qDebug() << "Возможно ошибка? Проверить"; // WARNING: нужно проверить заходит ли сюда прога
+    }
 }
 
 const QList<SVariant *> *COrder::getStageVariants(qint32 stageId)

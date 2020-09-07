@@ -14,6 +14,26 @@ CRewardWidget::~CRewardWidget()
     delete ui;
 }
 
+qint32 CRewardWidget::getType()
+{
+    return ui->cb_rewardType->currentIndex();
+}
+
+qint32 CRewardWidget::getObject()
+{
+    return ui->cb_object->currentIndex();
+}
+
+qint32 CRewardWidget::getCount()
+{
+    return ui->sp_rewardCount->value();
+}
+
+qint32 CRewardWidget::getPsyState()
+{
+    return ui->cb_psyState->currentIndex();
+}
+
 void CRewardWidget::on_cb_rewardType_currentIndexChanged(int index)
 {
     ui->cb_object->clear();

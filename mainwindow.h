@@ -23,6 +23,14 @@ struct SCurrentNode {
         id = newId;
         type = newType;
     }
+    bool isOutcome()
+    {
+        if (type == eOutcome)
+            return true;
+        else {
+            return false;
+        }
+    }
 };
 
 namespace Ui {

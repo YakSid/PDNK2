@@ -23,6 +23,11 @@ public:
     explicit CRewardWidget(QWidget *parent = nullptr);
     ~CRewardWidget();
 
+    qint32 getType();
+    qint32 getObject();
+    qint32 getCount();
+    qint32 getPsyState();
+
 private slots:
     void on_cb_rewardType_currentIndexChanged(int index);
 

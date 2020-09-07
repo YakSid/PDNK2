@@ -11,15 +11,21 @@
  * Хранит id исходов или ссылки на них и на родительский исход.
  */
 
-//! Визуальное отображение варианта и все данные
+//! Визуальное отображение варианта и его данные
 struct SVariant {
     QString text;
     qint32 outcomeId { -1 };
     qint32 resource { -1 };
     qint32 resourceCount { -1 };
 };
-// TODO: СЕЙЧАС забыл сохранять текст стейджа, возможно награду и статус финальный ли (ui элементы вне вариантов и
-// проверок чекнуть)
+//! Награда за достижение этапа
+struct SReward {
+    qint32 type { -1 };
+    qint32 object { -1 };
+    qint32 count { -1 };
+    qint32 psyState { -1 };
+};
+
 class CStage
 {
 public:
@@ -29,11 +35,19 @@ public:
     void setParentId(qint32 parentId) { m_parentId = parentId; }
     qint32 getParentId() const { return m_parentId; }
     const QList<SVariant *> *getVariants() { return &m_variants; }
-    void update(const QList<SVariant *> &variants) { m_variants = variants; }
+    void updateInfo(const QList<SVariant *> &variants, qint32 time, QString text, const QList<SReward *> rewards);
+    void setFinal(bool final) { m_final = final; }
+    bool isFinal() const { return m_final; }
 
 private:
     qint32 m_id;
     qint32 m_parentId;
+    //Данные этапа
+    qint32 m_time;
+    QString m_text;
+    bool m_final { false };
+    //! Список всех наград в этом этапе
+    QList<SReward *> m_rewards;
     //! Список всех вариантов в этом этапе
     QList<SVariant *> m_variants;
 };

@@ -49,7 +49,9 @@ public:
     void updateOutcome(qint32 id, const QList<SCheck *> &checks);
     const QList<SCheck *> *getOutcomeChecks(qint32 outcomeId);
     qint32 addStage(qint32 parentId);
-    void updateStage(qint32 id, const QList<SVariant *> &variants);
+    void updateStage(qint32 id, const QList<SVariant *> &variants, qint32 time, QString text,
+                     const QList<SReward *> rewards);
+    void setStageFinal(qint32 id, bool final);
     const QList<SVariant *> *getStageVariants(qint32 stageId);
     //! Узнать id родителя по id и типу сына
     qint32 getParentId(qint32 id, ENodeType type);

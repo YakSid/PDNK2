@@ -56,7 +56,7 @@ void MainWindow::needReqResToggled(bool checked)
 void MainWindow::slotNewNodeSelected(qint32 id, ENodeType type)
 {
     //Сохраняем текущий нод
-    if (m_currentNode.type == eOutcome) {
+    if (m_currentNode.isOutcome()) {
         _saveCurrentOutcome();
     } else {
         _saveCurrentStage();
@@ -104,6 +104,12 @@ void MainWindow::slotCreateOutcomeClicked()
 
 void MainWindow::on_action_save_triggered()
 {
+    //Сохранение текущего нода
+    if (m_currentNode.isOutcome()) {
+        _saveCurrentOutcome();
+    } else {
+        _saveCurrentStage();
+    }
     // Сохранить всё в базу
     // TODO: указать имя сохраняемого приказа
     QString jName = QFileDialog::getSaveFileName(this, "Сохранить приказ", "", "*.json");
@@ -205,6 +211,7 @@ void MainWindow::_prepareOutcomeUi(qint32 id)
 }
 void MainWindow::_prepareStageUi(qint32 id)
 {
+    // TODO: СЕЙЧАС подготовить инфу стейджа и награды
     ui->stackedWidget->setCurrentIndex(0);
     ui->gb_stagesOutcomes->setTitle("Этап с выбором");
     ui->pb_toParentOutcome->setVisible(true);
@@ -273,6 +280,17 @@ void MainWindow::_saveCurrentOutcome()
 
 void MainWindow::_saveCurrentStage()
 {
+    QList<SReward *> rewards;
+    for (int i = 0; i < ui->lw_rewards->count(); i++) {
+        auto wgt = qobject_cast<CRewardWidget *>(ui->lw_rewards->itemWidget(ui->lw_rewards->item(i)));
+        auto reward = new SReward;
+        reward->type = wgt->getType();
+        reward->object = wgt->getObject();
+        reward->count = wgt->getCount();
+        reward->psyState = wgt->getPsyState();
+        rewards.append(reward);
+    }
+
     QList<SVariant *> variants;
     for (int i = 0; i < ui->lw_variants->count(); i++) {
         auto wgt = qobject_cast<CVariantWidget *>(ui->lw_variants->itemWidget(ui->lw_variants->item(i)));
@@ -283,7 +301,8 @@ void MainWindow::_saveCurrentStage()
         variant->resourceCount = wgt->getResourceCount();
         variants.append(variant);
     }
-    m_order->updateStage(m_currentNode.id, variants);
+    m_order->updateStage(m_currentNode.id, variants, ui->cb_time->currentIndex(), ui->te_stageText->toPlainText(),
+                         rewards);
 }
 
 void MainWindow::_saveOutcomeLoadStage(qint32 stageId)
@@ -486,6 +505,8 @@ void MainWindow::on_pb_setFinal_clicked()
         ui->pb_deleteVariant->setVisible(false);
         ui->groupStageDescription->setTitle("Описание результатов приказа");
         ui->grp_stageReward->setMaximumHeight(16777215);
+        m_order->setStageFinal(m_currentNode.id, true);
+        // TODO: сделать в map_manager нод визуально финальным и свойство ему дать?
     } else {
         //Сделать обычным
         ui->pb_setFinal->setText("Сделать финальным");
@@ -495,6 +516,7 @@ void MainWindow::on_pb_setFinal_clicked()
         ui->pb_deleteVariant->setVisible(true);
         ui->groupStageDescription->setTitle("Описание этапа");
         ui->grp_stageReward->setMaximumHeight(135);
+        m_order->setStageFinal(m_currentNode.id, false);
     }
 }
 
