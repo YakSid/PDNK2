@@ -192,12 +192,16 @@ void MainWindow::_prepareAllFromLoadedOrder()
 
 void MainWindow::_prepareOutcomeUi(qint32 id)
 {
+    m_currentNode.update(id, eOutcome);
     ui->stackedWidget->setCurrentIndex(1);
     ui->gb_stagesOutcomes->setTitle("Исходы выбора");
-    ui->pb_toParentStage->setVisible(true);
+    if (id == 0)
+        ui->pb_toParentStage->setVisible(false);
+    else {
+        ui->pb_toParentStage->setVisible(true);
+    }
     ui->lb_briefReminder->setText("краткое описание");
-    ui->lw_outcomes->clear();
-    m_currentNode.update(id, eOutcome);
+    //Подготовка проверок
     ui->lw_outcomes->clear();
     auto checksList = m_order->getOutcomeChecks(id);
     if (checksList != nullptr) {
@@ -212,12 +216,12 @@ void MainWindow::_prepareOutcomeUi(qint32 id)
 void MainWindow::_prepareStageUi(qint32 id)
 {
     // TODO: СЕЙЧАС подготовить инфу стейджа и награды
+    m_currentNode.update(id, eStage);
     ui->stackedWidget->setCurrentIndex(0);
     ui->gb_stagesOutcomes->setTitle("Этап с выбором");
     ui->pb_toParentOutcome->setVisible(true);
     ui->lb_briefReminder->setText("краткое описание");
-    ui->lw_variants->clear();
-    m_currentNode.update(id, eStage);
+    //Подготовка вариантов
     ui->lw_variants->clear();
     auto variantsList = m_order->getStageVariants(id);
     if (variantsList != nullptr) {

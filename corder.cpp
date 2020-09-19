@@ -186,9 +186,6 @@ void COrder::setStageFinal(qint32 id, bool final)
     auto it = m_stages.find(id);
     if (it != m_stages.end())
         it.value()->setFinal(final);
-    else {
-        qDebug() << "Возможно ошибка? Проверить"; // WARNING: нужно проверить заходит ли сюда прога
-    }
 }
 
 const QList<SVariant *> *COrder::getStageVariants(qint32 stageId)
