@@ -51,6 +51,7 @@ public:
     qint32 addStage(qint32 parentId);
     void updateStage(qint32 id, const QList<SVariant *> &variants, qint32 time, QString text,
                      const QList<SReward *> rewards);
+    const SStageInfo getStageInfo(qint32 id);
     void setStageFinal(qint32 id, bool final);
     const QList<SVariant *> *getStageVariants(qint32 stageId);
     //! Узнать id родителя по id и типу сына

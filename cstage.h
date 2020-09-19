@@ -25,6 +25,12 @@ struct SReward {
     qint32 count { -1 };
     qint32 psyState { -1 };
 };
+//! Информация этапа
+struct SStageInfo {
+    qint32 time { -1 };
+    QString text;
+    bool isFinal { false };
+};
 
 class CStage
 {
@@ -36,6 +42,10 @@ public:
     qint32 getParentId() const { return m_parentId; }
     const QList<SVariant *> *getVariants() { return &m_variants; }
     void updateInfo(const QList<SVariant *> &variants, qint32 time, QString text, const QList<SReward *> rewards);
+    qint32 getTime() const { return m_time; }
+    QString getText() const { return m_text; }
+    const SStageInfo getStageInfo();
+    const QList<SReward *> *getRewards() { return &m_rewards; }
     void setFinal(bool final) { m_final = final; }
     bool isFinal() const { return m_final; }
 

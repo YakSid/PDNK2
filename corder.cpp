@@ -181,6 +181,15 @@ void COrder::updateStage(qint32 id, const QList<SVariant *> &variants, qint32 ti
         it.value()->updateInfo(variants, time, text, rewards);
 }
 
+const SStageInfo COrder::getStageInfo(qint32 id)
+{
+    SStageInfo result;
+    auto it = m_stages.find(id);
+    if (it != m_stages.end())
+        result = it.value()->getStageInfo();
+    return result;
+}
+
 void COrder::setStageFinal(qint32 id, bool final)
 {
     auto it = m_stages.find(id);

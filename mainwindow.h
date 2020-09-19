@@ -103,6 +103,7 @@ private:
     void _saveOutcomeLoadStage(qint32 stageId);
     //! Сохранить данные текущего стейджа, перейти к ауткому и подготовить его ui
     void _saveStageLoadOutcome(qint32 outcomeId);
+    void _setStageUiFinal(bool st);
 
 private:
     Ui::MainWindow *ui;

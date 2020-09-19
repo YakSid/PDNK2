@@ -215,12 +215,17 @@ void MainWindow::_prepareOutcomeUi(qint32 id)
 }
 void MainWindow::_prepareStageUi(qint32 id)
 {
-    // TODO: СЕЙЧАС подготовить инфу стейджа и награды
     m_currentNode.update(id, eStage);
     ui->stackedWidget->setCurrentIndex(0);
     ui->gb_stagesOutcomes->setTitle("Этап с выбором");
     ui->pb_toParentOutcome->setVisible(true);
-    ui->lb_briefReminder->setText("краткое описание");
+    ui->lb_briefReminder->setText("краткое описание"); // TODO: чуть позже заполнить хэдэр из текста родителя
+    //Подготовка времени, текста и наград
+    auto stageInfo = m_order->getStageInfo(id);
+    ui->cb_time->setCurrentIndex(stageInfo.time);
+    ui->te_stageText->setText(stageInfo.text);
+    _setStageUiFinal(stageInfo.isFinal);
+    // TODO: СЕЙЧАС заполнить награды
     //Подготовка вариантов
     ui->lw_variants->clear();
     auto variantsList = m_order->getStageVariants(id);
@@ -323,6 +328,30 @@ void MainWindow::_saveStageLoadOutcome(qint32 outcomeId)
 
     m_mapManager->setSelected(outcomeId, eOutcome);
     _prepareOutcomeUi(outcomeId);
+}
+
+void MainWindow::_setStageUiFinal(bool st)
+{
+    if (st) {
+        ui->pb_setFinal->setText("Сделать обычным");
+        ui->groupVariants->setTitle("");
+        ui->lw_variants->setVisible(false);
+        ui->pb_addVariant->setVisible(false);
+        ui->pb_deleteVariant->setVisible(false);
+        ui->groupStageDescription->setTitle("Описание результатов приказа");
+        ui->grp_stageReward->setMaximumHeight(16777215);
+        m_order->setStageFinal(m_currentNode.id, true);
+        // TODO: сделать в map_manager нод визуально финальным и свойство ему дать?
+    } else {
+        ui->pb_setFinal->setText("Сделать финальным");
+        ui->groupVariants->setTitle("Варианты действий");
+        ui->lw_variants->setVisible(true);
+        ui->pb_addVariant->setVisible(true);
+        ui->pb_deleteVariant->setVisible(true);
+        ui->groupStageDescription->setTitle("Описание этапа");
+        ui->grp_stageReward->setMaximumHeight(135);
+        m_order->setStageFinal(m_currentNode.id, false);
+    }
 }
 
 void MainWindow::on_cb_type_currentIndexChanged(int index)
@@ -501,26 +530,9 @@ void MainWindow::on_pb_deleteVariant_clicked()
 void MainWindow::on_pb_setFinal_clicked()
 {
     if (ui->pb_setFinal->text() == "Сделать финальным") {
-        //Сделать финальным
-        ui->pb_setFinal->setText("Сделать обычным");
-        ui->groupVariants->setTitle("");
-        ui->lw_variants->setVisible(false);
-        ui->pb_addVariant->setVisible(false);
-        ui->pb_deleteVariant->setVisible(false);
-        ui->groupStageDescription->setTitle("Описание результатов приказа");
-        ui->grp_stageReward->setMaximumHeight(16777215);
-        m_order->setStageFinal(m_currentNode.id, true);
-        // TODO: сделать в map_manager нод визуально финальным и свойство ему дать?
+        _setStageUiFinal(true);
     } else {
-        //Сделать обычным
-        ui->pb_setFinal->setText("Сделать финальным");
-        ui->groupVariants->setTitle("Варианты действий");
-        ui->lw_variants->setVisible(true);
-        ui->pb_addVariant->setVisible(true);
-        ui->pb_deleteVariant->setVisible(true);
-        ui->groupStageDescription->setTitle("Описание этапа");
-        ui->grp_stageReward->setMaximumHeight(135);
-        m_order->setStageFinal(m_currentNode.id, false);
+        _setStageUiFinal(false);
     }
 }
 
