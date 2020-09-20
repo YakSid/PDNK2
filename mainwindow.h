@@ -86,7 +86,8 @@ private slots:
 
 private:
     void _prepareView();
-    void _prepareAllFromLoadedOrder();
+    //! Заполнить основные настройки загруженными данными
+    void _prepareMainSettings(const SMainSettings &sett);
     //! Подготовить виджет исхода и заполнить данными из COrder
     void _prepareOutcomeUi(qint32 id);
     //! Подготовить виджет этапа и заполнить данными из COrder
@@ -103,7 +104,9 @@ private:
     void _saveOutcomeLoadStage(qint32 stageId);
     //! Сохранить данные текущего стейджа, перейти к ауткому и подготовить его ui
     void _saveStageLoadOutcome(qint32 outcomeId);
+    // Изменение ui
     void _setStageUiFinal(bool st);
+    void _setRewardsVisible(bool st);
 
 private:
     Ui::MainWindow *ui;

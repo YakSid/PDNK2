@@ -27,10 +27,10 @@ struct SMainSettings {
     qint32 departmentPO;
     qint32 areVampires;
     qint32 innerOrderType;
-    bool hexagonType[12] = { false, false, false, false, false, false, false, false, false, false, false, false };
-    bool hexagonWelfare[5] = { false, false, false, false, false };
-    qint32 staff[4] = { 0, 0, 0, 0 };
-    qint32 resources[4] = { 0, 0, 0, 0 };
+    QList<bool> hexagonType = { false, false, false, false, false, false, false, false, false, false, false, false };
+    QList<bool> hexagonWelfare = { false, false, false, false, false };
+    QList<qint32> staff = { 0, 0, 0, 0 };
+    QList<qint32> resources = { 0, 0, 0, 0 };
     QList<SReqToStaff> staffReq;
     QString text;
     QString needToDiscuss;
@@ -43,7 +43,7 @@ public:
     COrder();
     ~COrder();
     void saveToJSON(QString filename, const SMainSettings &settings);
-    void loadFromJSON(QString filename);
+    SMainSettings loadFromJSON(QString filename);
 
     qint32 addOutcome(qint32 parentId);
     void updateOutcome(qint32 id, const QList<SCheck *> &checks);
@@ -52,6 +52,7 @@ public:
     void updateStage(qint32 id, const QList<SVariant *> &variants, qint32 time, QString text,
                      const QList<SReward *> rewards);
     const SStageInfo getStageInfo(qint32 id);
+    const QList<SReward *> *getStageRewards(qint32 id);
     void setStageFinal(qint32 id, bool final);
     const QList<SVariant *> *getStageVariants(qint32 stageId);
     //! Узнать id родителя по id и типу сына

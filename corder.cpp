@@ -8,7 +8,7 @@
 
 COrder::COrder()
 {
-    //Заполнить стартовые параметры
+    // TODO: Заполнить стартовые параметры?
 }
 
 COrder::~COrder() {}
@@ -17,7 +17,7 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
 {
     auto jDoc = new QJsonDocument();
     auto jObjInsideDoc = jDoc->object();
-    //Заполнение данных
+    //Основные настройки
     QJsonObject mainSettings;
     mainSettings.insert("locationType", settings.locationType);
     mainSettings.insert("department", settings.department);
@@ -55,9 +55,8 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
     mainSettings.insert("staffReq", jStaffReq);
     mainSettings.insert("text", settings.text);
     mainSettings.insert("needToDiscuss", settings.needToDiscuss);
-
     jObjInsideDoc["mainSettings"] = mainSettings;
-
+    //Исходы
     QJsonArray jOutcomes;
     for (auto outcome : m_outcomes) {
         auto jOutcome = new QJsonObject();
@@ -88,13 +87,27 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
         jOutcomes.append(*jOutcome);
     }
     jObjInsideDoc["outcomes"] = jOutcomes;
-
-    // TODO: СЕЙЧАС добавить инфу стейджа и награды
+    //Этапы
     QJsonArray jStages;
     for (auto stage : m_stages) {
         auto jStage = new QJsonObject();
         jStage->insert("id", stage->getId());
         jStage->insert("parentId", stage->getParentId());
+        jStage->insert("time", stage->getTime());
+        jStage->insert("text", stage->getText());
+        jStage->insert("final", stage->isFinal());
+        auto rewards = *stage->getRewards();
+        QJsonArray jRewards;
+        for (auto reward : rewards) {
+            auto jReward = new QJsonObject();
+            jReward->insert("type", reward->type);
+            jReward->insert("object", reward->object);
+            jReward->insert("count", reward->count);
+            jReward->insert("psyState", reward->psyState);
+            jRewards.append(*jReward);
+        }
+        jStage->insert("rewards", jRewards);
+
         auto variants = *stage->getVariants();
         QJsonArray jVariants;
         for (auto variant : variants) {
@@ -103,7 +116,6 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
             jVariant->insert("outcomeId", variant->outcomeId);
             jVariant->insert("resource", variant->resource);
             jVariant->insert("resourceCount", variant->resourceCount);
-
             jVariants.append(*jVariant);
         }
         jStage->insert("variants", jVariants);
@@ -118,28 +130,125 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
     jFile.close();
 }
 
-void COrder::loadFromJSON(QString filename)
+SMainSettings COrder::loadFromJSON(QString filename)
 {
+    // TODO: СЕЙЧАС проверить правильно ли массивы разбираю
     QFile jFile(filename);
     jFile.open(QFile::ReadOnly);
     auto jDoc = QJsonDocument().fromJson(jFile.readAll());
     jFile.close();
-    //Распаковка данных
+    //Основные настройки
+    SMainSettings settings;
     QJsonObject jObjInsideDoc = jDoc.object();
-    /*QJsonObject mainSettings = jObjInsideDoc["mainSettings"].toObject();
-    auto res1 = mainSettings["id"].toString();
-    QDate date;
-    date.fromString(mainSettings["dateStr"].toString(), "dd.MM.yyyy");
-    auto res2 = date;
+    QJsonObject jMainSettings = jObjInsideDoc["mainSettings"].toObject();
+    settings.locationType = jMainSettings["locationType"].toInt();
+    settings.department = jMainSettings["department"].toInt();
+    settings.threatLevel = jMainSettings["threatLevel"].toInt();
+    settings.departmentPO = jMainSettings["departmentPO"].toInt();
+    settings.areVampires = jMainSettings["areVampires"].toInt();
+    settings.innerOrderType = jMainSettings["innerOrderType"].toInt();
+    QJsonArray jHexTypeArray = jMainSettings["hexagonType"].toArray();
+    settings.hexagonType.clear();
+    for (auto val : jHexTypeArray) {
+        settings.hexagonType.append(val.toBool());
+    }
+    QJsonArray jHexWelfare = jMainSettings["hexagonWelfare"].toArray();
+    settings.hexagonWelfare.clear();
+    for (auto val : jHexWelfare) {
+        settings.hexagonWelfare.append(val.toBool());
+    }
+    QJsonArray jStaff = jMainSettings["staff"].toArray();
+    settings.staff.clear();
+    for (auto val : jStaff) {
+        settings.staff.append(val.toInt());
+    }
+    QJsonArray jRes = jMainSettings["resources"].toArray();
+    settings.resources.clear();
+    for (auto val : jRes) {
+        settings.resources.append(val.toInt());
+    }
+    QJsonArray jStaffReq = jMainSettings["staffReq"].toArray();
+    settings.staffReq.clear();
+    for (auto val : jStaffReq) {
+        auto obj = val.toObject();
+        auto req = new SReqToStaff;
+        req->count = obj["count"].toInt();
+        req->req = obj["req"].toInt();
+        settings.staffReq.append(*req);
+    }
+    settings.text = jMainSettings["text"].toString();
+    settings.needToDiscuss = jMainSettings["needToDiscuss"].toString();
 
-    QJsonArray jArray = jObjInsideDoc["fragments"].toArray();
-    for (QJsonValueRef jValueRef : jArray) {
-        auto jFrag = jValueRef.toObject();
-        auto frag = new fragment();
-        frag->setText(jFrag["text"].toString());
-        frag->setUt(jFrag["Ut"].toBool());
-        currentKolDog->fragments.append(frag);
-    }*/
+    //Исходы
+    QJsonArray jOutcomes = jObjInsideDoc["outcomes"].toArray();
+    for (auto jRefOutcome : jOutcomes) {
+        auto jOutcome = jRefOutcome.toObject();
+        auto outcome = new COutcome(jOutcome["id"].toInt());
+        outcome->setParentId(jOutcome["parentId"].toInt());
+        QList<SCheck *> checks;
+        auto jChecks = jOutcome["checks"].toArray();
+        for (auto jRefCheck : jChecks) {
+            auto jCheck = jRefCheck.toObject();
+            auto check = new SCheck();
+            check->type = jCheck["type"].toInt();
+            check->trait = jCheck["trait"].toInt();
+            QJsonArray jSpinValues = jCheck["spinValues"].toArray();
+            check->spinValues.clear();
+            for (auto val : jSpinValues) {
+                check->spinValues.append(val.toInt());
+            }
+            QJsonArray jStagesId = jCheck["stagesId"].toArray();
+            check->stagesId.clear();
+            while (!jStagesId.isEmpty()) {
+                qint32 firstVal = jStagesId.first().toInt();
+                jStagesId.removeFirst();
+                qint32 secondVal = jStagesId.first().toInt();
+                jStagesId.removeFirst();
+                check->stagesId.insert(COutcomeWidget::EOutcomeButton(firstVal), secondVal);
+            }
+            checks.append(check);
+        }
+        outcome->update(checks);
+        m_outcomes.insert(outcome->getId(), outcome);
+    }
+
+    //Этапы
+    QJsonArray jStages = jObjInsideDoc["stages"].toArray();
+    for (auto jRefStage : jStages) {
+        auto jStage = jRefStage.toObject();
+        auto stage = new CStage(jStage["id"].toInt());
+        stage->setParentId(jStage["parentId"].toInt());
+        stage->setTime(jStage["time"].toInt());
+        stage->setText(jStage["text"].toString());
+        stage->setFinal(jStage["final"].toBool());
+        QList<SReward *> rewards;
+        auto jRewards = jStage["rewards"].toArray();
+        for (auto jRefReward : jRewards) {
+            auto jReward = jRefReward.toObject();
+            auto reward = new SReward();
+            reward->type = jReward["type"].toInt();
+            reward->object = jReward["object"].toInt();
+            reward->count = jReward["count"].toInt();
+            reward->psyState = jReward["psyState"].toInt();
+            rewards.append(reward);
+        }
+        stage->setRewards(rewards);
+        QList<SVariant *> variants;
+        auto jVariants = jStage["variants"].toArray();
+        for (auto jRefVariant : jVariants) {
+            auto jVariant = jRefVariant.toObject();
+            auto variant = new SVariant();
+            variant->text = jVariant["text"].toString();
+            variant->outcomeId = jVariant["outcomeId"].toInt();
+            variant->resource = jVariant["resource"].toInt();
+            variant->resourceCount = jVariant["resourceCount"].toInt();
+            variants.append(variant);
+        }
+        stage->setVariants(variants);
+        m_stages.insert(stage->getId(), stage);
+    }
+
+    return settings;
 }
 
 qint32 COrder::addOutcome(qint32 parentId)
@@ -187,6 +296,15 @@ const SStageInfo COrder::getStageInfo(qint32 id)
     auto it = m_stages.find(id);
     if (it != m_stages.end())
         result = it.value()->getStageInfo();
+    return result;
+}
+
+const QList<SReward *> *COrder::getStageRewards(qint32 id)
+{
+    const QList<SReward *> *result = nullptr;
+    auto it = m_stages.find(id);
+    if (it != m_stages.end())
+        result = it.value()->getRewards();
     return result;
 }
 

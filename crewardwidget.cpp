@@ -34,6 +34,18 @@ qint32 CRewardWidget::getPsyState()
     return ui->cb_psyState->currentIndex();
 }
 
+void CRewardWidget::updateData(qint32 type, qint32 object, qint32 count, qint32 psyState)
+{
+    if (type != -1)
+        ui->cb_rewardType->setCurrentIndex(type);
+    if (object != -1)
+        ui->cb_object->setCurrentIndex(object);
+    if (count != -1)
+        ui->sp_rewardCount->setValue(count);
+    if (psyState != -1)
+        ui->cb_psyState->setCurrentIndex(psyState);
+}
+
 void CRewardWidget::on_cb_rewardType_currentIndexChanged(int index)
 {
     ui->cb_object->clear();

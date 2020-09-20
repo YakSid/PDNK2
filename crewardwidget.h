@@ -27,6 +27,7 @@ public:
     qint32 getObject();
     qint32 getCount();
     qint32 getPsyState();
+    void updateData(qint32 type, qint32 object, qint32 count, qint32 psyState);
 
 private slots:
     void on_cb_rewardType_currentIndexChanged(int index);

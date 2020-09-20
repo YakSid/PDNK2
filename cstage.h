@@ -41,11 +41,15 @@ public:
     void setParentId(qint32 parentId) { m_parentId = parentId; }
     qint32 getParentId() const { return m_parentId; }
     const QList<SVariant *> *getVariants() { return &m_variants; }
+    void setVariants(const QList<SVariant *> &variants) { m_variants = variants; }
     void updateInfo(const QList<SVariant *> &variants, qint32 time, QString text, const QList<SReward *> rewards);
+    void setTime(qint32 time) { m_time = time; }
     qint32 getTime() const { return m_time; }
+    void setText(QString text) { m_text = text; }
     QString getText() const { return m_text; }
     const SStageInfo getStageInfo();
     const QList<SReward *> *getRewards() { return &m_rewards; }
+    void setRewards(const QList<SReward *> &rewards) { m_rewards = rewards; }
     void setFinal(bool final) { m_final = final; }
     bool isFinal() const { return m_final; }
 

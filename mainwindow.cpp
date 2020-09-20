@@ -26,11 +26,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     case 2:
         // Редактировать старый приказ
         // TODO: потом-потом, отобразить список сохранённых приказов с разными метками в corderspage
-        _prepareView();
-        m_order->loadFromJSON(m_startPage->jFilename);
-        _prepareAllFromLoadedOrder();
-
         ui->setupUi(this);
+        // TODO: СЕЙЧАС не забыть добавить логику из on_pb_createQuest_clicked, а то ордер не инициализирован
+        _prepareView();
+        _prepareMainSettings(m_order->loadFromJSON(m_startPage->jFilename));
         break;
     }
 }
@@ -185,9 +184,10 @@ void MainWindow::_prepareView()
     m_resSpinBoxes.append({ ui->spb_money, ui->spb_first_res, ui->spb_second_res, ui->spb_third_res });
 }
 
-void MainWindow::_prepareAllFromLoadedOrder()
+void MainWindow::_prepareMainSettings(const SMainSettings &sett)
 {
-    // TODO: СЕЙЧАС подготовку mw из готового ордера
+    // TODO: СЕЙЧАС заполнить настройки из полученных данных
+    // TODO: СЕЙЧАС здесь или где-то заполнить mapManager этапами и ауткомами ?ui подготовить для первого?
 }
 
 void MainWindow::_prepareOutcomeUi(qint32 id)
@@ -220,12 +220,23 @@ void MainWindow::_prepareStageUi(qint32 id)
     ui->gb_stagesOutcomes->setTitle("Этап с выбором");
     ui->pb_toParentOutcome->setVisible(true);
     ui->lb_briefReminder->setText("краткое описание"); // TODO: чуть позже заполнить хэдэр из текста родителя
-    //Подготовка времени, текста и наград
+    //Подготовка времени и текста
     auto stageInfo = m_order->getStageInfo(id);
     ui->cb_time->setCurrentIndex(stageInfo.time);
     ui->te_stageText->setText(stageInfo.text);
     _setStageUiFinal(stageInfo.isFinal);
-    // TODO: СЕЙЧАС заполнить награды
+    //Подготовка наград
+    ui->lw_rewards->clear();
+    auto rewards = m_order->getStageRewards(id);
+    if (rewards != nullptr) {
+        for (auto reward : *rewards) {
+            on_pb_addReward_clicked();
+            auto wgt = qobject_cast<CRewardWidget *>(
+                    ui->lw_rewards->itemWidget(ui->lw_rewards->item(ui->lw_rewards->count() - 1)));
+            wgt->updateData(reward->type, reward->object, reward->count, reward->psyState);
+        }
+    }
+    _setRewardsVisible(!rewards->isEmpty());
     //Подготовка вариантов
     ui->lw_variants->clear();
     auto variantsList = m_order->getStageVariants(id);
@@ -351,6 +362,17 @@ void MainWindow::_setStageUiFinal(bool st)
         ui->groupStageDescription->setTitle("Описание этапа");
         ui->grp_stageReward->setMaximumHeight(135);
         m_order->setStageFinal(m_currentNode.id, false);
+    }
+}
+
+void MainWindow::_setRewardsVisible(bool st)
+{
+    if (st) {
+        ui->grp_stageReward->setVisible(true);
+        ui->pb_showRewardGroup->setText("Убрать результат(награду)");
+    } else {
+        ui->grp_stageReward->setVisible(false);
+        ui->pb_showRewardGroup->setText("Добавить результат(награду)");
     }
 }
 
@@ -539,13 +561,9 @@ void MainWindow::on_pb_setFinal_clicked()
 void MainWindow::on_pb_showRewardGroup_clicked()
 {
     if (ui->grp_stageReward->isVisible()) {
-        //Скрыть
-        ui->grp_stageReward->setVisible(false);
-        ui->pb_showRewardGroup->setText("Добавить результат(награду)");
+        _setRewardsVisible(false);
     } else {
-        //Отобразить
-        ui->grp_stageReward->setVisible(true);
-        ui->pb_showRewardGroup->setText("Убрать результат(награду)");
+        _setRewardsVisible(true);
     }
 }
 
