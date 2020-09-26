@@ -132,7 +132,6 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
 
 SMainSettings COrder::loadFromJSON(QString filename)
 {
-    // TODO: СЕЙЧАС проверить правильно ли массивы разбираю
     QFile jFile(filename);
     jFile.open(QFile::ReadOnly);
     auto jDoc = QJsonDocument().fromJson(jFile.readAll());
@@ -332,6 +331,23 @@ qint32 COrder::getParentId(qint32 id, ENodeType type)
     } else {
         auto it = m_stages.find(id);
         result = it.value()->getParentId();
+    }
+    return result;
+}
+
+QList<qint32> COrder::getChildrenId(qint32 id, ENodeType type)
+{
+    QList<qint32> result;
+    if (type == eOutcome) {
+        for (auto outcome : m_outcomes) {
+            if (outcome->getParentId() == id)
+                result.append(outcome->getId());
+        }
+    } else {
+        for (auto stage : m_outcomes) {
+            if (stage->getParentId() == id)
+                result.append(stage->getId());
+        }
     }
     return result;
 }

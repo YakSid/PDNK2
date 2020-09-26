@@ -58,6 +58,9 @@ public:
     //! Узнать id родителя по id и типу сына
     qint32 getParentId(qint32 id, ENodeType type);
 
+    // Функции для создания карты загруженного приказа из mw
+    QList<qint32> getChildrenId(qint32 id, ENodeType type);
+
 private:
     //! Пройтись по всем нодам указанного типа и вернуть минимальный незанятый id
     qint32 _makeMinId(ENodeType type);

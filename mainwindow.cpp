@@ -27,16 +27,18 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         // Редактировать старый приказ
         // TODO: потом-потом, отобразить список сохранённых приказов с разными метками в corderspage
         ui->setupUi(this);
-        // TODO: СЕЙЧАС не забыть добавить логику из on_pb_createQuest_clicked, а то ордер не инициализирован
         _prepareView();
+        _initOrder(false);
         _prepareMainSettings(m_order->loadFromJSON(m_startPage->jFilename));
+        _prepareMapAfterOrderLoad();
         break;
     }
 }
 
 MainWindow::~MainWindow()
 {
-    delete m_order;
+    if (m_order != nullptr)
+        delete m_order;
     delete ui;
 }
 
@@ -103,6 +105,8 @@ void MainWindow::slotCreateOutcomeClicked()
 
 void MainWindow::on_action_save_triggered()
 {
+    if (m_order == nullptr)
+        return;
     //Сохранение текущего нода
     if (m_currentNode.isOutcome()) {
         _saveCurrentOutcome();
@@ -157,7 +161,7 @@ void MainWindow::on_action_save_triggered()
 void MainWindow::on_action_saveAndExit_triggered()
 {
     on_action_save_triggered();
-    // TODO: чуть позже: и выйти
+    // TODO: чуть позже: оформить правильный выход
 }
 
 void MainWindow::updateWindow()
@@ -175,6 +179,10 @@ void MainWindow::_prepareView()
     ui->grp_stageReward->setVisible(false);
     ui->tabWidget->setCurrentIndex(0);
     ui->tabWidget->tabBar()->setTabEnabled(1, false);
+    m_hexCheckBoxes.clear();
+    m_welfareCheckBoxes.clear();
+    m_staffSpinBoxes.clear();
+    m_resSpinBoxes.clear();
     m_hexCheckBoxes.append({ ui->hex_poor_resident, ui->hex_rich_resident, ui->hex_works, ui->hex_commercial,
                              ui->hex_science, ui->hex_farmer, ui->hex_wild_land, ui->hex_police, ui->hex_church,
                              ui->hex_medicine, ui->hex_aristocracy, ui->hex_culture });
@@ -186,8 +194,40 @@ void MainWindow::_prepareView()
 
 void MainWindow::_prepareMainSettings(const SMainSettings &sett)
 {
-    // TODO: СЕЙЧАС заполнить настройки из полученных данных
-    // TODO: СЕЙЧАС здесь или где-то заполнить mapManager этапами и ауткомами ?ui подготовить для первого?
+    // Заполнение основных настроек
+    ui->cb_type->setCurrentIndex(sett.locationType);
+    ui->cb_department->setCurrentIndex(sett.department);
+    ui->cb_threatLevel->setCurrentIndex(sett.threatLevel);
+    ui->cb_awarenessIndex->setCurrentIndex(sett.departmentPO);
+    ui->cb_vampiresMentioned->setCurrentIndex(sett.areVampires);
+    ui->cb_innerType->setCurrentIndex(sett.innerOrderType);
+    for (int i = 0; i < m_hexCheckBoxes.count() && i < sett.hexagonType.count(); i++) {
+        m_hexCheckBoxes.at(i)->setChecked(sett.hexagonType.at(i));
+    }
+    for (int i = 0; i < m_welfareCheckBoxes.count() && i < sett.hexagonWelfare.count(); i++) {
+        m_welfareCheckBoxes.at(i)->setChecked(sett.hexagonWelfare.at(i));
+    }
+    for (int i = 0; i < m_staffSpinBoxes.count() && i < sett.staff.count(); i++) {
+        m_staffSpinBoxes.at(i)->setValue(sett.staff.at(i));
+    }
+    for (int i = 0; i < m_resSpinBoxes.count() && i < sett.resources.count(); i++) {
+        m_resSpinBoxes.at(i)->setValue(sett.resources.at(i));
+    }
+    for (auto req : sett.staffReq) {
+        _addTerm(req.count, req.req);
+    }
+    ui->te_order_text->setText(sett.text);
+    ui->te_need_to_discuss->setText(sett.needToDiscuss);
+}
+
+void MainWindow::_prepareMapAfterOrderLoad()
+{
+    // Заполнение нодов на карте TODO: СЕЙЧАС
+    m_mapManager->addFirstNode();
+
+    SCurrentNode currentNode;
+    currentNode.update(0, eOutcome);
+    _addLoadedNodeInMap(currentNode);
 }
 
 void MainWindow::_prepareOutcomeUi(qint32 id)
@@ -376,6 +416,56 @@ void MainWindow::_setRewardsVisible(bool st)
     }
 }
 
+void MainWindow::_addTerm(qint32 count, qint32 req)
+{
+    auto wgt = new QWidget;
+    auto font = wgt->font();
+    font.setPointSize(12);
+    font.setBold(false);
+    wgt->setFont(font);
+    auto layout = new QHBoxLayout;
+    auto spin = new QSpinBox;
+    spin->setObjectName("spin");
+    spin->setMinimum(1);
+    spin->setMaximumWidth(45);
+    layout->addWidget(spin);
+    auto cb = new QComboBox;
+    cb->setObjectName("cb");
+    cb->addItems(TRAITS);
+    layout->addWidget(cb);
+    wgt->setLayout(layout);
+    layout->setContentsMargins(15, 6, 6, 6);
+    layout->setSpacing(2);
+    wgt->setMaximumHeight(55);
+
+    auto item = new QListWidgetItem(ui->lw_terms);
+    item->setSizeHint(wgt->sizeHint());
+    ui->lw_terms->setItemWidget(item, wgt);
+
+    if (!ui->pb_deleteTerm->isEnabled()) {
+        ui->pb_deleteTerm->setEnabled(true);
+    }
+
+    if (count != -1 && req != -1) {
+        spin->setValue(count);
+        cb->setCurrentIndex(req);
+    }
+}
+
+void MainWindow::_addLoadedNodeInMap(SCurrentNode node)
+{
+    auto childrenId = m_order->getChildrenId(node.id, node.type);
+    if (!childrenId.isEmpty()) {
+        m_mapManager->setSelected(node.id, node.type);
+        for (auto child : childrenId) {
+            m_mapManager->addNode(child, node.anotherType());
+            SCurrentNode nextNode;
+            nextNode.update(child, node.anotherType());
+            _addLoadedNodeInMap(nextNode);
+        }
+    }
+}
+
 void MainWindow::on_cb_type_currentIndexChanged(int index)
 {
     switch (index) {
@@ -466,33 +556,7 @@ void MainWindow::on_lw_outcomes_currentItemChanged(QListWidgetItem *current, QLi
 
 void MainWindow::on_pb_addTerm_clicked()
 {
-    auto wgt = new QWidget;
-    auto font = wgt->font();
-    font.setPointSize(12);
-    font.setBold(false);
-    wgt->setFont(font);
-    auto layout = new QHBoxLayout;
-    auto spin = new QSpinBox;
-    spin->setObjectName("spin");
-    spin->setMinimum(1);
-    spin->setMaximumWidth(45);
-    layout->addWidget(spin);
-    auto cb = new QComboBox;
-    cb->setObjectName("cb");
-    cb->addItems(TRAITS);
-    layout->addWidget(cb);
-    wgt->setLayout(layout);
-    layout->setContentsMargins(15, 6, 6, 6);
-    layout->setSpacing(2);
-    wgt->setMaximumHeight(55);
-
-    auto item = new QListWidgetItem(ui->lw_terms);
-    item->setSizeHint(wgt->sizeHint());
-    ui->lw_terms->setItemWidget(item, wgt);
-
-    if (!ui->pb_deleteTerm->isEnabled()) {
-        ui->pb_deleteTerm->setEnabled(true);
-    }
+    _addTerm();
 }
 
 void MainWindow::on_pb_deleteTerm_clicked()
@@ -574,14 +638,7 @@ void MainWindow::on_pb_createQuest_clicked()
         m_mapManager->setSelected(0, eOutcome);
     } else {
         //Нажимается впервые, нужно создать квест
-        ui->tabWidget->tabBar()->setTabEnabled(1, true);
-        m_order = new COrder();
-        // TODO: чуть позже записать основные параметры квеста в сордер
-        m_mapManager = new CMapManager();
-        connect(m_mapManager, &CMapManager::s_newNodeSelected, this, &MainWindow::slotNewNodeSelected);
-        ui->gb_map->layout()->addWidget(m_mapManager);
-        m_currentNode.update(-1, eStage);
-        slotCreateOutcomeClicked();
+        _initOrder(true);
     }
     ui->tabWidget->setCurrentIndex(1);
 }
@@ -628,4 +685,16 @@ void MainWindow::on_lw_rewards_currentItemChanged(QListWidgetItem *current, QLis
     } else {
         ui->pb_deleteReward->setEnabled(true);
     }
+}
+
+void MainWindow::_initOrder(bool newOrder)
+{
+    ui->tabWidget->tabBar()->setTabEnabled(1, true);
+    m_order = new COrder();
+    m_mapManager = new CMapManager();
+    connect(m_mapManager, &CMapManager::s_newNodeSelected, this, &MainWindow::slotNewNodeSelected);
+    ui->gb_map->layout()->addWidget(m_mapManager);
+    m_currentNode.update(-1, eStage);
+    if (newOrder)
+        slotCreateOutcomeClicked();
 }

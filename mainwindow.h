@@ -31,6 +31,14 @@ struct SCurrentNode {
             return false;
         }
     }
+    ENodeType anotherType()
+    {
+        if (type == eOutcome)
+            return eStage;
+        else {
+            return eOutcome;
+        }
+    }
 };
 
 namespace Ui {
@@ -85,19 +93,22 @@ private slots:
     void on_lw_rewards_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
 private:
+    void _initOrder(bool newOrder);
     void _prepareView();
     //! Заполнить основные настройки загруженными данными
     void _prepareMainSettings(const SMainSettings &sett);
+    //! Подготовить карту приказа после загрузки готового
+    void _prepareMapAfterOrderLoad();
     //! Подготовить виджет исхода и заполнить данными из COrder
     void _prepareOutcomeUi(qint32 id);
     //! Подготовить виджет этапа и заполнить данными из COrder
     void _prepareStageUi(qint32 id);
 
+    // TODO: СЕЙЧАС автоматическое добавление проверки?, копирование нода, удаление, сделать подсветку линий или детей
+    // выбранного.
     void _changeGrpNumberStaffTitle();
     qint32 _createOutcome();
     qint32 _createStage();
-    // TODO: СЕЙЧАС автоматическое добавление проверки?, копирование нода, удаление, сделать подсветку линий или детей
-    // выбранного.
     void _saveCurrentOutcome();
     void _saveCurrentStage();
     //! Сохранить данные текущего ауткома, перейти к стейджу и подготовить его ui
@@ -107,13 +118,17 @@ private:
     // Изменение ui
     void _setStageUiFinal(bool st);
     void _setRewardsVisible(bool st);
+    //!Добавить условие для сотрудников (Если -1, то добавить новый)
+    void _addTerm(qint32 count = -1, qint32 req = -1);
+    //! Рекурсивная функция для заполнения карты из загруженного приказа
+    void _addLoadedNodeInMap(SCurrentNode node);
 
 private:
     Ui::MainWindow *ui;
     CDatabaseManager *m_databaseManager;
     CMapManager *m_mapManager;
     //! Текущий приказ
-    COrder *m_order;
+    COrder *m_order { nullptr };
     //! Текущий нод
     SCurrentNode m_currentNode;
     // Группы чекбоксов
