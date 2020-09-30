@@ -338,13 +338,14 @@ qint32 COrder::getParentId(qint32 id, ENodeType type)
 QList<qint32> COrder::getChildrenId(qint32 id, ENodeType type)
 {
     QList<qint32> result;
-    if (type == eOutcome) {
+    //Если ищем детей этапа, то среди исходов
+    if (type == eStage) {
         for (auto outcome : m_outcomes) {
             if (outcome->getParentId() == id)
                 result.append(outcome->getId());
         }
     } else {
-        for (auto stage : m_outcomes) {
+        for (auto stage : m_stages) {
             if (stage->getParentId() == id)
                 result.append(stage->getId());
         }

@@ -3,6 +3,8 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QMessageBox>
+#include <QtWidgets>
 #include "crewardwidget.h"
 #include "cconstants.h"
 
@@ -31,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         _initOrder(false);
         _prepareMainSettings(m_order->loadFromJSON(m_startPage->jFilename));
         _prepareMapAfterOrderLoad();
+        m_haveUnsavedChanges = false;
         break;
     }
 }
@@ -103,6 +106,18 @@ void MainWindow::slotCreateOutcomeClicked()
     }
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (m_haveUnsavedChanges) {
+        bool answer = _showQuestion("В проекте остались несохранённые изменения, хотите выйти без сохранения?");
+        if (answer) {
+            event->accept();
+        } else {
+            event->ignore();
+        }
+    }
+}
+
 void MainWindow::on_action_save_triggered()
 {
     if (m_order == nullptr)
@@ -155,13 +170,15 @@ void MainWindow::on_action_save_triggered()
         settings.needToDiscuss = ui->te_need_to_discuss->toPlainText();
 
         m_order->saveToJSON(jName, settings);
+        m_haveUnsavedChanges = false;
     }
 }
 
+// TODO: чуть позже отслеживать изменились ли mainSettings и сохранять их или предупреждать перед выходом
 void MainWindow::on_action_saveAndExit_triggered()
 {
     on_action_save_triggered();
-    // TODO: чуть позже: оформить правильный выход
+    qApp->quit();
 }
 
 void MainWindow::updateWindow()
@@ -173,6 +190,7 @@ void MainWindow::updateWindow()
 void MainWindow::_prepareView()
 {
     // TODO: чуть позже привести к начальному значению поля после сохранения или выбора другого приказа
+    setWindowTitle(PROGRAM_NAME);
     ui->cb_type->setCurrentIndex(0);
     ui->swgt_order_type->setCurrentWidget(ui->wgt_inner_order);
     ui->cb_time->addItems(TIME_PERIODS);
@@ -222,12 +240,14 @@ void MainWindow::_prepareMainSettings(const SMainSettings &sett)
 
 void MainWindow::_prepareMapAfterOrderLoad()
 {
-    // Заполнение нодов на карте TODO: СЕЙЧАС
     m_mapManager->addFirstNode();
 
     SCurrentNode currentNode;
     currentNode.update(0, eOutcome);
     _addLoadedNodeInMap(currentNode);
+
+    m_mapManager->setSelected(currentNode.id, currentNode.type);
+    _prepareOutcomeUi(currentNode.id);
 }
 
 void MainWindow::_prepareOutcomeUi(qint32 id)
@@ -290,6 +310,26 @@ void MainWindow::_prepareStageUi(qint32 id)
     }
 }
 
+void MainWindow::_showMessage(QString text, QString title)
+{
+    QMessageBox msg;
+    msg.setText(text);
+    msg.setWindowTitle(title);
+    msg.exec();
+}
+
+bool MainWindow::_showQuestion(QString text, QString textYes, QString textNo, QString title)
+{
+    bool result = false;
+    QMessageBox msgBox(QMessageBox::Question, title, text, QMessageBox::Yes | QMessageBox::No, this);
+    msgBox.setButtonText(QMessageBox::Yes, textYes);
+    msgBox.setButtonText(QMessageBox::No, textNo);
+    qint32 resMsg = msgBox.exec();
+    if (resMsg == QMessageBox::Yes)
+        result = true;
+    return result;
+}
+
 void MainWindow::_changeGrpNumberStaffTitle()
 {
     qint32 numberStaff = ui->spb_first_rank->value() + ui->spb_second_rank->value() + ui->spb_third_rank->value()
@@ -299,6 +339,7 @@ void MainWindow::_changeGrpNumberStaffTitle()
 
 qint32 MainWindow::_createOutcome()
 {
+    m_haveUnsavedChanges = true;
     //Невизуальная часть
     qint32 id = m_order->addOutcome(m_currentNode.id);
 
@@ -314,6 +355,7 @@ qint32 MainWindow::_createOutcome()
 
 qint32 MainWindow::_createStage()
 {
+    m_haveUnsavedChanges = true;
     //Невизуальная часть
     qint32 id = m_order->addStage(m_currentNode.id);
 
@@ -336,6 +378,7 @@ void MainWindow::_saveCurrentOutcome()
         checks.append(check);
     }
     m_order->updateOutcome(m_currentNode.id, checks);
+    m_haveUnsavedChanges = true;
 }
 
 void MainWindow::_saveCurrentStage()
@@ -363,6 +406,7 @@ void MainWindow::_saveCurrentStage()
     }
     m_order->updateStage(m_currentNode.id, variants, ui->cb_time->currentIndex(), ui->te_stageText->toPlainText(),
                          rewards);
+    m_haveUnsavedChanges = true;
 }
 
 void MainWindow::_saveOutcomeLoadStage(qint32 stageId)
@@ -403,6 +447,7 @@ void MainWindow::_setStageUiFinal(bool st)
         ui->grp_stageReward->setMaximumHeight(135);
         m_order->setStageFinal(m_currentNode.id, false);
     }
+    m_haveUnsavedChanges = true;
 }
 
 void MainWindow::_setRewardsVisible(bool st)
@@ -456,8 +501,8 @@ void MainWindow::_addLoadedNodeInMap(SCurrentNode node)
 {
     auto childrenId = m_order->getChildrenId(node.id, node.type);
     if (!childrenId.isEmpty()) {
-        m_mapManager->setSelected(node.id, node.type);
         for (auto child : childrenId) {
+            m_mapManager->setSelected(node.id, node.type);
             m_mapManager->addNode(child, node.anotherType());
             SCurrentNode nextNode;
             nextNode.update(child, node.anotherType());
@@ -516,10 +561,10 @@ void MainWindow::on_grp_req_resources_toggled(bool arg1)
 
 void MainWindow::on_cb_department_currentIndexChanged(int index)
 {
-    // TODO: позже: вписать значения и энумы сделать
+    // TODO: позже: вписать значения в константы и энумы сделать
 }
 
-// TODO: позже сделать алгоритм автоматического появления проверки "неудача", если есть одна из трёх первых и этой нет
+// TODO: СЕЙЧАС сделать алгоритм автоматического появления проверки "неудача", если есть одна из трёх первых и этой нет
 void MainWindow::on_pb_addCheck_clicked()
 {
     //Визуальная часть ui
@@ -636,6 +681,7 @@ void MainWindow::on_pb_createQuest_clicked()
     if (ui->tabWidget->tabBar()->isTabEnabled(1)) {
         //Создание квеста уже было произведено, нужно просто перейти на первый этап
         m_mapManager->setSelected(0, eOutcome);
+        _prepareOutcomeUi(0);
     } else {
         //Нажимается впервые, нужно создать квест
         _initOrder(true);

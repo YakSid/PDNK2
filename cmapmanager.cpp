@@ -39,6 +39,7 @@ void CMapManager::addFirstNode()
     m_nodes.insert(node->getId(), node);
 }
 
+// TODO: чуть позже: расширить отступы, чтобы не у краёв были ноды. И можно добавить перемещение мышью?
 // TODO: чуть позже улучшить алгоритм размещения нодов на мапе
 void CMapManager::addNode(qint32 id, ENodeType type)
 {
@@ -92,12 +93,14 @@ void CMapManager::setSelected(qint32 selectedId, ENodeType type)
     }
 
     auto it = m_nodes.find(selectedId);
-    it.value()->setSelected(true);
-    if (m_selectedNodeId != -1) {
-        it = m_nodes.find(m_selectedNodeId);
-        it.value()->setSelected(false);
+    if (!it.value()->isSelected()) {
+        it.value()->setSelected(true);
+        if (m_selectedNodeId != -1) {
+            it = m_nodes.find(m_selectedNodeId);
+            it.value()->setSelected(false);
+        }
+        m_selectedNodeId = selectedId;
     }
-    m_selectedNodeId = selectedId;
 }
 
 void CMapManager::slotNodeClicked(qint32 id)

@@ -14,6 +14,8 @@
  * Класс основного рабочего окна.
  */
 
+const QString PROGRAM_NAME = "ПДНК";
+
 struct SCurrentNode {
     qint32 id;
     ENodeType type;
@@ -64,6 +66,9 @@ public slots:
     void slotToOutcomeClicked(qint32 id);
     void slotCreateOutcomeClicked();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 private slots:
     void on_action_save_triggered();
     void on_action_saveAndExit_triggered();
@@ -85,6 +90,7 @@ private slots:
     void on_pb_deleteVariant_clicked();
     void on_pb_setFinal_clicked();
     void on_pb_showRewardGroup_clicked();
+    //! Переход к табу этапов
     void on_pb_createQuest_clicked();
     void on_pb_toParentStage_clicked();
     void on_pb_toParentOutcome_clicked();
@@ -104,7 +110,10 @@ private:
     //! Подготовить виджет этапа и заполнить данными из COrder
     void _prepareStageUi(qint32 id);
 
-    // TODO: СЕЙЧАС автоматическое добавление проверки?, копирование нода, удаление, сделать подсветку линий или детей
+    //Вывод сообщений на экран
+    void _showMessage(QString text, QString title = PROGRAM_NAME);
+    bool _showQuestion(QString text, QString textYes = "Да", QString textNo = "Нет", QString title = PROGRAM_NAME);
+    // TODO: СЕЙЧАС копирование нода, удаление, сделать подсветку линий или детей
     // выбранного.
     void _changeGrpNumberStaffTitle();
     qint32 _createOutcome();
@@ -136,6 +145,8 @@ private:
     QList<QCheckBox *> m_welfareCheckBoxes;
     QList<QSpinBox *> m_staffSpinBoxes;
     QList<QSpinBox *> m_resSpinBoxes;
+
+    bool m_haveUnsavedChanges { false };
 };
 
 #endif // MAINWINDOW_H
