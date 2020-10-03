@@ -16,7 +16,7 @@
 
 const QString PROGRAM_NAME = "ПДНК";
 
-struct SCurrentNode {
+struct SNode {
     qint32 id;
     ENodeType type;
 
@@ -42,7 +42,8 @@ struct SCurrentNode {
         }
     }
 };
-
+// TODO: СЕЙЧАС копирование нода, удаление, добавить tooltip для map нодов с кратким описанием.
+// TODO: позже Проверку "есть ли провал у каждой из первых трех"
 namespace Ui {
 class MainWindow;
 }
@@ -72,6 +73,7 @@ protected:
 private slots:
     void on_action_save_triggered();
     void on_action_saveAndExit_triggered();
+    void on_action_runTest_triggered();
     void updateWindow();
     void on_cb_type_currentIndexChanged(int index);
     void on_spb_first_rank_valueChanged(int arg1);
@@ -113,8 +115,7 @@ private:
     //Вывод сообщений на экран
     void _showMessage(QString text, QString title = PROGRAM_NAME);
     bool _showQuestion(QString text, QString textYes = "Да", QString textNo = "Нет", QString title = PROGRAM_NAME);
-    // TODO: СЕЙЧАС копирование нода, удаление, сделать подсветку линий или детей
-    // выбранного.
+
     void _changeGrpNumberStaffTitle();
     qint32 _createOutcome();
     qint32 _createStage();
@@ -130,7 +131,7 @@ private:
     //!Добавить условие для сотрудников (Если -1, то добавить новый)
     void _addTerm(qint32 count = -1, qint32 req = -1);
     //! Рекурсивная функция для заполнения карты из загруженного приказа
-    void _addLoadedNodeInMap(SCurrentNode node);
+    void _addLoadedNodeInMap(SNode node);
 
 private:
     Ui::MainWindow *ui;
@@ -139,7 +140,7 @@ private:
     //! Текущий приказ
     COrder *m_order { nullptr };
     //! Текущий нод
-    SCurrentNode m_currentNode;
+    SNode m_currentNode;
     // Группы чекбоксов
     QList<QCheckBox *> m_hexCheckBoxes;
     QList<QCheckBox *> m_welfareCheckBoxes;
@@ -147,6 +148,8 @@ private:
     QList<QSpinBox *> m_resSpinBoxes;
 
     bool m_haveUnsavedChanges { false };
+    //! Список нодов, которые после загрузки уже нарисованы на карте
+    QList<SNode *> m_paintedNodes; //Нужно, чтобы не нарисовать нод дважды, если у него два родителя (после копирования)
 };
 
 #endif // MAINWINDOW_H

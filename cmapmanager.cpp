@@ -9,6 +9,7 @@ CMapManager::CMapManager(QWidget *parent) : QGraphicsView(parent)
 {
     m_scene = new QGraphicsScene();
     setScene(m_scene);
+    // TODO: позже настроить ширину границ, чтобы антиалайзинг норм выглядел
     // setRenderHint(QPainter::Antialiasing);
     /*// NOTE: Координатная разметка
     QPen penGreen(Qt::green);
@@ -114,5 +115,7 @@ void CMapManager::slotNodeClicked(qint32 id)
             setSelected(id, eOutcome);
             emit s_newNodeSelected(id, eOutcome);
         }
+    } else {
+        //
     }
 }

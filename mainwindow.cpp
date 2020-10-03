@@ -181,9 +181,13 @@ void MainWindow::on_action_saveAndExit_triggered()
     qApp->quit();
 }
 
+void MainWindow::on_action_runTest_triggered()
+{
+    // TODO: позже: сделать механику тест прогона приказа
+}
+
 void MainWindow::updateWindow()
 {
-    //
     // TODO: позже: показывать условия приказа соответствующие типу вн или птр
 }
 
@@ -242,7 +246,7 @@ void MainWindow::_prepareMapAfterOrderLoad()
 {
     m_mapManager->addFirstNode();
 
-    SCurrentNode currentNode;
+    SNode currentNode;
     currentNode.update(0, eOutcome);
     _addLoadedNodeInMap(currentNode);
 
@@ -497,16 +501,31 @@ void MainWindow::_addTerm(qint32 count, qint32 req)
     }
 }
 
-void MainWindow::_addLoadedNodeInMap(SCurrentNode node)
+void MainWindow::_addLoadedNodeInMap(SNode node)
 {
     auto childrenId = m_order->getChildrenId(node.id, node.type);
     if (!childrenId.isEmpty()) {
         for (auto child : childrenId) {
-            m_mapManager->setSelected(node.id, node.type);
-            m_mapManager->addNode(child, node.anotherType());
-            SCurrentNode nextNode;
-            nextNode.update(child, node.anotherType());
-            _addLoadedNodeInMap(nextNode);
+            //Проверка не нарисован ли уже этот нод
+            bool needToPaint = true;
+            for (auto paintedNode : m_paintedNodes) {
+                if (paintedNode->type == node.anotherType() && paintedNode->id == child) {
+                    needToPaint = false;
+                }
+            }
+            //
+            if (needToPaint) {
+                m_mapManager->setSelected(node.id, node.type);
+                m_mapManager->addNode(child, node.anotherType());
+                //Добавление нода в список, чтобы не нарисовать его второй раз
+                auto paintedNode = new SNode;
+                paintedNode->update(child, node.anotherType());
+                m_paintedNodes.append(paintedNode);
+
+                SNode nextNode;
+                nextNode.update(child, node.anotherType());
+                _addLoadedNodeInMap(nextNode);
+            }
         }
     }
 }
@@ -564,7 +583,6 @@ void MainWindow::on_cb_department_currentIndexChanged(int index)
     // TODO: позже: вписать значения в константы и энумы сделать
 }
 
-// TODO: СЕЙЧАС сделать алгоритм автоматического появления проверки "неудача", если есть одна из трёх первых и этой нет
 void MainWindow::on_pb_addCheck_clicked()
 {
     //Визуальная часть ui

@@ -1845,7 +1845,20 @@ p, li { white-space: pre-wrap; }
             </font>
            </property>
            <property name="text">
-            <string>Предварительный просмотр</string>
+            <string>Тест просмотр</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_3">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>70</y>
+             <width>91</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
            </property>
           </widget>
          </widget>
@@ -1879,7 +1892,14 @@ p, li { white-space: pre-wrap; }
     <addaction name="action_statistics"/>
     <addaction name="action_help"/>
    </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Тест прогон</string>
+    </property>
+    <addaction name="action_runTest"/>
+   </widget>
    <addaction name="menu_saving"/>
+   <addaction name="menu"/>
    <addaction name="menu_extra"/>
   </widget>
   <action name="action_save">
@@ -1903,6 +1923,11 @@ p, li { white-space: pre-wrap; }
   <action name="action_help">
    <property name="text">
     <string>Справка</string>
+   </property>
+  </action>
+  <action name="action_runTest">
+   <property name="text">
+    <string>Запустить</string>
    </property>
   </action>
  </widget>

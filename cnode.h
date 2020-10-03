@@ -37,6 +37,7 @@ public:
 
 signals:
     void s_clicked(qint32 id);
+    void s_doubleClicked(qint32 id);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -53,6 +54,8 @@ private:
     //! Глубина/Уровень на котором он находится на карте/Количество поколений перед ним
     quint16 m_layer;
     bool m_selected { false };
+    //! Копируется прямо сейчас
+    bool m_copiyed { false };
 };
 
 #endif // CNODE_H
