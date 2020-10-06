@@ -23,13 +23,20 @@ void CNode::removeChild(qint32 childId)
 {
     m_children.removeOne(childId);
 }
-// TODO: СЕЙЧАС сделать отмену копирования и копирование
+
+void CNode::setCopied(bool st)
+{
+    m_copied = st;
+    update();
+}
+
 void CNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (m_selected) {
-        m_copiyed = true;
-        update();
-        emit s_doubleClicked(m_id);
+        if (m_id != 0) {
+            setCopied(true);
+            emit s_doubleClicked(m_id);
+        }
     } else {
         emit s_clicked(m_id);
     }
@@ -55,7 +62,7 @@ void CNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         brush.setColor(Qt::yellow);
     }
     QPen pen(Qt::black, 6);
-    if (m_copiyed) {
+    if (m_copied) {
         pen.setColor(Qt::darkGray);
     }
     painter->setPen(pen);

@@ -66,6 +66,10 @@ public slots:
     //! Нажата кнопка "К исходам..." на виджете варианта
     void slotToOutcomeClicked(qint32 id);
     void slotCreateOutcomeClicked();
+    //! Проверка можно ли копировать нод
+    void slotPrepareNodesCopy(qint32 copiedId, ENodeType copiedType, qint32 selectedId, ENodeType selectedType);
+    //! На карте нод кликнут дважды
+    void slotNodeDoubleClicked();
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -99,6 +103,8 @@ private slots:
     void on_pb_addReward_clicked();
     void on_pb_deleteReward_clicked();
     void on_lw_rewards_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+
+    void on_pb_cancelCopy_clicked();
 
 private:
     void _initOrder(bool newOrder);

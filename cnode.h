@@ -34,6 +34,7 @@ public:
     qint32 getChildrenCount() { return m_children.count(); }
     void setLayer(quint16 layer) { m_layer = layer; }
     quint16 getLayer() const { return m_layer; }
+    void setCopied(bool st);
 
 signals:
     void s_clicked(qint32 id);
@@ -55,7 +56,7 @@ private:
     quint16 m_layer;
     bool m_selected { false };
     //! Копируется прямо сейчас
-    bool m_copiyed { false };
+    bool m_copied { false };
 };
 
 #endif // CNODE_H

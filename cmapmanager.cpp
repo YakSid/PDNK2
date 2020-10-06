@@ -65,6 +65,7 @@ void CMapManager::addNode(qint32 id, ENodeType type)
     node->setParentId(parentId);
     node->setLayer(layer);
     connect(node, &CNode::s_clicked, this, &CMapManager::slotNodeClicked);
+    connect(node, &CNode::s_doubleClicked, this, &CMapManager::slotNodeDoubleClicked);
     m_scene->addItem(node);
     m_nodes.insert(id, node);
 
@@ -89,9 +90,7 @@ void CMapManager::setSelected(qint32 selectedId, ENodeType type)
     if (selectedId == -1)
         return;
 
-    if (type == eStage && selectedId < MILLION) {
-        selectedId += MILLION;
-    }
+    selectedId = _idFromMW(selectedId, type);
 
     auto it = m_nodes.find(selectedId);
     if (!it.value()->isSelected()) {
@@ -104,18 +103,73 @@ void CMapManager::setSelected(qint32 selectedId, ENodeType type)
     }
 }
 
+void CMapManager::canCopy(bool st)
+{
+    if (st) {
+        //Можно копировать
+        // TODO: СЕЙЧАС удалить копируемый, перечертить его линию к новому
+        qDebug() << "Произошло копирование";
+    } else {
+        //Нельзя копировать
+        auto it = m_nodes.find(m_copiedNodeId);
+        it.value()->setCopied(false);
+        qDebug() << "Копирование отменено";
+    }
+    m_copiedNodeId = -1;
+}
+
 void CMapManager::slotNodeClicked(qint32 id)
 {
     if (id != m_selectedNodeId) {
-        qDebug() << "Node" << id << "was clicked";
-        if (id > MILLION) {
+        // qDebug() << "Node" << id << "was selected";
+        //Если есть копируемый
+        if (m_copiedNodeId != -1) {
+            //Спросить можно ли копировать
+            emit s_askToCopy(_idToMW(m_copiedNodeId), _typeToMW(m_copiedNodeId), _idToMW(id), _typeToMW(id));
+        }
+        if (id >= MILLION) {
             setSelected(id, eStage);
             emit s_newNodeSelected(id - MILLION, eStage);
         } else {
             setSelected(id, eOutcome);
             emit s_newNodeSelected(id, eOutcome);
         }
+
     } else {
-        //
+        //если кликнули выбранный
+    }
+}
+
+void CMapManager::slotNodeDoubleClicked(qint32 id)
+{
+    qDebug() << "Копирование началось";
+    m_copiedNodeId = id;
+    emit s_nodeDoubleClicked();
+}
+
+qint32 CMapManager::_idFromMW(qint32 id, ENodeType type)
+{
+    if (type == eStage && id < MILLION) {
+        return id + MILLION;
+    } else {
+        return id;
+    }
+}
+
+ENodeType CMapManager::_typeToMW(qint32 id)
+{
+    if (id >= MILLION) {
+        return eStage;
+    } else {
+        return eOutcome;
+    }
+}
+
+qint32 CMapManager::_idToMW(qint32 id)
+{
+    if (id >= MILLION) {
+        return id - MILLION;
+    } else {
+        return id;
     }
 }

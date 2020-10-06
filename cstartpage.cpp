@@ -4,6 +4,13 @@
 CStartPage::CStartPage(QWidget *parent) : QDialog(parent), ui(new Ui::CStartPage)
 {
     ui->setupUi(this);
+    // TODO: позже сделать авторизацию
+    ui->pushButton_5->setVisible(false);
+
+    //Пока БД не используется
+    ui->pb_connectDatabase->setVisible(false);
+    ui->pic_connection->setVisible(false);
+    ui->lbl_connected->setVisible(false);
 }
 
 CStartPage::~CStartPage()

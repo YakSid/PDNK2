@@ -1829,7 +1829,7 @@ p, li { white-space: pre-wrap; }
           <property name="title">
            <string>Дополнительная панель</string>
           </property>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="pb_cancelCopy">
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -1845,20 +1845,26 @@ p, li { white-space: pre-wrap; }
             </font>
            </property>
            <property name="text">
-            <string>Тест просмотр</string>
+            <string>Отменить копирование</string>
            </property>
           </widget>
-          <widget class="QLabel" name="label_3">
+          <widget class="QLabel" name="lb_warningsLog">
            <property name="geometry">
             <rect>
              <x>10</x>
              <y>70</y>
-             <width>91</width>
-             <height>21</height>
+             <width>400</width>
+             <height>51</height>
             </rect>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>400</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
-            <string>TextLabel</string>
+            <string>Предупреждения</string>
            </property>
           </widget>
          </widget>

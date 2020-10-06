@@ -106,6 +106,35 @@ void MainWindow::slotCreateOutcomeClicked()
     }
 }
 
+void MainWindow::slotPrepareNodesCopy(qint32 copiedId, ENodeType copiedType, qint32 selectedId, ENodeType selectedType)
+{
+    Q_UNUSED(selectedId);
+
+    bool answer = true;
+    if (copiedType != selectedType) {
+        ui->lb_warningsLog->setText("Выбран несоответствующий тип этапа\nкопирование отменено");
+        answer = false;
+    }
+    if (!m_order->getChildrenId(copiedId, copiedType).isEmpty()) {
+        ui->lb_warningsLog->setText("У копируемого есть дети\nкопирование отменено");
+        answer = false;
+    }
+
+    if (answer) {
+        // TODO: СЕЙЧАС для отца копируемого назначить ребёнка - выбранный заместо копируемого(в ту же кнопку), удалить
+        // копируемый
+    }
+    // TODO: скрыть варнинг о копировании спустя время или по нажатию
+    ui->lb_warningsLog->setVisible(!answer);
+    ui->pb_cancelCopy->setVisible(false);
+    m_mapManager->canCopy(answer);
+}
+
+void MainWindow::slotNodeDoubleClicked()
+{
+    ui->pb_cancelCopy->setVisible(true);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (m_haveUnsavedChanges) {
@@ -212,6 +241,9 @@ void MainWindow::_prepareView()
                                  ui->hex_welfare_devastation, ui->hex_welfare_abandoned });
     m_staffSpinBoxes.append({ ui->spb_common, ui->spb_third_rank, ui->spb_second_rank, ui->spb_first_rank });
     m_resSpinBoxes.append({ ui->spb_money, ui->spb_first_res, ui->spb_second_res, ui->spb_third_res });
+    // TODO: сделать жёлтый цвет для предупреждений
+    ui->lb_warningsLog->setVisible(false);
+    ui->pb_cancelCopy->setVisible(false);
 }
 
 void MainWindow::_prepareMainSettings(const SMainSettings &sett)
@@ -757,8 +789,17 @@ void MainWindow::_initOrder(bool newOrder)
     m_order = new COrder();
     m_mapManager = new CMapManager();
     connect(m_mapManager, &CMapManager::s_newNodeSelected, this, &MainWindow::slotNewNodeSelected);
+    connect(m_mapManager, &CMapManager::s_askToCopy, this, &MainWindow::slotPrepareNodesCopy);
+    connect(m_mapManager, &CMapManager::s_nodeDoubleClicked, this, &MainWindow::slotNodeDoubleClicked);
     ui->gb_map->layout()->addWidget(m_mapManager);
     m_currentNode.update(-1, eStage);
     if (newOrder)
         slotCreateOutcomeClicked();
+}
+
+void MainWindow::on_pb_cancelCopy_clicked()
+{
+    ui->lb_warningsLog->setVisible(false);
+    ui->pb_cancelCopy->setVisible(false);
+    m_mapManager->canCopy(false);
 }
