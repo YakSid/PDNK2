@@ -23,6 +23,7 @@ public:
     ~CMapManager();
     void addFirstNode();
     void addNode(qint32 id, ENodeType type);
+    void deleteNode(qint32 id, ENodeType type);
     void setSelected(qint32 selectedId, ENodeType type);
     //! Обработка ответа на запрос о копировании
     void canCopy(bool st);
@@ -43,6 +44,9 @@ private:
     ENodeType _typeToMW(qint32 id);
     //! Перевод id в вид MW (Использовать только рядом с верхней функцией, а не то возможны просчёты)
     qint32 _idToMW(qint32 id);
+    //! Удалить нод с локальным id
+    void _deleteNode(qint32 localId);
+    void _addLine(QPointF parentPoint, ENodeType type, QPointF point);
 
 private:
     QGraphicsScene *m_scene;

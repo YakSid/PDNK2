@@ -28,7 +28,12 @@ CMapManager::CMapManager(QWidget *parent) : QGraphicsView(parent)
     //*/
 }
 
-CMapManager::~CMapManager() {}
+CMapManager::~CMapManager()
+{
+    for (auto it = m_nodes.begin(); it != m_nodes.end(); it++) {
+        delete it.value();
+    }
+}
 
 void CMapManager::addFirstNode()
 {
@@ -70,19 +75,12 @@ void CMapManager::addNode(qint32 id, ENodeType type)
     m_nodes.insert(id, node);
 
     //Добавление линии
-    QPen penBlack(Qt::black);
-    QLineF line;
-    if (type == eStage) {
-        //родитель - аутком
-        line.setP1(QPointF(parentNode->x() + NODE_SIZE / 2 + OWID, parentNode->y()));
-        line.setP2(QPointF(x - (NODE_SIZE + 10) / 2 - OWID, y));
-    } else {
-        //родитель - стейдж
-        line.setP1(QPointF(parentNode->x() + (NODE_SIZE + 10) / 2 + OWID, parentNode->y()));
-        line.setP2(QPointF(x - NODE_SIZE / 2 - OWID, y));
-    }
-    penBlack.setWidth(2);
-    m_scene->addLine(line, penBlack);
+    _addLine(QPointF(parentNode->x(), parentNode->y()), type, QPointF(x, y));
+}
+
+void CMapManager::deleteNode(qint32 id, ENodeType type)
+{
+    _deleteNode(_idFromMW(id, type));
 }
 
 void CMapManager::setSelected(qint32 selectedId, ENodeType type)
@@ -105,14 +103,20 @@ void CMapManager::setSelected(qint32 selectedId, ENodeType type)
 
 void CMapManager::canCopy(bool st)
 {
+    auto copiedNode = m_nodes.find(m_copiedNodeId).value();
     if (st) {
-        //Можно копировать
-        // TODO: СЕЙЧАС удалить копируемый, перечертить его линию к новому
+        //Можно копировать, рисуем новую линию и удаляем старую вместе с нодом
+        //Находим родителя копируемого и выбранный нод, чтобы найти их координаты для отрисовки линии
+        auto parentId = copiedNode->getParentId();
+        auto parentNode = m_nodes.find(parentId).value();
+        auto selectedNode = m_nodes.find(m_selectedNodeId).value();
+        _addLine(QPointF(parentNode->x(), parentNode->y()), _typeToMW(m_selectedNodeId),
+                 QPointF(selectedNode->x(), selectedNode->y()));
+        _deleteNode(m_copiedNodeId);
         qDebug() << "Произошло копирование";
     } else {
         //Нельзя копировать
-        auto it = m_nodes.find(m_copiedNodeId);
-        it.value()->setCopied(false);
+        copiedNode->setCopied(false);
         qDebug() << "Копирование отменено";
     }
     m_copiedNodeId = -1;
@@ -122,11 +126,6 @@ void CMapManager::slotNodeClicked(qint32 id)
 {
     if (id != m_selectedNodeId) {
         // qDebug() << "Node" << id << "was selected";
-        //Если есть копируемый
-        if (m_copiedNodeId != -1) {
-            //Спросить можно ли копировать
-            emit s_askToCopy(_idToMW(m_copiedNodeId), _typeToMW(m_copiedNodeId), _idToMW(id), _typeToMW(id));
-        }
         if (id >= MILLION) {
             setSelected(id, eStage);
             emit s_newNodeSelected(id - MILLION, eStage);
@@ -134,7 +133,11 @@ void CMapManager::slotNodeClicked(qint32 id)
             setSelected(id, eOutcome);
             emit s_newNodeSelected(id, eOutcome);
         }
-
+        //Если есть копируемый
+        if (m_copiedNodeId != -1) {
+            //Спросить можно ли копировать
+            emit s_askToCopy(_idToMW(m_copiedNodeId), _typeToMW(m_copiedNodeId), _idToMW(id), _typeToMW(id));
+        }
     } else {
         //если кликнули выбранный
     }
@@ -142,9 +145,14 @@ void CMapManager::slotNodeClicked(qint32 id)
 
 void CMapManager::slotNodeDoubleClicked(qint32 id)
 {
-    qDebug() << "Копирование началось";
-    m_copiedNodeId = id;
-    emit s_nodeDoubleClicked();
+    if (m_copiedNodeId == id) {
+        //!Специальный сигнал о самостоятельной отмене копирования
+        emit s_askToCopy(-1, eStage, 0, eStage);
+    } else {
+        qDebug() << "Копирование началось copiedNodeId" << id;
+        m_copiedNodeId = id;
+        emit s_nodeDoubleClicked();
+    }
 }
 
 qint32 CMapManager::_idFromMW(qint32 id, ENodeType type)
@@ -172,4 +180,48 @@ qint32 CMapManager::_idToMW(qint32 id)
     } else {
         return id;
     }
+}
+
+void CMapManager::_deleteNode(qint32 localId)
+{
+    auto it = m_nodes.find(localId);
+    // TODO: СЕЙЧАС хранить id линий в памяти нодов, чтобы удалять через id, а не координаты
+    // Поиск координаты точки, где линия родителя пересекатеся с нодом
+    qreal xLine, yLine;
+    if (_typeToMW(localId) == eOutcome) {
+        xLine = it.value()->x() - NODE_SIZE / 2 - OWID;
+    } else {
+        xLine = it.value()->x() - (NODE_SIZE + 10) / 2 - OWID;
+    }
+    yLine = it.value()->y();
+    // Поиск и удаление линии
+    auto line = m_scene->itemAt(xLine, yLine, QTransform());
+    if (line != nullptr) {
+        m_scene->removeItem(line);
+        m_scene->update();
+    } else {
+        qDebug() << "Линия не найдена!";
+    }
+
+    m_scene->removeItem(it.value());
+    delete it.value();
+    m_nodes.remove(localId);
+    m_scene->update();
+}
+
+void CMapManager::_addLine(QPointF parentPoint, ENodeType type, QPointF point)
+{
+    QPen penBlack(Qt::black);
+    QLineF line;
+    if (type == eStage) {
+        //родитель - аутком
+        line.setP1(QPointF(parentPoint.x() + NODE_SIZE / 2 + OWID, parentPoint.y()));
+        line.setP2(QPointF(point.x() - (NODE_SIZE + 10) / 2 - OWID, point.y()));
+    } else {
+        //родитель - стейдж
+        line.setP1(QPointF(parentPoint.x() + (NODE_SIZE + 10) / 2 + OWID, parentPoint.y()));
+        line.setP2(QPointF(point.x() - NODE_SIZE / 2 - OWID, point.y()));
+    }
+    penBlack.setWidth(2);
+    m_scene->addLine(line, penBlack);
 }

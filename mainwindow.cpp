@@ -108,28 +108,58 @@ void MainWindow::slotCreateOutcomeClicked()
 
 void MainWindow::slotPrepareNodesCopy(qint32 copiedId, ENodeType copiedType, qint32 selectedId, ENodeType selectedType)
 {
-    Q_UNUSED(selectedId);
-
     bool answer = true;
     if (copiedType != selectedType) {
         ui->lb_warningsLog->setText("Выбран несоответствующий тип этапа\nкопирование отменено");
         answer = false;
     }
-    if (!m_order->getChildrenId(copiedId, copiedType).isEmpty()) {
+    if (copiedId == -1) {
+        //Заскриптованная ситуация: пользователь сам отменил копирование
+        ui->lb_warningsLog->setText("");
+        answer = false;
+    } else if (!m_order->getChildrenId(copiedId, copiedType).isEmpty()) {
         ui->lb_warningsLog->setText("У копируемого есть дети\nкопирование отменено");
         answer = false;
     }
 
     if (answer) {
-        // TODO: СЕЙЧАС для отца копируемого назначить ребёнка - выбранный заместо копируемого(в ту же кнопку), удалить
-        // копируемый
+        // TODO: СЕЙЧАС удалить копируемый и при проверить рисуются ли линии к копированным при загрузке
+        // TODO: СЕЙЧАС также переписывать дляв сех родиетлей если их несколько
+        //Замена адреса нода копируемого на адрес выбранного в кнопке родителя копируемого
+        auto copiedParentId = m_order->getParentId(copiedId, copiedType);
+        if (copiedType == eOutcome) {
+            //родитель - стейдж
+            auto variants = *m_order->getStageVariants(copiedParentId);
+            for (auto variant : variants) {
+                if (variant->outcomeId == copiedId) {
+                    variant->outcomeId = selectedId;
+                    break;
+                }
+            }
+        } else {
+            //родитель - аутком
+            auto checks = *m_order->getOutcomeChecks(copiedParentId);
+            bool breakAll = false; // выйти из всех циклов
+            for (auto check : checks) {
+                for (auto it = check->stagesId.begin(); it != check->stagesId.end(); it++) {
+                    if (it.value() == copiedId) {
+                        it.value() = selectedId;
+                        breakAll = true;
+                        break;
+                    }
+                }
+                if (breakAll) {
+                    break;
+                }
+            }
+        }
     }
     // TODO: скрыть варнинг о копировании спустя время или по нажатию
     ui->lb_warningsLog->setVisible(!answer);
     ui->pb_cancelCopy->setVisible(false);
     m_mapManager->canCopy(answer);
 }
-
+// TODO: позже проверить нет ли ошибки если нажать Х при выборе загружаемого приказа
 void MainWindow::slotNodeDoubleClicked()
 {
     ui->pb_cancelCopy->setVisible(true);

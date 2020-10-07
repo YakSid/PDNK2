@@ -30,6 +30,7 @@ public:
     qint32 getId() const { return m_id; }
     void setParentId(qint32 parentId) { m_parentId = parentId; }
     qint32 getParentId() const { return m_parentId; }
+    //! NOTE: Осторожно, константность не работает, но я этим пользуюсь при копировании
     const QList<SCheck *> *getChecks() { return &m_checks; }
     void update(const QList<SCheck *> &checks) { m_checks = checks; }
 
