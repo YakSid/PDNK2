@@ -27,8 +27,10 @@ public:
     void setSelected(bool selected);
     bool isSelected() const { return m_selected; }
     qint32 getId() const { return m_id; }
-    void setParentId(qint32 parentId) { m_parentId = parentId; }
-    qint32 getParentId() const { return m_parentId; }
+    void setMainParentId(qint32 mainParentId) { m_mainParentId = mainParentId; }
+    qint32 getMainParentId() const { return m_mainParentId; }
+    void addAdditionalParent(qint32 parentId) { m_additionalParentsId.append(parentId); }
+    QList<qint32> getAdditionalParentsId() const { return m_additionalParentsId; }
     void addChild(qint32 childId) { m_children.append(childId); }
     void removeChild(qint32 childId);
     qint32 getChildrenCount() { return m_children.count(); }
@@ -50,7 +52,8 @@ private:
 private:
     qint32 m_id;
     ENodeType m_type;
-    qint32 m_parentId;
+    qint32 m_mainParentId;
+    QList<qint32> m_additionalParentsId;
     QList<qint32> m_children;
     //! Глубина/Уровень на котором он находится на карте/Количество поколений перед ним
     quint16 m_layer;

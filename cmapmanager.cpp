@@ -38,7 +38,7 @@ CMapManager::~CMapManager()
 void CMapManager::addFirstNode()
 {
     auto node = new CNode(0, eOutcome, 0, 0);
-    node->setParentId(-1);
+    node->setMainParentId(-1);
     node->setLayer(0);
     connect(node, &CNode::s_clicked, this, &CMapManager::slotNodeClicked);
     m_scene->addItem(node);
@@ -46,7 +46,7 @@ void CMapManager::addFirstNode()
 }
 
 // TODO: чуть позже: расширить отступы, чтобы не у краёв были ноды. И можно добавить перемещение мышью?
-// TODO: чуть позже улучшить алгоритм размещения нодов на мапе
+// TODO: позже улучшить алгоритм размещения нодов на мапе
 void CMapManager::addNode(qint32 id, ENodeType type)
 {
     auto parentId = m_selectedNodeId;
@@ -67,7 +67,7 @@ void CMapManager::addNode(qint32 id, ENodeType type)
 
     //Создание нода
     auto node = new CNode(id, type, x, y);
-    node->setParentId(parentId);
+    node->setMainParentId(parentId);
     node->setLayer(layer);
     connect(node, &CNode::s_clicked, this, &CMapManager::slotNodeClicked);
     connect(node, &CNode::s_doubleClicked, this, &CMapManager::slotNodeDoubleClicked);
@@ -107,9 +107,23 @@ void CMapManager::canCopy(bool st)
     if (st) {
         //Можно копировать, рисуем новую линию и удаляем старую вместе с нодом
         //Находим родителя копируемого и выбранный нод, чтобы найти их координаты для отрисовки линии
-        auto parentId = copiedNode->getParentId();
-        auto parentNode = m_nodes.find(parentId).value();
         auto selectedNode = m_nodes.find(m_selectedNodeId).value();
+        //Замена id для доп.родителей и перерисовка их линий
+        auto additionalParents = copiedNode->getAdditionalParentsId();
+        for (auto additionalParent : additionalParents) {
+            auto additionalParentNode = m_nodes.find(additionalParent).value();
+            additionalParentNode->removeChild(copiedNode->getId());
+            additionalParentNode->addChild(selectedNode->getId());
+            selectedNode->addAdditionalParent(additionalParentNode->getId());
+            _addLine(QPointF(additionalParentNode->x(), additionalParentNode->y()), _typeToMW(m_selectedNodeId),
+                     QPointF(selectedNode->x(), selectedNode->y()));
+        }
+        //Копирование основного нода
+        auto parentId = copiedNode->getMainParentId();
+        auto parentNode = m_nodes.find(parentId).value();
+        parentNode->removeChild(copiedNode->getId());
+        parentNode->addChild(selectedNode->getId());
+        selectedNode->addAdditionalParent(parentId);
         _addLine(QPointF(parentNode->x(), parentNode->y()), _typeToMW(m_selectedNodeId),
                  QPointF(selectedNode->x(), selectedNode->y()));
         _deleteNode(m_copiedNodeId);
@@ -120,6 +134,21 @@ void CMapManager::canCopy(bool st)
         qDebug() << "Копирование отменено";
     }
     m_copiedNodeId = -1;
+}
+
+void CMapManager::addAdditionalParentToNode(qint32 nodeId, ENodeType nodeType, qint32 parentId, ENodeType parentType)
+{
+    nodeId = _idFromMW(nodeId, nodeType);
+    parentId = _idFromMW(parentId, parentType);
+
+    auto it = m_nodes.find(nodeId);
+    if (it != m_nodes.end()) {
+        it.value()->addAdditionalParent(parentId);
+    }
+    //Рисуем линию
+    auto node = m_nodes.find(nodeId).value();
+    auto parentNode = m_nodes.find(parentId).value();
+    _addLine(QPointF(parentNode->x(), parentNode->y()), nodeType, QPointF(node->x(), node->y()));
 }
 
 void CMapManager::slotNodeClicked(qint32 id)

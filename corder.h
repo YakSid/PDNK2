@@ -55,8 +55,8 @@ public:
     const QList<SReward *> *getStageRewards(qint32 id);
     void setStageFinal(qint32 id, bool final);
     const QList<SVariant *> *getStageVariants(qint32 stageId);
-    //! Узнать id родителя по id и типу сына
-    qint32 getParentId(qint32 id, ENodeType type);
+    //! Узнать id основного родителя по id и типу сына
+    qint32 getMainParentId(qint32 id, ENodeType type);
 
     // Функции для создания карты загруженного приказа из mw
     QList<qint32> getChildrenId(qint32 id, ENodeType type);

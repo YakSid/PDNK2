@@ -61,7 +61,7 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
     for (auto outcome : m_outcomes) {
         auto jOutcome = new QJsonObject();
         jOutcome->insert("id", outcome->getId());
-        jOutcome->insert("parentId", outcome->getParentId());
+        jOutcome->insert("mainParentId", outcome->getMainParentId());
         auto checks = *outcome->getChecks();
         QJsonArray jChecks;
         for (auto check : checks) {
@@ -92,7 +92,7 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
     for (auto stage : m_stages) {
         auto jStage = new QJsonObject();
         jStage->insert("id", stage->getId());
-        jStage->insert("parentId", stage->getParentId());
+        jStage->insert("mainParentId", stage->getMainParentId());
         jStage->insert("time", stage->getTime());
         jStage->insert("text", stage->getText());
         jStage->insert("final", stage->isFinal());
@@ -183,7 +183,7 @@ SMainSettings COrder::loadFromJSON(QString filename)
     for (auto jRefOutcome : jOutcomes) {
         auto jOutcome = jRefOutcome.toObject();
         auto outcome = new COutcome(jOutcome["id"].toInt());
-        outcome->setParentId(jOutcome["parentId"].toInt());
+        outcome->setMainParentId(jOutcome["mainParentId"].toInt());
         QList<SCheck *> checks;
         auto jChecks = jOutcome["checks"].toArray();
         for (auto jRefCheck : jChecks) {
@@ -216,7 +216,7 @@ SMainSettings COrder::loadFromJSON(QString filename)
     for (auto jRefStage : jStages) {
         auto jStage = jRefStage.toObject();
         auto stage = new CStage(jStage["id"].toInt());
-        stage->setParentId(jStage["parentId"].toInt());
+        stage->setMainParentId(jStage["mainParentId"].toInt());
         stage->setTime(jStage["time"].toInt());
         stage->setText(jStage["text"].toString());
         stage->setFinal(jStage["final"].toBool());
@@ -253,7 +253,7 @@ SMainSettings COrder::loadFromJSON(QString filename)
 qint32 COrder::addOutcome(qint32 parentId)
 {
     auto outcome = new COutcome(_makeMinId(eOutcome));
-    outcome->setParentId(parentId);
+    outcome->setMainParentId(parentId);
     m_outcomes.insert(outcome->getId(), outcome);
     return outcome->getId();
 }
@@ -276,7 +276,7 @@ const QList<SCheck *> *COrder::getOutcomeChecks(qint32 outcomeId)
 qint32 COrder::addStage(qint32 parentId)
 {
     auto stage = new CStage(_makeMinId(eStage));
-    stage->setParentId(parentId);
+    stage->setMainParentId(parentId);
     m_stages.insert(stage->getId(), stage);
     return stage->getId();
 }
@@ -322,15 +322,15 @@ const QList<SVariant *> *COrder::getStageVariants(qint32 stageId)
     return nullptr;
 }
 
-qint32 COrder::getParentId(qint32 id, ENodeType type)
+qint32 COrder::getMainParentId(qint32 id, ENodeType type)
 {
     qint32 result;
     if (type == eOutcome) {
         auto it = m_outcomes.find(id);
-        result = it.value()->getParentId();
+        result = it.value()->getMainParentId();
     } else {
         auto it = m_stages.find(id);
-        result = it.value()->getParentId();
+        result = it.value()->getMainParentId();
     }
     return result;
 }
@@ -341,12 +341,13 @@ QList<qint32> COrder::getChildrenId(qint32 id, ENodeType type)
     //Если ищем детей этапа, то среди исходов
     if (type == eStage) {
         for (auto outcome : m_outcomes) {
-            if (outcome->getParentId() == id)
+            if (outcome->getMainParentId() == id)
+                // TODO: СЕЙЧАС возвращать детей где является доп.родителем
                 result.append(outcome->getId());
         }
     } else {
         for (auto stage : m_stages) {
-            if (stage->getParentId() == id)
+            if (stage->getMainParentId() == id)
                 result.append(stage->getId());
         }
     }

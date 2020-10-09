@@ -38,8 +38,9 @@ public:
     CStage(qint32 id) { m_id = id; }
     ~CStage();
     qint32 getId() const { return m_id; }
-    void setParentId(qint32 parentId) { m_parentId = parentId; }
-    qint32 getParentId() const { return m_parentId; }
+    void setMainParentId(qint32 mainParentId) { m_mainParentId = mainParentId; }
+    qint32 getMainParentId() const { return m_mainParentId; }
+    QList<qint32> getAdditionalParentsId() const { return m_additionalParentsId; }
     //! NOTE: Осторожно, константность не работает, но я этим пользуюсь при копировании
     const QList<SVariant *> *getVariants() { return &m_variants; }
     void setVariants(const QList<SVariant *> &variants) { m_variants = variants; }
@@ -55,10 +56,11 @@ public:
     void setRewards(const QList<SReward *> &rewards) { m_rewards = rewards; }
     void setFinal(bool final) { m_final = final; }
     bool isFinal() const { return m_final; }
-
+    // TODO: СЕЙЧАС при удалении mainParent делать additionalParent мэйном если нет других
 private:
     qint32 m_id;
-    qint32 m_parentId;
+    qint32 m_mainParentId;
+    QList<qint32> m_additionalParentsId;
     //Данные этапа
     qint32 m_time;
     QString m_text;

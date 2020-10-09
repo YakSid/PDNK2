@@ -28,15 +28,17 @@ public:
     COutcome(qint32 id) { m_id = id; }
     ~COutcome();
     qint32 getId() const { return m_id; }
-    void setParentId(qint32 parentId) { m_parentId = parentId; }
-    qint32 getParentId() const { return m_parentId; }
+    void setMainParentId(qint32 mainParentId) { m_mainParentId = mainParentId; }
+    qint32 getMainParentId() const { return m_mainParentId; }
+    QList<qint32> getAdditionalParentsId() const { return m_additionalParentsId; }
     //! NOTE: Осторожно, константность не работает, но я этим пользуюсь при копировании
     const QList<SCheck *> *getChecks() { return &m_checks; }
     void update(const QList<SCheck *> &checks) { m_checks = checks; }
 
 private:
     qint32 m_id;
-    qint32 m_parentId;
+    qint32 m_mainParentId;
+    QList<qint32> m_additionalParentsId;
     //! Список всех проверок в этом исходе
     QList<SCheck *> m_checks;
 };

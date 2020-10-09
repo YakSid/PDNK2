@@ -42,8 +42,7 @@ struct SNode {
         }
     }
 };
-// TODO: СЕЙЧАС копирование нода(если произошло копирование то m_haveUnsavedChanges обновить), удаление, добавить
-// tooltip для map нодов с кратким описанием.
+// TODO: СЕЙЧАС копирование нода, удаление, добавить tooltip для map нодов с кратким описанием.
 
 // TODO: позже Проверку "есть ли провал у каждой из первых трех"
 namespace Ui {
@@ -105,7 +104,6 @@ private slots:
     void on_pb_addReward_clicked();
     void on_pb_deleteReward_clicked();
     void on_lw_rewards_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
-
     void on_pb_cancelCopy_clicked();
 
 private:

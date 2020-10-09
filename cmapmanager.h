@@ -15,6 +15,8 @@
 #include <QGraphicsScene>
 #include "cnode.h"
 
+// NOTE: localId - используются внутри cnode и mapManager - это для единения между стейджами и ауткомами
+
 class CMapManager : public QGraphicsView
 {
     Q_OBJECT
@@ -27,6 +29,8 @@ public:
     void setSelected(qint32 selectedId, ENodeType type);
     //! Обработка ответа на запрос о копировании
     void canCopy(bool st);
+    //! Добавить ноду дополнительного родителя и нарисовать линию
+    void addAdditionalParentToNode(qint32 nodeId, ENodeType nodeType, qint32 parentId, ENodeType parentType);
 
 signals:
     void s_newNodeSelected(qint32 id, ENodeType type);

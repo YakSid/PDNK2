@@ -123,10 +123,11 @@ void MainWindow::slotPrepareNodesCopy(qint32 copiedId, ENodeType copiedType, qin
     }
 
     if (answer) {
-        // TODO: СЕЙЧАС удалить копируемый и при проверить рисуются ли линии к копированным при загрузке
-        // TODO: СЕЙЧАС также переписывать дляв сех родиетлей если их несколько
+        // TODO: СЕЙЧАС удалить копируемый и проверить рисуются ли линии к копированным при загрузке
+        // TODO: СЕЙЧАС также переписывать номера нодов для всех родиетлей если их несколько (повторить то же чот для
+        // map)
         //Замена адреса нода копируемого на адрес выбранного в кнопке родителя копируемого
-        auto copiedParentId = m_order->getParentId(copiedId, copiedType);
+        auto copiedParentId = m_order->getMainParentId(copiedId, copiedType);
         if (copiedType == eOutcome) {
             //родитель - стейдж
             auto variants = *m_order->getStageVariants(copiedParentId);
@@ -153,6 +154,7 @@ void MainWindow::slotPrepareNodesCopy(qint32 copiedId, ENodeType copiedType, qin
                 }
             }
         }
+        m_haveUnsavedChanges = true;
     }
     // TODO: скрыть варнинг о копировании спустя время или по нажатию
     ui->lb_warningsLog->setVisible(!answer);
@@ -449,6 +451,7 @@ void MainWindow::_saveCurrentOutcome()
 
 void MainWindow::_saveCurrentStage()
 {
+    // TODO: позже позже проверить утечки памяти, не быстрее ли будет проверять были ли изменения?
     QList<SReward *> rewards;
     for (int i = 0; i < ui->lw_rewards->count(); i++) {
         auto wgt = qobject_cast<CRewardWidget *>(ui->lw_rewards->itemWidget(ui->lw_rewards->item(i)));
@@ -587,6 +590,8 @@ void MainWindow::_addLoadedNodeInMap(SNode node)
                 SNode nextNode;
                 nextNode.update(child, node.anotherType());
                 _addLoadedNodeInMap(nextNode);
+            } else {
+                m_mapManager->addAdditionalParentToNode(child, node.anotherType(), node.id, node.type);
             }
         }
     }
@@ -656,6 +661,7 @@ void MainWindow::on_pb_addCheck_clicked()
     wgtSize.setHeight(121);
     item->setSizeHint(wgtSize);
     ui->lw_outcomes->setItemWidget(item, wgt);
+    m_haveUnsavedChanges = true;
 }
 
 void MainWindow::on_pb_deleteCheck_clicked()
@@ -667,6 +673,8 @@ void MainWindow::on_pb_deleteCheck_clicked()
     ui->lw_outcomes->takeItem(ui->lw_outcomes->currentRow());
 
     //Визуальная часть map
+
+    m_haveUnsavedChanges = true;
 }
 
 void MainWindow::on_lw_outcomes_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
@@ -722,6 +730,8 @@ void MainWindow::on_pb_addVariant_clicked()
     if (!ui->pb_deleteVariant->isEnabled()) {
         ui->pb_deleteVariant->setEnabled(true);
     }
+
+    m_haveUnsavedChanges = true;
 }
 
 void MainWindow::on_pb_deleteVariant_clicked()
@@ -736,6 +746,8 @@ void MainWindow::on_pb_deleteVariant_clicked()
     if (!ui->lw_variants->count()) {
         ui->pb_deleteVariant->setEnabled(false);
     }
+
+    m_haveUnsavedChanges = true;
 }
 
 void MainWindow::on_pb_setFinal_clicked()
@@ -771,13 +783,13 @@ void MainWindow::on_pb_createQuest_clicked()
 
 void MainWindow::on_pb_toParentStage_clicked()
 {
-    auto parentId = m_order->getParentId(m_currentNode.id, m_currentNode.type);
+    auto parentId = m_order->getMainParentId(m_currentNode.id, m_currentNode.type);
     _saveOutcomeLoadStage(parentId);
 }
 
 void MainWindow::on_pb_toParentOutcome_clicked()
 {
-    auto parentId = m_order->getParentId(m_currentNode.id, m_currentNode.type);
+    auto parentId = m_order->getMainParentId(m_currentNode.id, m_currentNode.type);
     _saveStageLoadOutcome(parentId);
 }
 
@@ -787,6 +799,8 @@ void MainWindow::on_pb_addReward_clicked()
     auto item = new QListWidgetItem(ui->lw_rewards);
     item->setSizeHint(wgt->sizeHint());
     ui->lw_rewards->setItemWidget(item, wgt);
+
+    m_haveUnsavedChanges = true;
 }
 
 void MainWindow::on_pb_deleteReward_clicked()
@@ -801,6 +815,8 @@ void MainWindow::on_pb_deleteReward_clicked()
     if (!ui->lw_rewards->count()) {
         ui->pb_deleteReward->setEnabled(false);
     }
+
+    m_haveUnsavedChanges = true;
 }
 
 void MainWindow::on_lw_rewards_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
