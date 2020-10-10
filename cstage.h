@@ -40,8 +40,9 @@ public:
     qint32 getId() const { return m_id; }
     void setMainParentId(qint32 mainParentId) { m_mainParentId = mainParentId; }
     qint32 getMainParentId() const { return m_mainParentId; }
+    void addAdditionalParent(qint32 additionaParentId) { m_additionalParentsId.append(additionaParentId); }
     QList<qint32> getAdditionalParentsId() const { return m_additionalParentsId; }
-    //! NOTE: Осторожно, константность не работает, но я этим пользуюсь при копировании
+    //! NOTE: Осторожно, константность не работает, но я этим пользуюсь при копировании и удалении
     const QList<SVariant *> *getVariants() { return &m_variants; }
     void setVariants(const QList<SVariant *> &variants) { m_variants = variants; }
     void updateInfo(const QList<SVariant *> &variants, qint32 time, QString text, const QList<SReward *> rewards);
@@ -56,7 +57,7 @@ public:
     void setRewards(const QList<SReward *> &rewards) { m_rewards = rewards; }
     void setFinal(bool final) { m_final = final; }
     bool isFinal() const { return m_final; }
-    // TODO: СЕЙЧАС при удалении mainParent делать additionalParent мэйном если нет других
+
 private:
     qint32 m_id;
     qint32 m_mainParentId;

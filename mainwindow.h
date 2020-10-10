@@ -5,6 +5,7 @@
 #include <QListWidgetItem>
 #include <QCheckBox>
 #include <QSpinBox>
+#include <QTimer>
 #include "cdatabasemanager.h"
 #include "cmapmanager.h"
 #include "cstartpage.h"
@@ -42,9 +43,11 @@ struct SNode {
         }
     }
 };
-// TODO: СЕЙЧАС копирование нода, удаление, добавить tooltip для map нодов с кратким описанием.
+// TODO: MAIN id линий для удаления и создания?в память?, удаление(удаления детей нет пока, блокируется в
+// копировании), при удалении mainParent делать additionalParent мэйном если нет других
 
 // TODO: позже Проверку "есть ли провал у каждой из первых трех"
+// TODO: позже tooltip id заменить на какой-нибудь текст?
 namespace Ui {
 class MainWindow;
 }
@@ -105,6 +108,7 @@ private slots:
     void on_pb_deleteReward_clicked();
     void on_lw_rewards_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
     void on_pb_cancelCopy_clicked();
+    void _hideWarning();
 
 private:
     void _initOrder(bool newOrder);
@@ -156,6 +160,7 @@ private:
     bool m_haveUnsavedChanges { false };
     //! Список нодов, которые после загрузки уже нарисованы на карте
     QList<SNode *> m_paintedNodes; //Нужно, чтобы не нарисовать нод дважды, если у него два родителя (после копирования)
+    QTimer *m_warningTimer;
 };
 
 #endif // MAINWINDOW_H

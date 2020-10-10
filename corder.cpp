@@ -11,7 +11,13 @@ COrder::COrder()
     // TODO: Заполнить стартовые параметры?
 }
 
-COrder::~COrder() {}
+COrder::~COrder()
+{
+    qDeleteAll(m_outcomes);
+    m_outcomes.clear();
+    qDeleteAll(m_stages);
+    m_stages.clear();
+}
 
 void COrder::saveToJSON(QString filename, const SMainSettings &settings)
 {
@@ -62,6 +68,11 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
         auto jOutcome = new QJsonObject();
         jOutcome->insert("id", outcome->getId());
         jOutcome->insert("mainParentId", outcome->getMainParentId());
+        QJsonArray jAdditionalParents;
+        for (auto additionalParent : outcome->getAdditionalParentsId()) {
+            jAdditionalParents.append(additionalParent);
+        }
+        jOutcome->insert("additionalParents", jAdditionalParents);
         auto checks = *outcome->getChecks();
         QJsonArray jChecks;
         for (auto check : checks) {
@@ -93,6 +104,11 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
         auto jStage = new QJsonObject();
         jStage->insert("id", stage->getId());
         jStage->insert("mainParentId", stage->getMainParentId());
+        QJsonArray jAdditionalParents;
+        for (auto additionalParent : stage->getAdditionalParentsId()) {
+            jAdditionalParents.append(additionalParent);
+        }
+        jStage->insert("additionalParents", jAdditionalParents);
         jStage->insert("time", stage->getTime());
         jStage->insert("text", stage->getText());
         jStage->insert("final", stage->isFinal());
@@ -184,6 +200,10 @@ SMainSettings COrder::loadFromJSON(QString filename)
         auto jOutcome = jRefOutcome.toObject();
         auto outcome = new COutcome(jOutcome["id"].toInt());
         outcome->setMainParentId(jOutcome["mainParentId"].toInt());
+        QJsonArray jAdditionalParents = jOutcome["additionalParents"].toArray();
+        for (auto val : jAdditionalParents) {
+            outcome->addAdditionalParent(val.toInt());
+        }
         QList<SCheck *> checks;
         auto jChecks = jOutcome["checks"].toArray();
         for (auto jRefCheck : jChecks) {
@@ -217,6 +237,10 @@ SMainSettings COrder::loadFromJSON(QString filename)
         auto jStage = jRefStage.toObject();
         auto stage = new CStage(jStage["id"].toInt());
         stage->setMainParentId(jStage["mainParentId"].toInt());
+        QJsonArray jAdditionalParents = jStage["additionalParents"].toArray();
+        for (auto val : jAdditionalParents) {
+            stage->addAdditionalParent(val.toInt());
+        }
         stage->setTime(jStage["time"].toInt());
         stage->setText(jStage["text"].toString());
         stage->setFinal(jStage["final"].toBool());
@@ -265,6 +289,23 @@ void COrder::updateOutcome(qint32 id, const QList<SCheck *> &checks)
         it.value()->update(checks);
 }
 
+void COrder::deleteOutcome(qint32 id, bool afterCopying)
+{
+    if (!m_outcomes.remove(id))
+        qDebug() << "Удаление не удалось, outcome" << id << "не найден";
+    if (afterCopying)
+        return;
+    //Удаление ссылки у родителей на этот стейдж
+    for (auto stage : m_stages) {
+        auto variants = *stage->getVariants();
+        for (auto variant : variants) {
+            if (variant->outcomeId == id) {
+                variant->outcomeId = -1;
+            }
+        }
+    }
+}
+
 const QList<SCheck *> *COrder::getOutcomeChecks(qint32 outcomeId)
 {
     auto it = m_outcomes.find(outcomeId);
@@ -287,6 +328,25 @@ void COrder::updateStage(qint32 id, const QList<SVariant *> &variants, qint32 ti
     auto it = m_stages.find(id);
     if (it != m_stages.end())
         it.value()->updateInfo(variants, time, text, rewards);
+}
+
+void COrder::deleteStage(qint32 id, bool afterCopying)
+{
+    if (!m_stages.remove(id))
+        qDebug() << "Удаление не удалось, stage" << id << "не найден";
+    if (afterCopying)
+        return;
+    //Удаление ссылки у родителей на этот стейдж
+    for (auto outcome : m_outcomes) {
+        auto checks = *outcome->getChecks();
+        for (auto check : checks) {
+            for (auto it = check->stagesId.begin(); it != check->stagesId.end(); it++) {
+                if (it.value() == id) {
+                    it.value() = -1;
+                }
+            }
+        }
+    }
 }
 
 const SStageInfo COrder::getStageInfo(qint32 id)
@@ -335,6 +395,38 @@ qint32 COrder::getMainParentId(qint32 id, ENodeType type)
     return result;
 }
 
+void COrder::addAdditionalParentToNode(qint32 id, ENodeType type, qint32 additionalParentId)
+{
+    if (type == eOutcome) {
+        auto it = m_outcomes.find(id);
+        if (it != m_outcomes.end()) {
+            it.value()->addAdditionalParent(additionalParentId);
+        }
+    } else {
+        auto it = m_stages.find(id);
+        if (it != m_stages.end()) {
+            it.value()->addAdditionalParent(additionalParentId);
+        }
+    }
+}
+
+QList<qint32> COrder::getAdditionalParentsId(qint32 id, ENodeType type)
+{
+    QList<qint32> result;
+    if (type == eOutcome) {
+        auto it = m_outcomes.find(id);
+        if (it != m_outcomes.end()) {
+            result = it.value()->getAdditionalParentsId();
+        }
+    } else {
+        auto it = m_stages.find(id);
+        if (it != m_stages.end()) {
+            result = it.value()->getAdditionalParentsId();
+        }
+    }
+    return result;
+}
+
 QList<qint32> COrder::getChildrenId(qint32 id, ENodeType type)
 {
     QList<qint32> result;
@@ -342,13 +434,24 @@ QList<qint32> COrder::getChildrenId(qint32 id, ENodeType type)
     if (type == eStage) {
         for (auto outcome : m_outcomes) {
             if (outcome->getMainParentId() == id)
-                // TODO: СЕЙЧАС возвращать детей где является доп.родителем
                 result.append(outcome->getId());
+            auto additionalParents = outcome->getAdditionalParentsId();
+            for (auto additionalParent : additionalParents) {
+                if (additionalParent == id) {
+                    result.append(outcome->getId());
+                }
+            }
         }
     } else {
         for (auto stage : m_stages) {
             if (stage->getMainParentId() == id)
                 result.append(stage->getId());
+            auto additionalParents = stage->getAdditionalParentsId();
+            for (auto additionalParent : additionalParents) {
+                if (additionalParent == id) {
+                    result.append(stage->getId());
+                }
+            }
         }
     }
     return result;

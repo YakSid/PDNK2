@@ -42,6 +42,8 @@ MainWindow::~MainWindow()
 {
     if (m_order != nullptr)
         delete m_order;
+    m_warningTimer->stop();
+    delete m_warningTimer;
     delete ui;
 }
 
@@ -123,12 +125,12 @@ void MainWindow::slotPrepareNodesCopy(qint32 copiedId, ENodeType copiedType, qin
     }
 
     if (answer) {
-        // TODO: СЕЙЧАС удалить копируемый и проверить рисуются ли линии к копированным при загрузке
-        // TODO: СЕЙЧАС также переписывать номера нодов для всех родиетлей если их несколько (повторить то же чот для
-        // map)
         //Замена адреса нода копируемого на адрес выбранного в кнопке родителя копируемого
         auto copiedParentId = m_order->getMainParentId(copiedId, copiedType);
+        auto copiedAdditionalParentsList = m_order->getAdditionalParentsId(copiedId, copiedType);
         if (copiedType == eOutcome) {
+            //Удаление копируемого нода ауткома
+            m_order->deleteOutcome(copiedId, true);
             //родитель - стейдж
             auto variants = *m_order->getStageVariants(copiedParentId);
             for (auto variant : variants) {
@@ -137,29 +139,55 @@ void MainWindow::slotPrepareNodesCopy(qint32 copiedId, ENodeType copiedType, qin
                     break;
                 }
             }
+            //Запись родителя копируемого в доп.родители выбранному
+            m_order->addAdditionalParentToNode(selectedId, selectedType, copiedParentId);
+            //Повтор предыдущих двух операций для доп.родителей копируемого нода
+            for (auto prntId : copiedAdditionalParentsList) {
+                auto variants = *m_order->getStageVariants(prntId);
+                for (auto variant : variants) {
+                    if (variant->outcomeId == copiedId) {
+                        variant->outcomeId = selectedId;
+                        break;
+                    }
+                }
+                m_order->addAdditionalParentToNode(selectedId, selectedType, prntId);
+            }
         } else {
+            //Удаление копируемого нода стейджа
+            m_order->deleteStage(copiedId, true);
             //родитель - аутком
             auto checks = *m_order->getOutcomeChecks(copiedParentId);
-            bool breakAll = false; // выйти из всех циклов
             for (auto check : checks) {
                 for (auto it = check->stagesId.begin(); it != check->stagesId.end(); it++) {
                     if (it.value() == copiedId) {
                         it.value() = selectedId;
-                        breakAll = true;
-                        break;
                     }
                 }
-                if (breakAll) {
-                    break;
+            }
+            //Запись родителя копируемого в доп.родители выбранному
+            m_order->addAdditionalParentToNode(selectedId, selectedType, copiedParentId);
+            //Повтор предыдущих двух операций для доп.родителей копируемого нода
+            for (auto prntId : copiedAdditionalParentsList) {
+                auto checks = *m_order->getOutcomeChecks(prntId);
+                for (auto check : checks) {
+                    for (auto it = check->stagesId.begin(); it != check->stagesId.end(); it++) {
+                        if (it.value() == copiedId) {
+                            it.value() = selectedId;
+                        }
+                    }
                 }
+                m_order->addAdditionalParentToNode(selectedId, selectedType, prntId);
             }
         }
         m_haveUnsavedChanges = true;
     }
-    // TODO: скрыть варнинг о копировании спустя время или по нажатию
+
     ui->lb_warningsLog->setVisible(!answer);
     ui->pb_cancelCopy->setVisible(false);
     m_mapManager->canCopy(answer);
+    if (!answer) {
+        m_warningTimer->start();
+    }
 }
 // TODO: позже проверить нет ли ошибки если нажать Х при выборе загружаемого приказа
 void MainWindow::slotNodeDoubleClicked()
@@ -190,7 +218,6 @@ void MainWindow::on_action_save_triggered()
         _saveCurrentStage();
     }
     // Сохранить всё в базу
-    // TODO: указать имя сохраняемого приказа
     QString jName = QFileDialog::getSaveFileName(this, "Сохранить приказ", "", "*.json");
     if (!jName.isEmpty()) {
         SMainSettings settings;
@@ -273,9 +300,13 @@ void MainWindow::_prepareView()
                                  ui->hex_welfare_devastation, ui->hex_welfare_abandoned });
     m_staffSpinBoxes.append({ ui->spb_common, ui->spb_third_rank, ui->spb_second_rank, ui->spb_first_rank });
     m_resSpinBoxes.append({ ui->spb_money, ui->spb_first_res, ui->spb_second_res, ui->spb_third_res });
-    // TODO: сделать жёлтый цвет для предупреждений
+    ui->lb_warningsLog->setStyleSheet("color: rgb(255,165,00)");
     ui->lb_warningsLog->setVisible(false);
     ui->pb_cancelCopy->setVisible(false);
+    m_warningTimer = new QTimer();
+    m_warningTimer->setInterval(10000);
+    m_warningTimer->setSingleShot(true);
+    connect(m_warningTimer, &QTimer::timeout, this, &MainWindow::_hideWarning);
 }
 
 void MainWindow::_prepareMainSettings(const SMainSettings &sett)
@@ -848,4 +879,9 @@ void MainWindow::on_pb_cancelCopy_clicked()
     ui->lb_warningsLog->setVisible(false);
     ui->pb_cancelCopy->setVisible(false);
     m_mapManager->canCopy(false);
+}
+
+void MainWindow::_hideWarning()
+{
+    ui->lb_warningsLog->setVisible(false);
 }

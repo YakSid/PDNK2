@@ -1,5 +1,13 @@
 #include "cstage.h"
 
+CStage::~CStage()
+{
+    qDeleteAll(m_rewards);
+    m_rewards.clear();
+    qDeleteAll(m_variants);
+    m_variants.clear();
+}
+
 void CStage::updateInfo(const QList<SVariant *> &variants, qint32 time, QString text, const QList<SReward *> rewards)
 {
     m_variants = variants;

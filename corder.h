@@ -47,16 +47,21 @@ public:
 
     qint32 addOutcome(qint32 parentId);
     void updateOutcome(qint32 id, const QList<SCheck *> &checks);
+    void deleteOutcome(qint32 id, bool afterCopying = false);
     const QList<SCheck *> *getOutcomeChecks(qint32 outcomeId);
     qint32 addStage(qint32 parentId);
     void updateStage(qint32 id, const QList<SVariant *> &variants, qint32 time, QString text,
                      const QList<SReward *> rewards);
+    void deleteStage(qint32 id, bool afterCopying = false);
     const SStageInfo getStageInfo(qint32 id);
     const QList<SReward *> *getStageRewards(qint32 id);
     void setStageFinal(qint32 id, bool final);
     const QList<SVariant *> *getStageVariants(qint32 stageId);
     //! Узнать id основного родителя по id и типу сына
     qint32 getMainParentId(qint32 id, ENodeType type);
+    //! Добавить доп.родителя ноду
+    void addAdditionalParentToNode(qint32 id, ENodeType type, qint32 additionalParentId);
+    QList<qint32> getAdditionalParentsId(qint32 id, ENodeType type);
 
     // Функции для создания карты загруженного приказа из mw
     QList<qint32> getChildrenId(qint32 id, ENodeType type);

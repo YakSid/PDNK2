@@ -38,6 +38,7 @@ CMapManager::~CMapManager()
 void CMapManager::addFirstNode()
 {
     auto node = new CNode(0, eOutcome, 0, 0);
+    node->setToolTip(QString::number(0));
     node->setMainParentId(-1);
     node->setLayer(0);
     connect(node, &CNode::s_clicked, this, &CMapManager::slotNodeClicked);
@@ -67,6 +68,7 @@ void CMapManager::addNode(qint32 id, ENodeType type)
 
     //Создание нода
     auto node = new CNode(id, type, x, y);
+    node->setToolTip(QString::number(id));
     node->setMainParentId(parentId);
     node->setLayer(layer);
     connect(node, &CNode::s_clicked, this, &CMapManager::slotNodeClicked);
@@ -214,7 +216,6 @@ qint32 CMapManager::_idToMW(qint32 id)
 void CMapManager::_deleteNode(qint32 localId)
 {
     auto it = m_nodes.find(localId);
-    // TODO: СЕЙЧАС хранить id линий в памяти нодов, чтобы удалять через id, а не координаты
     // Поиск координаты точки, где линия родителя пересекатеся с нодом
     qreal xLine, yLine;
     if (_typeToMW(localId) == eOutcome) {
