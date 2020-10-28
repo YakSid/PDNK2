@@ -56,15 +56,17 @@ public:
     const SStageInfo getStageInfo(qint32 id);
     const QList<SReward *> *getStageRewards(qint32 id);
     void setStageFinal(qint32 id, bool final);
+    //! Узнать является ли стейдж финальным
+    bool isStageFinal(qint32 stageId);
     const QList<SVariant *> *getStageVariants(qint32 stageId);
     //! Узнать id основного родителя по id и типу сына
     qint32 getMainParentId(qint32 id, ENodeType type);
     //! Добавить доп.родителя ноду
     void addAdditionalParentToNode(qint32 id, ENodeType type, qint32 additionalParentId);
     QList<qint32> getAdditionalParentsId(qint32 id, ENodeType type);
-
-    // Функции для создания карты загруженного приказа из mw
     QList<qint32> getChildrenId(qint32 id, ENodeType type);
+    //! Получить подпись хэдэра для этого нода из названия кнопки родителя
+    QString getHeaderString(qint32 id, ENodeType type);
 
 private:
     //! Пройтись по всем нодам указанного типа и вернуть минимальный незанятый id

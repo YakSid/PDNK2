@@ -37,6 +37,12 @@ public:
     void setLayer(quint16 layer) { m_layer = layer; }
     quint16 getLayer() const { return m_layer; }
     void setCopied(bool st);
+    void setFinal(bool final) { m_final = final; }
+    bool isFinal() { return m_final; }
+    ENodeType getType() const { return m_type; }
+    void addLine(qint32 parentId, QGraphicsItem *lineId) { m_lines.insert(parentId, lineId); }
+    const QList<QGraphicsItem *> getAllLines();
+    void removeLineFromParent(qint32 parentId) { m_lines.remove(parentId); }
 
 signals:
     void s_clicked(qint32 id);
@@ -60,6 +66,9 @@ private:
     bool m_selected { false };
     //! Копируется прямо сейчас
     bool m_copied { false };
+    bool m_final { false };
+    //! Список родителй и линий приходящих в нод от них
+    QMap<qint32, QGraphicsItem *> m_lines;
 };
 
 #endif // CNODE_H

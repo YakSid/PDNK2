@@ -374,6 +374,16 @@ void COrder::setStageFinal(qint32 id, bool final)
         it.value()->setFinal(final);
 }
 
+bool COrder::isStageFinal(qint32 stageId)
+{
+    bool result = false;
+    auto it = m_stages.find(stageId);
+    if (it != m_stages.end()) {
+        result = it.value()->isFinal();
+    }
+    return result;
+}
+
 const QList<SVariant *> *COrder::getStageVariants(qint32 stageId)
 {
     auto it = m_stages.find(stageId);
@@ -452,6 +462,26 @@ QList<qint32> COrder::getChildrenId(qint32 id, ENodeType type)
                     result.append(stage->getId());
                 }
             }
+        }
+    }
+    return result;
+}
+
+QString COrder::getHeaderString(qint32 id, ENodeType type)
+{
+    QString result;
+    auto parentId = getMainParentId(id, type);
+    if (type == eOutcome) {
+        //родитель - стейдж
+        auto it = m_stages.find(parentId);
+        if (it != m_stages.end()) {
+            result = it.value()->getTextFromVariantOutcome(id);
+        }
+    } else {
+        //родитель - аутком
+        auto it = m_outcomes.find(parentId);
+        if (it != m_outcomes.end()) {
+            result = it.value()->getTextFromCheckStage(id);
         }
     }
     return result;

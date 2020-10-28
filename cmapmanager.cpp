@@ -77,7 +77,7 @@ void CMapManager::addNode(qint32 id, ENodeType type)
     m_nodes.insert(id, node);
 
     //Добавление линии
-    _addLine(QPointF(parentNode->x(), parentNode->y()), type, QPointF(x, y));
+    _addLine(parentNode, node);
 }
 
 void CMapManager::deleteNode(qint32 id, ENodeType type)
@@ -103,6 +103,17 @@ void CMapManager::setSelected(qint32 selectedId, ENodeType type)
     }
 }
 
+void CMapManager::setFinal(qint32 id, ENodeType type, bool final)
+{
+    if (id == -1)
+        return;
+
+    id = _idFromMW(id, type);
+
+    auto it = m_nodes.find(id);
+    it.value()->setFinal(final);
+}
+
 void CMapManager::canCopy(bool st)
 {
     auto copiedNode = m_nodes.find(m_copiedNodeId).value();
@@ -117,8 +128,7 @@ void CMapManager::canCopy(bool st)
             additionalParentNode->removeChild(copiedNode->getId());
             additionalParentNode->addChild(selectedNode->getId());
             selectedNode->addAdditionalParent(additionalParentNode->getId());
-            _addLine(QPointF(additionalParentNode->x(), additionalParentNode->y()), _typeToMW(m_selectedNodeId),
-                     QPointF(selectedNode->x(), selectedNode->y()));
+            _addLine(additionalParentNode, selectedNode);
         }
         //Копирование основного нода
         auto parentId = copiedNode->getMainParentId();
@@ -126,8 +136,7 @@ void CMapManager::canCopy(bool st)
         parentNode->removeChild(copiedNode->getId());
         parentNode->addChild(selectedNode->getId());
         selectedNode->addAdditionalParent(parentId);
-        _addLine(QPointF(parentNode->x(), parentNode->y()), _typeToMW(m_selectedNodeId),
-                 QPointF(selectedNode->x(), selectedNode->y()));
+        _addLine(parentNode, selectedNode);
         _deleteNode(m_copiedNodeId);
         qDebug() << "Произошло копирование";
     } else {
@@ -150,7 +159,7 @@ void CMapManager::addAdditionalParentToNode(qint32 nodeId, ENodeType nodeType, q
     //Рисуем линию
     auto node = m_nodes.find(nodeId).value();
     auto parentNode = m_nodes.find(parentId).value();
-    _addLine(QPointF(parentNode->x(), parentNode->y()), nodeType, QPointF(node->x(), node->y()));
+    _addLine(parentNode, node);
 }
 
 void CMapManager::slotNodeClicked(qint32 id)
@@ -216,21 +225,11 @@ qint32 CMapManager::_idToMW(qint32 id)
 void CMapManager::_deleteNode(qint32 localId)
 {
     auto it = m_nodes.find(localId);
-    // Поиск координаты точки, где линия родителя пересекатеся с нодом
-    qreal xLine, yLine;
-    if (_typeToMW(localId) == eOutcome) {
-        xLine = it.value()->x() - NODE_SIZE / 2 - OWID;
-    } else {
-        xLine = it.value()->x() - (NODE_SIZE + 10) / 2 - OWID;
-    }
-    yLine = it.value()->y();
-    // Поиск и удаление линии
-    auto line = m_scene->itemAt(xLine, yLine, QTransform());
-    if (line != nullptr) {
+
+    //Удаление входящих линий
+    auto lines = it.value()->getAllLines();
+    for (auto line : lines) {
         m_scene->removeItem(line);
-        m_scene->update();
-    } else {
-        qDebug() << "Линия не найдена!";
     }
 
     m_scene->removeItem(it.value());
@@ -239,19 +238,21 @@ void CMapManager::_deleteNode(qint32 localId)
     m_scene->update();
 }
 
-void CMapManager::_addLine(QPointF parentPoint, ENodeType type, QPointF point)
+void CMapManager::_addLine(const CNode *parent, CNode *destinationNode)
 {
     QPen penBlack(Qt::black);
     QLineF line;
-    if (type == eStage) {
+    if (destinationNode->getType() == eStage) {
         //родитель - аутком
-        line.setP1(QPointF(parentPoint.x() + NODE_SIZE / 2 + OWID, parentPoint.y()));
-        line.setP2(QPointF(point.x() - (NODE_SIZE + 10) / 2 - OWID, point.y()));
+        line.setP1(QPointF(parent->x() + NODE_SIZE / 2 + OWID, parent->y()));
+        line.setP2(QPointF(destinationNode->x() - (NODE_SIZE + 10) / 2 - OWID, destinationNode->y()));
     } else {
         //родитель - стейдж
-        line.setP1(QPointF(parentPoint.x() + (NODE_SIZE + 10) / 2 + OWID, parentPoint.y()));
-        line.setP2(QPointF(point.x() - NODE_SIZE / 2 - OWID, point.y()));
+        line.setP1(QPointF(parent->x() + (NODE_SIZE + 10) / 2 + OWID, parent->y()));
+        line.setP2(QPointF(destinationNode->x() - NODE_SIZE / 2 - OWID, destinationNode->y()));
     }
     penBlack.setWidth(2);
-    m_scene->addLine(line, penBlack);
+    auto linePointer = m_scene->addLine(line, penBlack);
+
+    destinationNode->addLine(parent->getId(), linePointer);
 }

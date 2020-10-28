@@ -30,6 +30,15 @@ void CNode::setCopied(bool st)
     update();
 }
 
+const QList<QGraphicsItem *> CNode::getAllLines()
+{
+    QList<QGraphicsItem *> result;
+    for (auto line : m_lines) {
+        result.append(line);
+    }
+    return result;
+}
+
 void CNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (m_selected) {
@@ -58,6 +67,9 @@ void CNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     Q_UNUSED(widget);
     auto rect = boundingRect();
     QBrush brush(Qt::white);
+    if (m_final) {
+        brush.setColor(Qt::blue);
+    }
     if (m_selected) {
         brush.setColor(Qt::yellow);
     }

@@ -35,6 +35,8 @@ public:
     //! NOTE: Осторожно, константность не работает, но я этим пользуюсь при копировании и удалении
     const QList<SCheck *> *getChecks() { return &m_checks; }
     void update(const QList<SCheck *> &checks) { m_checks = checks; }
+    //! Найти какая проверка указывает на этот нод и взять её текст
+    QString getTextFromCheckStage(qint32 stageId);
 
 private:
     qint32 m_id;

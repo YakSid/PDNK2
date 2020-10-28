@@ -104,7 +104,15 @@ void CRewardWidget::on_cb_rewardType_currentIndexChanged(int index)
         ui->cb_object->addItems({ "Изменилось на", "Изменилось до" });
         ui->sp_rewardCount->setMinimum(-100);
         ui->sp_rewardCount->setMaximum(100);
-        // TODO: позже добавить предупреждение, что нельзя указать "Изменилось до отрицательного числа"
         break;
+    }
+}
+
+void CRewardWidget::on_cb_object_currentIndexChanged(const QString &arg1)
+{
+    if (arg1.right(2) == "до") {
+        ui->sp_rewardCount->setMinimum(0);
+    } else {
+        ui->sp_rewardCount->setMinimum(-100);
     }
 }

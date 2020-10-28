@@ -32,6 +32,8 @@ public:
 private slots:
     void on_cb_rewardType_currentIndexChanged(int index);
 
+    void on_cb_object_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::CRewardWidget *ui;
 };

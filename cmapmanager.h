@@ -27,6 +27,8 @@ public:
     void addNode(qint32 id, ENodeType type);
     void deleteNode(qint32 id, ENodeType type);
     void setSelected(qint32 selectedId, ENodeType type);
+    //! Сделать финальным. Возможно только для стейджей!
+    void setFinal(qint32 id, ENodeType type, bool final = true);
     //! Обработка ответа на запрос о копировании
     void canCopy(bool st);
     //! Добавить ноду дополнительного родителя и нарисовать линию
@@ -50,7 +52,8 @@ private:
     qint32 _idToMW(qint32 id);
     //! Удалить нод с локальным id
     void _deleteNode(qint32 localId);
-    void _addLine(QPointF parentPoint, ENodeType type, QPointF point);
+    //! Нарисовать линию от parent к destinationNode
+    void _addLine(const CNode *parent, CNode *destinationNode);
 
 private:
     QGraphicsScene *m_scene;

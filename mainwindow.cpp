@@ -100,7 +100,6 @@ void MainWindow::slotCreateOutcomeClicked()
         //Начальный исход
         m_mapManager->setSelected(0, eOutcome);
         _prepareOutcomeUi(0);
-        ui->lb_briefReminder->setText("Начальный этап");
     } else {
         auto wgt = qobject_cast<CVariantWidget *>(sender());
         wgt->setOutcomeId(id);
@@ -282,6 +281,12 @@ void MainWindow::updateWindow()
 void MainWindow::_prepareView()
 {
     // TODO: чуть позже привести к начальному значению поля после сохранения или выбора другого приказа
+    //Настройка полей главных настроек приказа
+    ui->cb_threatLevel->addItems(THREAT_LEVELS);
+    ui->cb_awarenessIndex->addItems(AWARNESS_INDEXES);
+    ui->cb_vampiresMentioned->addItems(VAMPIRES_MENTIONED);
+    ui->cb_innerType->addItems(INNER_ORDER_TYPES);
+    //
     setWindowTitle(PROGRAM_NAME);
     ui->cb_type->setCurrentIndex(0);
     ui->swgt_order_type->setCurrentWidget(ui->wgt_inner_order);
@@ -354,12 +359,13 @@ void MainWindow::_prepareOutcomeUi(qint32 id)
     m_currentNode.update(id, eOutcome);
     ui->stackedWidget->setCurrentIndex(1);
     ui->gb_stagesOutcomes->setTitle("Исходы выбора");
-    if (id == 0)
+    if (id == 0) {
         ui->pb_toParentStage->setVisible(false);
-    else {
+        ui->lb_briefReminderOutcome->setText("Начальный исход");
+    } else {
         ui->pb_toParentStage->setVisible(true);
+        ui->lb_briefReminderOutcome->setText(m_order->getHeaderString(id, eOutcome));
     }
-    ui->lb_briefReminder->setText("краткое описание");
     //Подготовка проверок
     ui->lw_outcomes->clear();
     auto checksList = m_order->getOutcomeChecks(id);
@@ -378,7 +384,7 @@ void MainWindow::_prepareStageUi(qint32 id)
     ui->stackedWidget->setCurrentIndex(0);
     ui->gb_stagesOutcomes->setTitle("Этап с выбором");
     ui->pb_toParentOutcome->setVisible(true);
-    ui->lb_briefReminder->setText("краткое описание"); // TODO: чуть позже заполнить хэдэр из текста родителя
+    ui->lb_briefReminderStage->setText(m_order->getHeaderString(id, eStage));
     //Подготовка времени и текста
     auto stageInfo = m_order->getStageInfo(id);
     ui->cb_time->setCurrentIndex(stageInfo.time);
@@ -536,7 +542,6 @@ void MainWindow::_setStageUiFinal(bool st)
         ui->groupStageDescription->setTitle("Описание результатов приказа");
         ui->grp_stageReward->setMaximumHeight(16777215);
         m_order->setStageFinal(m_currentNode.id, true);
-        // TODO: сделать в map_manager нод визуально финальным и свойство ему дать?
     } else {
         ui->pb_setFinal->setText("Сделать финальным");
         ui->groupVariants->setTitle("Варианты действий");
@@ -613,6 +618,12 @@ void MainWindow::_addLoadedNodeInMap(SNode node)
             if (needToPaint) {
                 m_mapManager->setSelected(node.id, node.type);
                 m_mapManager->addNode(child, node.anotherType());
+                //Если этап и финальный то сделать мап нод финальным
+                if (node.anotherType() == eStage) {
+                    if (m_order->isStageFinal(child)) {
+                        m_mapManager->setFinal(child, eStage);
+                    }
+                }
                 //Добавление нода в список, чтобы не нарисовать его второй раз
                 auto paintedNode = new SNode;
                 paintedNode->update(child, node.anotherType());
@@ -785,8 +796,10 @@ void MainWindow::on_pb_setFinal_clicked()
 {
     if (ui->pb_setFinal->text() == "Сделать финальным") {
         _setStageUiFinal(true);
+        m_mapManager->setFinal(m_currentNode.id, m_currentNode.type, true);
     } else {
         _setStageUiFinal(false);
+        m_mapManager->setFinal(m_currentNode.id, m_currentNode.type, false);
     }
 }
 

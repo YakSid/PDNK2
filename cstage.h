@@ -57,6 +57,8 @@ public:
     void setRewards(const QList<SReward *> &rewards) { m_rewards = rewards; }
     void setFinal(bool final) { m_final = final; }
     bool isFinal() const { return m_final; }
+    //! Найти какой вариант указывает на этот нод и взять его текст
+    QString getTextFromVariantOutcome(qint32 outcomeId);
 
 private:
     qint32 m_id;

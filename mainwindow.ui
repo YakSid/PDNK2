@@ -200,21 +200,6 @@
                <bold>false</bold>
               </font>
              </property>
-             <item>
-              <property name="text">
-               <string>[1] Подготовка департаментов</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>[2] Паника от неизвестности</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>[3] Открытое противостояние</string>
-              </property>
-             </item>
             </widget>
            </item>
            <item row="1" column="0">
@@ -238,26 +223,6 @@
                <bold>false</bold>
               </font>
              </property>
-             <item>
-              <property name="text">
-               <string>[1] Департамент в неведении</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>[2] Некоторые люди подозревают что-то</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>[3] Почти все уверены</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>[4] Департамент осведомлён</string>
-              </property>
-             </item>
             </widget>
            </item>
            <item row="2" column="0">
@@ -287,21 +252,6 @@
              <property name="toolTip">
               <string/>
              </property>
-             <item>
-              <property name="text">
-               <string>Точно да</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Неоднозначно</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Точно нет</string>
-              </property>
-             </item>
             </widget>
            </item>
            <item row="3" column="0" colspan="2">
@@ -343,26 +293,6 @@
                    <bold>false</bold>
                   </font>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>[1] Поднять П.О.</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>[2] Получить очки знаний</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>[3] Увеличить ресурсы</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>[4] Прокачать сотрудников</string>
-                  </property>
-                 </item>
                 </widget>
                </item>
                <item row="0" column="0">
@@ -1142,7 +1072,7 @@ p, li { white-space: pre-wrap; }
         <bool>true</bool>
        </property>
        <attribute name="title">
-        <string>Этап квеста</string>
+        <string>Этапы квеста</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_11">
         <item row="0" column="0" rowspan="2">
@@ -1252,6 +1182,32 @@ p, li { white-space: pre-wrap; }
                   </item>
                   <item>
                    <widget class="QComboBox" name="cb_time"/>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_8">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="lb_briefReminderStage">
+                    <property name="font">
+                     <font>
+                      <pointsize>12</pointsize>
+                      <italic>true</italic>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Физическая проверка &quot;Успех&quot;</string>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <spacer name="horizontalSpacer_5">
@@ -1672,7 +1628,7 @@ p, li { white-space: pre-wrap; }
                 </layout>
                </item>
                <item>
-                <widget class="QLabel" name="lb_briefReminder">
+                <widget class="QLabel" name="lb_briefReminderOutcome">
                  <property name="font">
                   <font>
                    <weight>50</weight>

@@ -24,3 +24,14 @@ const SStageInfo CStage::getStageInfo()
     result.isFinal = m_final;
     return result;
 }
+
+QString CStage::getTextFromVariantOutcome(qint32 outcomeId)
+{
+    QString result;
+    for (auto variant : m_variants) {
+        if (variant->outcomeId == outcomeId) {
+            result = variant->text;
+        }
+    }
+    return result;
+}
