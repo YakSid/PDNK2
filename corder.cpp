@@ -6,10 +6,7 @@
 #include <QFile>
 #include <QtDebug>
 
-COrder::COrder()
-{
-    // TODO: Заполнить стартовые параметры?
-}
+COrder::COrder() {}
 
 COrder::~COrder()
 {
@@ -289,19 +286,63 @@ void COrder::updateOutcome(qint32 id, const QList<SCheck *> &checks)
         it.value()->update(checks);
 }
 
-void COrder::deleteOutcome(qint32 id, bool afterCopying)
+void COrder::deleteOutcome(qint32 id, qint32 deletableId, bool afterCopying)
 {
-    if (!m_outcomes.remove(id))
-        qDebug() << "Удаление не удалось, outcome" << id << "не найден";
-    if (afterCopying)
+    if (afterCopying) {
+        //Замена ссылки у родителей на этот аутком происходит при копировании
+        //Удаление ауткома
+        if (m_outcomes.contains(id)) {
+            delete m_outcomes.value(id);
+            m_outcomes.remove(id);
+        } else {
+            qDebug() << "Удаление из m_order не удалось, outcome" << id << "не найден";
+        }
         return;
-    //Удаление ссылки у родителей на этот стейдж
-    for (auto stage : m_stages) {
-        auto variants = *stage->getVariants();
-        for (auto variant : variants) {
-            if (variant->outcomeId == id) {
-                variant->outcomeId = -1;
+    }
+
+    if (m_outcomes.value(id)->getAdditionalParentsId().isEmpty()) {
+        //Если родитель один, запускаем рекурсивное удаление детей
+        for (auto check : *m_outcomes.value(id)->getChecks()) {
+            for (auto stageId : check->stagesId) {
+                deleteStage(stageId, id, false);
             }
+        }
+
+        //Удаляем ссылки у родителей на этот аутком
+        for (auto stage : m_stages) {
+            auto variants = *stage->getVariants();
+            for (auto variant : variants) {
+                if (variant->outcomeId == id) {
+                    variant->outcomeId = -1;
+                }
+            }
+        }
+
+        //Удаление ауткома
+        if (m_outcomes.contains(id)) {
+            delete m_outcomes.value(id);
+            m_outcomes.remove(id);
+        } else {
+            qDebug() << "Удаление из m_order не удалось, outcome" << id << "не найден";
+        }
+
+    } else {
+        //Если родителей несколько, удаляем ссылку от удаляемого родителя
+        auto stage = m_stages.find(deletableId);
+        if (stage != m_stages.end()) {
+            for (auto variant : *stage.value()->getVariants()) {
+                if (variant->outcomeId == id) {
+                    variant->outcomeId = -1; // WARNING: проверить это место
+                }
+            }
+        }
+
+        if (m_outcomes.value(id)->getMainParentId() == deletableId) {
+            //Удаляемый это главный родитель
+            m_outcomes.value(id)->setMainParentId(m_outcomes.value(id)->getAdditionalParentsId().first());
+            m_outcomes.value(id)->removeAdditionalParent(m_outcomes.value(id)->getAdditionalParentsId().first());
+        } else {
+            m_outcomes.value(id)->removeAdditionalParent(deletableId);
         }
     }
 }
@@ -330,21 +371,64 @@ void COrder::updateStage(qint32 id, const QList<SVariant *> &variants, qint32 ti
         it.value()->updateInfo(variants, time, text, rewards);
 }
 
-void COrder::deleteStage(qint32 id, bool afterCopying)
+void COrder::deleteStage(qint32 id, qint32 deletableId, bool afterCopying)
 {
-    if (!m_stages.remove(id))
-        qDebug() << "Удаление не удалось, stage" << id << "не найден";
-    if (afterCopying)
+    if (afterCopying) {
+        //Замена ссылки у родителей на этот аутком происходит при копировании
+        //Удаление ауткома
+        if (m_stages.contains(id)) {
+            delete m_stages.value(id);
+            m_stages.remove(id);
+        } else {
+            qDebug() << "Удаление из m_order не удалось, stage" << id << "не найден";
+        }
         return;
-    //Удаление ссылки у родителей на этот стейдж
-    for (auto outcome : m_outcomes) {
+    }
+
+    if (m_stages.value(id)->getAdditionalParentsId().isEmpty()) {
+        //Если родитель один, запускаем рекурсивное удаление детей
+        for (auto variant : *m_stages.value(id)->getVariants()) {
+            deleteOutcome(variant->outcomeId, id);
+        }
+
+        //Удаляем ссылки у родителей на этот аутком
+        for (auto outcome : m_outcomes) {
+            auto checks = *outcome->getChecks();
+            for (auto check : checks) {
+                for (auto it = check->stagesId.begin(); it != check->stagesId.end(); it++) {
+                    if (it.value() == id) {
+                        it.value() = -1;
+                    }
+                }
+            }
+        }
+
+        //Удаление стейджа
+        if (m_stages.contains(id)) {
+            delete m_stages.value(id);
+            m_stages.remove(id);
+        } else {
+            qDebug() << "Удаление из m_order не удалось, stage" << id << "не найден";
+        }
+
+    } else {
+        //Если родителей несколько, удаляем ссылку от удаляемого родителя
+        auto outcome = m_outcomes.find(deletableId).value();
         auto checks = *outcome->getChecks();
         for (auto check : checks) {
             for (auto it = check->stagesId.begin(); it != check->stagesId.end(); it++) {
                 if (it.value() == id) {
-                    it.value() = -1;
+                    it.value() = -1; // WARNING: Проверить это место
                 }
             }
+        }
+
+        if (m_stages.value(id)->getMainParentId() == deletableId) {
+            //Удаляемый это главный родитель
+            m_stages.value(id)->setMainParentId(m_stages.value(id)->getAdditionalParentsId().first());
+            m_stages.value(id)->removeAdditionalParent(m_stages.value(id)->getAdditionalParentsId().first());
+        } else {
+            m_stages.value(id)->removeAdditionalParent(deletableId);
         }
     }
 }

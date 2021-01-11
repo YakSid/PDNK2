@@ -30,12 +30,7 @@ public:
 public slots:
     void databaseConnected(bool connected);
 
-signals:
-    void s_connectDatabase();
-
 private slots:
-    void on_pb_connectDatabase_clicked();
-
     void on_pb_create_new_order_clicked();
 
     void on_pb_edit_order_clicked();

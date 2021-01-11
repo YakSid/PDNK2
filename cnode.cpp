@@ -19,6 +19,16 @@ void CNode::setSelected(bool selected)
     update();
 }
 
+void CNode::removeAdditionalParent(qint32 parentId)
+{
+    for (int i = 0; i < m_additionalParentsId.count(); i++) {
+        if (m_additionalParentsId.at(i) == parentId) {
+            m_additionalParentsId.removeAt(i);
+            break;
+        }
+    }
+}
+
 void CNode::removeChild(qint32 childId)
 {
     m_children.removeOne(childId);
@@ -37,6 +47,19 @@ const QList<QGraphicsItem *> CNode::getAllLines()
         result.append(line);
     }
     return result;
+}
+
+void CNode::removeLineFromParent(qint32 parentId)
+{
+    auto line = m_lines.value(parentId);
+    delete line;
+    m_lines.remove(parentId);
+}
+
+void CNode::removeAllLines()
+{
+    qDeleteAll(m_lines);
+    m_lines.clear();
 }
 
 void CNode::mousePressEvent(QGraphicsSceneMouseEvent *event)

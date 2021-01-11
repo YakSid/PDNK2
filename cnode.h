@@ -31,18 +31,25 @@ public:
     qint32 getMainParentId() const { return m_mainParentId; }
     void addAdditionalParent(qint32 parentId) { m_additionalParentsId.append(parentId); }
     QList<qint32> getAdditionalParentsId() const { return m_additionalParentsId; }
+    void removeAdditionalParent(qint32 parentId);
     void addChild(qint32 childId) { m_children.append(childId); }
     void removeChild(qint32 childId);
     qint32 getChildrenCount() { return m_children.count(); }
+    QList<qint32> getChildren() { return m_children; }
     void setLayer(quint16 layer) { m_layer = layer; }
     quint16 getLayer() const { return m_layer; }
+    // Номер места вдоль вертикального уровня
+    void setPlaceNumber(quint16 placeNumber) { m_placeNumber = placeNumber; }
+    quint16 getPlaceNumber() const { return m_placeNumber; }
     void setCopied(bool st);
     void setFinal(bool final) { m_final = final; }
     bool isFinal() { return m_final; }
     ENodeType getType() const { return m_type; }
     void addLine(qint32 parentId, QGraphicsItem *lineId) { m_lines.insert(parentId, lineId); }
     const QList<QGraphicsItem *> getAllLines();
-    void removeLineFromParent(qint32 parentId) { m_lines.remove(parentId); }
+    void removeLineFromParent(qint32 parentId);
+    //! Удалить все входящие линии
+    void removeAllLines();
 
 signals:
     void s_clicked(qint32 id);
@@ -63,6 +70,8 @@ private:
     QList<qint32> m_children;
     //! Глубина/Уровень на котором он находится на карте/Количество поколений перед ним
     quint16 m_layer;
+    //! Номер позиции на уровне
+    quint16 m_placeNumber;
     bool m_selected { false };
     //! Копируется прямо сейчас
     bool m_copied { false };

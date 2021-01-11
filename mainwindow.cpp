@@ -12,8 +12,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 {
     auto m_startPage = new CStartPage();
     m_databaseManager = new CDatabaseManager();
-    connect(m_startPage, &CStartPage::s_connectDatabase, m_databaseManager, &CDatabaseManager::connectDatabase);
-    connect(m_databaseManager, &CDatabaseManager::s_databaseConnected, m_startPage, &CStartPage::databaseConnected);
+    // connect(m_startPage, &CStartPage::s_connectDatabase, m_databaseManager, &CDatabaseManager::connectDatabase);
+    // connect(m_databaseManager, &CDatabaseManager::s_databaseConnected, m_startPage, &CStartPage::databaseConnected);
     m_startPage->init();
     m_startPage->setModal(true);
     m_startPage->exec();
@@ -40,6 +40,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 MainWindow::~MainWindow()
 {
+    _deleteAllObjectsFromLw(ui->lw_outcomes);
+    _deleteAllObjectsFromLw(ui->lw_variants);
+    _deleteAllObjectsFromLw(ui->lw_rewards);
+    _deleteAllObjectsFromLw(ui->lw_terms);
+
     if (m_order != nullptr)
         delete m_order;
     m_warningTimer->stop();
@@ -129,7 +134,7 @@ void MainWindow::slotPrepareNodesCopy(qint32 copiedId, ENodeType copiedType, qin
         auto copiedAdditionalParentsList = m_order->getAdditionalParentsId(copiedId, copiedType);
         if (copiedType == eOutcome) {
             //Удаление копируемого нода ауткома
-            m_order->deleteOutcome(copiedId, true);
+            m_order->deleteOutcome(copiedId, -1, true);
             //родитель - стейдж
             auto variants = *m_order->getStageVariants(copiedParentId);
             for (auto variant : variants) {
@@ -153,7 +158,7 @@ void MainWindow::slotPrepareNodesCopy(qint32 copiedId, ENodeType copiedType, qin
             }
         } else {
             //Удаление копируемого нода стейджа
-            m_order->deleteStage(copiedId, true);
+            m_order->deleteStage(copiedId, -1, true);
             //родитель - аутком
             auto checks = *m_order->getOutcomeChecks(copiedParentId);
             for (auto check : checks) {
@@ -188,7 +193,7 @@ void MainWindow::slotPrepareNodesCopy(qint32 copiedId, ENodeType copiedType, qin
         m_warningTimer->start();
     }
 }
-// TODO: позже проверить нет ли ошибки если нажать Х при выборе загружаемого приказа
+
 void MainWindow::slotNodeDoubleClicked()
 {
     ui->pb_cancelCopy->setVisible(true);
@@ -261,7 +266,7 @@ void MainWindow::on_action_save_triggered()
     }
 }
 
-// TODO: чуть позже отслеживать изменились ли mainSettings и сохранять их или предупреждать перед выходом
+// TODO: позже отслеживать изменились ли mainSettings и сохранять их или предупреждать перед выходом
 void MainWindow::on_action_saveAndExit_triggered()
 {
     on_action_save_triggered();
@@ -275,7 +280,7 @@ void MainWindow::on_action_runTest_triggered()
 
 void MainWindow::updateWindow()
 {
-    // TODO: позже: показывать условия приказа соответствующие типу вн или птр
+    // TODO: релиз: показывать условия приказа соответствующие типу вн или птр
 }
 
 void MainWindow::_prepareView()
@@ -367,6 +372,7 @@ void MainWindow::_prepareOutcomeUi(qint32 id)
         ui->lb_briefReminderOutcome->setText(m_order->getHeaderString(id, eOutcome));
     }
     //Подготовка проверок
+    _deleteAllObjectsFromLw(ui->lw_outcomes);
     ui->lw_outcomes->clear();
     auto checksList = m_order->getOutcomeChecks(id);
     if (checksList != nullptr) {
@@ -391,6 +397,7 @@ void MainWindow::_prepareStageUi(qint32 id)
     ui->te_stageText->setText(stageInfo.text);
     _setStageUiFinal(stageInfo.isFinal);
     //Подготовка наград
+    _deleteAllObjectsFromLw(ui->lw_rewards);
     ui->lw_rewards->clear();
     auto rewards = m_order->getStageRewards(id);
     if (rewards != nullptr) {
@@ -403,6 +410,7 @@ void MainWindow::_prepareStageUi(qint32 id)
     }
     _setRewardsVisible(!rewards->isEmpty());
     //Подготовка вариантов
+    _deleteAllObjectsFromLw(ui->lw_variants);
     ui->lw_variants->clear();
     auto variantsList = m_order->getStageVariants(id);
     if (variantsList != nullptr) {
@@ -411,6 +419,9 @@ void MainWindow::_prepareStageUi(qint32 id)
             auto wgt = qobject_cast<CVariantWidget *>(
                     ui->lw_variants->itemWidget(ui->lw_variants->item(ui->lw_variants->count() - 1)));
             wgt->updateData(variant->text, variant->outcomeId, variant->resource, variant->resourceCount);
+        }
+        if (variantsList->isEmpty()) {
+            ui->pb_deleteVariant->setEnabled(false);
         }
     }
 }
@@ -639,6 +650,14 @@ void MainWindow::_addLoadedNodeInMap(SNode node)
     }
 }
 
+void MainWindow::_deleteAllObjectsFromLw(QListWidget *lw)
+{
+    for (int i = 0; i < lw->count(); i++) {
+        auto wgt = lw->itemWidget(lw->item(i));
+        delete wgt;
+    }
+}
+
 void MainWindow::on_cb_type_currentIndexChanged(int index)
 {
     switch (index) {
@@ -708,13 +727,31 @@ void MainWindow::on_pb_addCheck_clicked()
 
 void MainWindow::on_pb_deleteCheck_clicked()
 {
-    //Невизуальная часть
-    // TODO: чуть позже запустить удаление всех следующих?
+    if (!ui->lw_outcomes->currentItem()) {
+        _showMessage("Проверка не выбрана");
+        return;
+    } else {
+        bool answer = _showQuestion("Удалить выбранный набор проверок и всех их наследников?");
+        if (!answer)
+            return;
+    }
 
-    //Визуальная часть ui
+    auto outcomeWgt = qobject_cast<COutcomeWidget *>(ui->lw_outcomes->itemWidget(ui->lw_outcomes->currentItem()));
+
+    for (auto stageId : outcomeWgt->getStagesId()) {
+        //Удалить данные из order
+        m_order->deleteStage(stageId, m_currentNode.id);
+        //Удалить из map
+        m_mapManager->deleteNode(stageId, eStage, m_currentNode.id, eOutcome);
+    }
+
+    //Удалить виджет из текущего ui
     ui->lw_outcomes->takeItem(ui->lw_outcomes->currentRow());
+    delete outcomeWgt;
 
-    //Визуальная часть map
+    if (!ui->lw_outcomes->count()) {
+        ui->pb_deleteCheck->setEnabled(false);
+    }
 
     m_haveUnsavedChanges = true;
 }
@@ -778,12 +815,27 @@ void MainWindow::on_pb_addVariant_clicked()
 
 void MainWindow::on_pb_deleteVariant_clicked()
 {
-    if (!ui->lw_variants->currentItem())
+    if (!ui->lw_variants->currentItem()) {
+        _showMessage("Вариант не выбран");
         return;
+    } else {
+        bool answer = _showQuestion("Удалить выбранный вариант и всех его наследников?");
+        if (!answer)
+            return;
+    }
 
-    auto wgt = ui->lw_variants->itemWidget(ui->lw_variants->currentItem());
+    auto variantWgt = qobject_cast<CVariantWidget *>(ui->lw_variants->itemWidget(ui->lw_variants->currentItem()));
+
+    if (variantWgt->getOutcomeId() != -1) {
+        //Удалить данные из order
+        m_order->deleteOutcome(variantWgt->getOutcomeId(), m_currentNode.id);
+        //Удалить из map
+        m_mapManager->deleteNode(variantWgt->getOutcomeId(), eOutcome, m_currentNode.id, eStage);
+    }
+
+    //Удалить виджет из текущего ui
     ui->lw_variants->takeItem(ui->lw_variants->row(ui->lw_variants->currentItem()));
-    delete wgt;
+    delete variantWgt;
 
     if (!ui->lw_variants->count()) {
         ui->pb_deleteVariant->setEnabled(false);

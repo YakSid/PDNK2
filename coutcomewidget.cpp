@@ -27,7 +27,7 @@ COutcomeWidget::~COutcomeWidget()
 {
     delete ui;
 }
-// TODO: позже предусмотреть удаление и изменение id этапов к кнопкам
+// TODO: релиз: предусмотреть удаление и изменение id этапов к кнопкам
 void COutcomeWidget::setStageIdForNewButton(qint32 stageId, EOutcomeButton btn)
 {
     auto it = m_stages.find(btn);

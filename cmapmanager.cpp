@@ -41,36 +41,49 @@ void CMapManager::addFirstNode()
     node->setToolTip(QString::number(0));
     node->setMainParentId(-1);
     node->setLayer(0);
+    node->setPlaceNumber(0);
     connect(node, &CNode::s_clicked, this, &CMapManager::slotNodeClicked);
     m_scene->addItem(node);
     m_nodes.insert(node->getId(), node);
 }
 
+// NOTE: позже можно сделать ноды движимыми (зажимая ПКМ перемещать вдоль placeNumber)
 // TODO: чуть позже: расширить отступы, чтобы не у краёв были ноды. И можно добавить перемещение мышью?
-// TODO: позже улучшить алгоритм размещения нодов на мапе
 void CMapManager::addNode(qint32 id, ENodeType type)
 {
     auto parentId = m_selectedNodeId;
     auto parentNode = m_nodes.find(m_selectedNodeId).value();
     quint16 layer = parentNode->getLayer() + 1;
-    quint16 nodesOnLayer = 0;
+    QList<quint16> occupiedPlacesOnLayer;
     for (auto it = m_nodes.begin(); it != m_nodes.end(); it++) {
         if (it.value()->getLayer() == layer)
-            nodesOnLayer++;
+            occupiedPlacesOnLayer.append(it.value()->getPlaceNumber());
     }
+    //Поиск свободного места с минимальным значением
+    quint16 minPlaceNumber = 0;
+    if (!occupiedPlacesOnLayer.isEmpty()) {
+        for (quint16 i = 0; i <= occupiedPlacesOnLayer.count(); i++) {
+            if (!occupiedPlacesOnLayer.contains(i)) {
+                minPlaceNumber = i;
+                break;
+            }
+        }
+    }
+
     if (type == eStage) {
         id += MILLION;
     }
     parentNode->addChild(id);
     qreal x, y;
     x = (25 + 2 * OWID + (2 * NODE_SIZE + 10) / 2) * layer;
-    y = (20 + NODE_SIZE + 2 * OWID) * nodesOnLayer;
+    y = (20 + NODE_SIZE + 2 * OWID) * minPlaceNumber;
 
     //Создание нода
     auto node = new CNode(id, type, x, y);
     node->setToolTip(QString::number(id));
     node->setMainParentId(parentId);
     node->setLayer(layer);
+    node->setPlaceNumber(minPlaceNumber);
     connect(node, &CNode::s_clicked, this, &CMapManager::slotNodeClicked);
     connect(node, &CNode::s_doubleClicked, this, &CMapManager::slotNodeDoubleClicked);
     m_scene->addItem(node);
@@ -80,9 +93,9 @@ void CMapManager::addNode(qint32 id, ENodeType type)
     _addLine(parentNode, node);
 }
 
-void CMapManager::deleteNode(qint32 id, ENodeType type)
+void CMapManager::deleteNode(qint32 id, ENodeType type, qint32 parentId, ENodeType parentType)
 {
-    _deleteNode(_idFromMW(id, type));
+    _deleteNode(_idFromMW(id, type), _idFromMW(parentId, parentType));
 }
 
 void CMapManager::setSelected(qint32 selectedId, ENodeType type)
@@ -137,7 +150,7 @@ void CMapManager::canCopy(bool st)
         parentNode->addChild(selectedNode->getId());
         selectedNode->addAdditionalParent(parentId);
         _addLine(parentNode, selectedNode);
-        _deleteNode(m_copiedNodeId);
+        _deleteNode(m_copiedNodeId, parentId, true);
         qDebug() << "Произошло копирование";
     } else {
         //Нельзя копировать
@@ -222,20 +235,64 @@ qint32 CMapManager::_idToMW(qint32 id)
     }
 }
 
-void CMapManager::_deleteNode(qint32 localId)
+// TODO: релиз: подсвечивать линию выделенного варианта/проверки
+void CMapManager::_deleteNode(qint32 localId, qint32 localParentId, bool copied)
 {
     auto it = m_nodes.find(localId);
+    if (it != m_nodes.end()) {
+        auto node = it.value();
 
-    //Удаление входящих линий
-    auto lines = it.value()->getAllLines();
-    for (auto line : lines) {
-        m_scene->removeItem(line);
+        //Свой алгоритм при удалении перед копированием
+        if (copied) {
+            //Удаление всех входящих линий
+            auto lines = node->getAllLines();
+            for (auto line : lines) {
+                m_scene->removeItem(line);
+            }
+            node->removeAllLines();
+
+            //Удаление нода
+            m_scene->removeItem(node);
+            delete node;
+            m_nodes.remove(localId);
+            m_scene->update();
+
+            return;
+        }
+
+        auto nodeAdditionalParents = node->getAdditionalParentsId();
+        if (!nodeAdditionalParents.isEmpty()) {
+            node->removeLineFromParent(localParentId);
+            if (node->getMainParentId() == localParentId) {
+                //Удаляем главного родителя
+                node->setMainParentId(nodeAdditionalParents.first());
+                node->removeAdditionalParent(nodeAdditionalParents.first());
+            } else {
+                //Удаляем дополнительного родителя
+                node->removeAdditionalParent(localParentId);
+            }
+
+            m_scene->update();
+            return;
+        }
+
+        //Запускаем удаление для детей
+        auto nodeChildren = node->getChildren();
+        for (auto nodeChild : nodeChildren) {
+            _deleteNode(nodeChild, localId);
+        }
+        //Удаление всех входящих линий
+        auto lines = node->getAllLines();
+        for (auto line : lines) {
+            m_scene->removeItem(line);
+        }
+        node->removeAllLines();
+        //Удаление нода
+        m_scene->removeItem(node);
+        delete node;
+        m_nodes.remove(localId);
+        m_scene->update();
     }
-
-    m_scene->removeItem(it.value());
-    delete it.value();
-    m_nodes.remove(localId);
-    m_scene->update();
 }
 
 void CMapManager::_addLine(const CNode *parent, CNode *destinationNode)

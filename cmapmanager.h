@@ -25,7 +25,7 @@ public:
     ~CMapManager();
     void addFirstNode();
     void addNode(qint32 id, ENodeType type);
-    void deleteNode(qint32 id, ENodeType type);
+    void deleteNode(qint32 id, ENodeType type, qint32 parentId, ENodeType parentType);
     void setSelected(qint32 selectedId, ENodeType type);
     //! Сделать финальным. Возможно только для стейджей!
     void setFinal(qint32 id, ENodeType type, bool final = true);
@@ -50,8 +50,8 @@ private:
     ENodeType _typeToMW(qint32 id);
     //! Перевод id в вид MW (Использовать только рядом с верхней функцией, а не то возможны просчёты)
     qint32 _idToMW(qint32 id);
-    //! Удалить нод с локальным id
-    void _deleteNode(qint32 localId);
+    //! Удалить нод с локальным id. Copied - удаляем ли мы нод при копировании или просто
+    void _deleteNode(qint32 localId, qint32 localParentId, bool copied = false);
     //! Нарисовать линию от parent к destinationNode
     void _addLine(const CNode *parent, CNode *destinationNode);
 

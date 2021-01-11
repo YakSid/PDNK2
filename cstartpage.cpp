@@ -4,13 +4,13 @@
 CStartPage::CStartPage(QWidget *parent) : QDialog(parent), ui(new Ui::CStartPage)
 {
     ui->setupUi(this);
-    // TODO: позже сделать авторизацию
-    ui->pushButton_5->setVisible(false);
+    // TODO: релиз: сделать авторизацию и иконку
+    // ui->pushButton_5->setVisible(false);
 
     //Пока БД не используется
-    ui->pb_connectDatabase->setVisible(false);
+    /*ui->pb_connectDatabase->setVisible(false);
     ui->pic_connection->setVisible(false);
-    ui->lbl_connected->setVisible(false);
+    ui->lbl_connected->setVisible(false);*/
 }
 
 CStartPage::~CStartPage()
@@ -20,12 +20,12 @@ CStartPage::~CStartPage()
 
 void CStartPage::init()
 {
-    emit s_connectDatabase();
+    // emit s_connectDatabase();
 }
 
 void CStartPage::databaseConnected(bool connected)
 {
-    QPixmap pixConnection;
+    /*QPixmap pixConnection;
     if (connected) {
         ui->lbl_connected->setText("БД подключена успешно");
         pixConnection.load(":/pictures/pictures/success.png");
@@ -35,12 +35,7 @@ void CStartPage::databaseConnected(bool connected)
         pixConnection.load(":/pictures/pictures/error.png");
         ui->pb_connectDatabase->setEnabled(true);
     }
-    ui->pic_connection->setPixmap(pixConnection);
-}
-
-void CStartPage::on_pb_connectDatabase_clicked()
-{
-    emit s_connectDatabase();
+    ui->pic_connection->setPixmap(pixConnection);*/
 }
 
 void CStartPage::on_pb_create_new_order_clicked()
@@ -52,6 +47,7 @@ void CStartPage::on_pb_create_new_order_clicked()
 void CStartPage::on_pb_edit_order_clicked()
 {
     jFilename = QFileDialog::getOpenFileName(this, "Выберите приказ", QString(), tr("JSON (*.json)"));
-    closeMode = 2;
+    if (!jFilename.isEmpty())
+        closeMode = 2;
     CStartPage::close();
 }

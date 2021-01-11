@@ -32,6 +32,7 @@ public:
     qint32 getMainParentId() const { return m_mainParentId; }
     void addAdditionalParent(qint32 additionaParentId) { m_additionalParentsId.append(additionaParentId); }
     QList<qint32> getAdditionalParentsId() const { return m_additionalParentsId; }
+    void removeAdditionalParent(qint32 id) { m_additionalParentsId.removeOne(id); }
     //! NOTE: Осторожно, константность не работает, но я этим пользуюсь при копировании и удалении
     const QList<SCheck *> *getChecks() { return &m_checks; }
     void update(const QList<SCheck *> &checks) { m_checks = checks; }

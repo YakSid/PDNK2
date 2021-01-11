@@ -56,9 +56,9 @@ void CRewardWidget::on_cb_rewardType_currentIndexChanged(int index)
     ui->sp_rewardCount->setMaximum(99999);
 
     if (index != 0 && index != 2 && index != 7 && index != 8) {
-        // TODO: позже сделать доп.окно для записей о нынешних сотрудниках, кто через что прошёл и кто есть
+        // TODO: релиз или потом: сделать доп.окно для записей о нынешних сотрудниках, кто через что прошёл и кто есть
         //Может потом записывать в историю сотрудников в godot, через что они прошли? Да
-        // TODO: позже уточнить сколько сотрудников сейчас выбрано
+        // TODO: релиз: уточнить сколько сотрудников сейчас выбрано
         ui->cb_object->addItems(CHARACTERS_MALE);
     } else if (index == 0) {
         ui->cb_object->addItems(RESOURCE_TYPES);
