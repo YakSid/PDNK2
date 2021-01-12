@@ -332,7 +332,7 @@ void COrder::deleteOutcome(qint32 id, qint32 deletableId, bool afterCopying)
         if (stage != m_stages.end()) {
             for (auto variant : *stage.value()->getVariants()) {
                 if (variant->outcomeId == id) {
-                    variant->outcomeId = -1; // WARNING: проверить это место
+                    variant->outcomeId = -1;
                 }
             }
         }
@@ -418,7 +418,7 @@ void COrder::deleteStage(qint32 id, qint32 deletableId, bool afterCopying)
         for (auto check : checks) {
             for (auto it = check->stagesId.begin(); it != check->stagesId.end(); it++) {
                 if (it.value() == id) {
-                    it.value() = -1; // WARNING: Проверить это место
+                    it.value() = -1;
                 }
             }
         }

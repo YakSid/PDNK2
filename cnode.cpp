@@ -1,5 +1,6 @@
 #include "cnode.h"
 #include <QDebug>
+#include <QStyleOptionGraphicsItem>
 
 CNode::CNode(QObject *parent) : QObject(parent), QGraphicsItem() {}
 

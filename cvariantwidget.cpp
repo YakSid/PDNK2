@@ -1,6 +1,7 @@
 #include "cvariantwidget.h"
 #include "ui_cvariantwidget.h"
 #include "cconstants.h"
+#include <QMouseEvent>
 
 CVariantWidget::CVariantWidget(QWidget *parent) : QWidget(parent), ui(new Ui::CVariantWidget)
 {
@@ -75,6 +76,13 @@ void CVariantWidget::slotToOutcomeClicked()
     } else {
         emit s_toOutcomeClicked(m_outcomeId);
     }
+}
+
+void CVariantWidget::mousePressEvent(QMouseEvent *event)
+{
+    if (m_outcomeId != -1)
+        emit s_markLineToOutcome(m_outcomeId);
+    QWidget::mousePressEvent(event);
 }
 
 void CVariantWidget::on_ch_needResource_stateChanged(int arg1)

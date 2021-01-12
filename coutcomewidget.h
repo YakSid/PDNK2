@@ -41,6 +41,11 @@ signals:
     //! btn - кнопка, которой назначается этап
     void s_createStageClicked(EOutcomeButton btn);
     void s_toStageClicked(qint32 id);
+    //! Нужно окрасить линию к стейджам
+    void s_markLineToStages(QList<qint32> stages);
+
+protected:
+    virtual void mousePressEvent(QMouseEvent *event);
 
 private slots:
     void on_cb_type_currentIndexChanged(int index);

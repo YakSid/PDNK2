@@ -199,6 +199,16 @@ void MainWindow::slotNodeDoubleClicked()
     ui->pb_cancelCopy->setVisible(true);
 }
 
+void MainWindow::slotMarkLineToOutcome(qint32 destinationOutcomeId)
+{
+    m_mapManager->markLineFromStageToOutcome(m_currentNode.id, destinationOutcomeId);
+}
+
+void MainWindow::slotMarkLinesToStages(QList<qint32> destinationStages)
+{
+    m_mapManager->markLineFromOutcomeToStages(m_currentNode.id, destinationStages);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (m_haveUnsavedChanges) {
@@ -717,6 +727,7 @@ void MainWindow::on_pb_addCheck_clicked()
     auto wgt = new COutcomeWidget();
     connect(wgt, &COutcomeWidget::s_createStageClicked, this, &MainWindow::slotCreateStageClicked);
     connect(wgt, &COutcomeWidget::s_toStageClicked, this, &MainWindow::slotToStageClicked);
+    connect(wgt, &COutcomeWidget::s_markLineToStages, this, &MainWindow::slotMarkLinesToStages);
     auto item = new QListWidgetItem(ui->lw_outcomes);
     auto wgtSize = wgt->sizeHint();
     wgtSize.setHeight(121);
@@ -802,6 +813,7 @@ void MainWindow::on_pb_addVariant_clicked()
     auto wgt = new CVariantWidget();
     connect(wgt, &CVariantWidget::s_createOutcomeClicked, this, &MainWindow::slotCreateOutcomeClicked);
     connect(wgt, &CVariantWidget::s_toOutcomeClicked, this, &MainWindow::slotToOutcomeClicked);
+    connect(wgt, &CVariantWidget::s_markLineToOutcome, this, &MainWindow::slotMarkLineToOutcome);
     auto item = new QListWidgetItem(ui->lw_variants);
     item->setSizeHint(wgt->sizeHint());
     ui->lw_variants->setItemWidget(item, wgt);

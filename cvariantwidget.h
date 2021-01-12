@@ -33,6 +33,11 @@ public slots:
 signals:
     void s_createOutcomeClicked();
     void s_toOutcomeClicked(qint32 id);
+    //! Нужно окрасить линию к исходу
+    void s_markLineToOutcome(qint32 outcomeId);
+
+protected:
+    virtual void mousePressEvent(QMouseEvent *event);
 
 private slots:
     void on_ch_needResource_stateChanged(int arg1);

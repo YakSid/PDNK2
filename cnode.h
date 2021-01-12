@@ -48,7 +48,6 @@ public:
     void addLine(qint32 parentId, QGraphicsItem *lineId) { m_lines.insert(parentId, lineId); }
     const QList<QGraphicsItem *> getAllLines();
     void removeLineFromParent(qint32 parentId);
-    //! Удалить все входящие линии
     void removeAllLines();
 
 signals:

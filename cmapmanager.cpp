@@ -47,7 +47,7 @@ void CMapManager::addFirstNode()
     m_nodes.insert(node->getId(), node);
 }
 
-// NOTE: позже можно сделать ноды движимыми (зажимая ПКМ перемещать вдоль placeNumber)
+// TODO: позже можно сделать ноды движимыми (зажимая ПКМ перемещать вдоль placeNumber)
 // TODO: чуть позже: расширить отступы, чтобы не у краёв были ноды. И можно добавить перемещение мышью?
 void CMapManager::addNode(qint32 id, ENodeType type)
 {
@@ -107,6 +107,9 @@ void CMapManager::setSelected(qint32 selectedId, ENodeType type)
 
     auto it = m_nodes.find(selectedId);
     if (!it.value()->isSelected()) {
+        //Удалить линии выбора
+        _removeAllSelectionLines();
+
         it.value()->setSelected(true);
         if (m_selectedNodeId != -1) {
             it = m_nodes.find(m_selectedNodeId);
@@ -175,6 +178,34 @@ void CMapManager::addAdditionalParentToNode(qint32 nodeId, ENodeType nodeType, q
     _addLine(parentNode, node);
 }
 
+void CMapManager::markLineFromStageToOutcome(qint32 stageId, qint32 outcomeId)
+{
+    auto itStage = m_nodes.find(_idFromMW(stageId, eStage));
+    auto itOutcome = m_nodes.find(_idFromMW(outcomeId, eOutcome));
+
+    if (itStage != m_nodes.end() && itOutcome != m_nodes.end()) {
+        _makeSelectionLines(itStage.value(), QList<CNode *> { itOutcome.value() });
+    }
+}
+
+void CMapManager::markLineFromOutcomeToStages(qint32 outcomeId, QList<qint32> stagesId)
+{
+    auto itOutcome = m_nodes.find(_idFromMW(outcomeId, eOutcome));
+    if (itOutcome == m_nodes.end())
+        return;
+
+    QList<CNode *> stages;
+    for (int i = 0; i < stagesId.count(); i++) {
+        auto itStage = m_nodes.find(_idFromMW(stagesId[i], eStage));
+        if (itStage != m_nodes.end()) {
+            stages.append(itStage.value());
+        }
+    }
+    if (!stages.isEmpty()) {
+        _makeSelectionLines(itOutcome.value(), stages);
+    }
+}
+
 void CMapManager::slotNodeClicked(qint32 id)
 {
     if (id != m_selectedNodeId) {
@@ -235,9 +266,9 @@ qint32 CMapManager::_idToMW(qint32 id)
     }
 }
 
-// TODO: релиз: подсвечивать линию выделенного варианта/проверки
 void CMapManager::_deleteNode(qint32 localId, qint32 localParentId, bool copied)
 {
+    _removeAllSelectionLines();
     auto it = m_nodes.find(localId);
     if (it != m_nodes.end()) {
         auto node = it.value();
@@ -308,8 +339,39 @@ void CMapManager::_addLine(const CNode *parent, CNode *destinationNode)
         line.setP1(QPointF(parent->x() + (NODE_SIZE + 10) / 2 + OWID, parent->y()));
         line.setP2(QPointF(destinationNode->x() - NODE_SIZE / 2 - OWID, destinationNode->y()));
     }
-    penBlack.setWidth(2);
+    penBlack.setWidth(3);
     auto linePointer = m_scene->addLine(line, penBlack);
 
     destinationNode->addLine(parent->getId(), linePointer);
+}
+
+void CMapManager::_makeSelectionLines(const CNode *parent, QList<CNode *> destinationNodes)
+{
+    _removeAllSelectionLines();
+    //Рисовка новых линий выбора
+    QPen penRed(Qt::yellow);
+    QLineF line;
+    for (int i = 0; i < destinationNodes.count(); i++) {
+        if (destinationNodes[i]->getType() == eStage) {
+            //родитель - аутком
+            line.setP1(QPointF(parent->x() + NODE_SIZE / 2 + OWID, parent->y()));
+            line.setP2(QPointF(destinationNodes[i]->x() - (NODE_SIZE + 10) / 2 - OWID, destinationNodes[i]->y()));
+        } else {
+            //родитель - стейдж
+            line.setP1(QPointF(parent->x() + (NODE_SIZE + 10) / 2 + OWID, parent->y()));
+            line.setP2(QPointF(destinationNodes[i]->x() - NODE_SIZE / 2 - OWID, destinationNodes[i]->y()));
+        }
+        penRed.setWidth(1);
+        auto linePointer = m_scene->addLine(line, penRed);
+        m_markedLines.append(linePointer);
+    }
+}
+
+void CMapManager::_removeAllSelectionLines()
+{
+    for (auto markedLine : m_markedLines) {
+        m_scene->removeItem(markedLine);
+    }
+    qDeleteAll(m_markedLines);
+    m_markedLines.clear();
 }

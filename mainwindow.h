@@ -74,6 +74,9 @@ public slots:
     void slotPrepareNodesCopy(qint32 copiedId, ENodeType copiedType, qint32 selectedId, ENodeType selectedType);
     //! На карте нод кликнут дважды
     void slotNodeDoubleClicked();
+    // Нажат вариант или проверка, нужно окрасить линию
+    void slotMarkLineToOutcome(qint32 destinationOutcomeId);
+    void slotMarkLinesToStages(QList<qint32> destinationStages);
 
 protected:
     void closeEvent(QCloseEvent *event);

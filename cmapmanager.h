@@ -33,6 +33,10 @@ public:
     void canCopy(bool st);
     //! Добавить ноду дополнительного родителя и нарисовать линию
     void addAdditionalParentToNode(qint32 nodeId, ENodeType nodeType, qint32 parentId, ENodeType parentType);
+    //! Окрасить линию от этапа к исходу
+    void markLineFromStageToOutcome(qint32 stageId, qint32 outcomeId);
+    //! Окрасить линии от исхода к этапам
+    void markLineFromOutcomeToStages(qint32 outcomeId, QList<qint32> stagesId);
 
 signals:
     void s_newNodeSelected(qint32 id, ENodeType type);
@@ -54,6 +58,10 @@ private:
     void _deleteNode(qint32 localId, qint32 localParentId, bool copied = false);
     //! Нарисовать линию от parent к destinationNode
     void _addLine(const CNode *parent, CNode *destinationNode);
+    //! Нарисовать временную линию выбора удалив существующие
+    void _makeSelectionLines(const CNode *parent, QList<CNode *> destinationNodes);
+    //! Удалить все существующие линии выбора
+    void _removeAllSelectionLines();
 
 private:
     QGraphicsScene *m_scene;
@@ -61,6 +69,8 @@ private:
     qint32 m_selectedNodeId { -1 };
     //! Номер копируемого нода, если сейчас происходит копирование
     qint32 m_copiedNodeId { -1 };
+    //! Указатели на окрашенные сейчас линии
+    QList<QGraphicsItem *> m_markedLines;
 };
 
 #endif // CMAPMANAGER_H

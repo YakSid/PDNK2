@@ -2,6 +2,7 @@
 #include "ui_coutcomewidget.h"
 #include <QDebug>
 #include "cconstants.h"
+#include <QMouseEvent>
 
 COutcomeWidget::COutcomeWidget(QWidget *parent) : QWidget(parent), ui(new Ui::COutcomeWidget)
 {
@@ -128,6 +129,22 @@ void COutcomeWidget::slotToStageClicked()
     } else {
         emit s_toStageClicked(it.value());
     }
+}
+
+void COutcomeWidget::mousePressEvent(QMouseEvent *event)
+{
+    bool haveStageId = false;
+    QList<qint32> stages;
+    for (auto stage : m_stages) {
+        if (stage != -1) {
+            haveStageId = true;
+        }
+        stages.append(stage);
+    }
+    if (haveStageId) {
+        emit s_markLineToStages(stages);
+    }
+    QWidget::mousePressEvent(event);
 }
 
 void COutcomeWidget::on_cb_type_currentIndexChanged(int index)
