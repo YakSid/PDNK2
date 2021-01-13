@@ -415,7 +415,7 @@ void MainWindow::_prepareStageUi(qint32 id)
             on_pb_addReward_clicked();
             auto wgt = qobject_cast<CRewardWidget *>(
                     ui->lw_rewards->itemWidget(ui->lw_rewards->item(ui->lw_rewards->count() - 1)));
-            wgt->updateData(reward->type, reward->object, reward->count, reward->psyState);
+            wgt->updateData(reward->type, reward->object, reward->count, reward->psyState, reward->note);
         }
     }
     _setRewardsVisible(!rewards->isEmpty());
@@ -518,6 +518,7 @@ void MainWindow::_saveCurrentStage()
         reward->object = wgt->getObject();
         reward->count = wgt->getCount();
         reward->psyState = wgt->getPsyState();
+        reward->note = wgt->getNote();
         rewards.append(reward);
     }
 

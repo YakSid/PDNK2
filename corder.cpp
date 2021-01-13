@@ -117,6 +117,7 @@ void COrder::saveToJSON(QString filename, const SMainSettings &settings)
             jReward->insert("object", reward->object);
             jReward->insert("count", reward->count);
             jReward->insert("psyState", reward->psyState);
+            jReward->insert("note", reward->note);
             jRewards.append(*jReward);
         }
         jStage->insert("rewards", jRewards);
@@ -250,6 +251,7 @@ SMainSettings COrder::loadFromJSON(QString filename)
             reward->object = jReward["object"].toInt();
             reward->count = jReward["count"].toInt();
             reward->psyState = jReward["psyState"].toInt();
+            reward->note = jReward["note"].toString();
             rewards.append(reward);
         }
         stage->setRewards(rewards);

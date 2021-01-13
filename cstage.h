@@ -24,6 +24,7 @@ struct SReward {
     qint32 object { -1 };
     qint32 count { -1 };
     qint32 psyState { -1 };
+    QString note;
 };
 //! Информация этапа
 struct SStageInfo {
