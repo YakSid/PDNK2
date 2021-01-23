@@ -773,7 +773,7 @@
               </font>
              </property>
              <property name="maximum">
-              <number>27</number>
+              <number>9</number>
              </property>
             </widget>
            </item>
@@ -1054,6 +1054,9 @@ p, li { white-space: pre-wrap; }
         </item>
         <item row="4" column="2">
          <widget class="QPushButton" name="pb_createQuest">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>121</width>
@@ -1561,7 +1564,7 @@ p, li { white-space: pre-wrap; }
                           </font>
                          </property>
                          <property name="text">
-                          <string>Добавить результат(награду)</string>
+                          <string>Добавить результаты(награды)</string>
                          </property>
                         </widget>
                        </item>

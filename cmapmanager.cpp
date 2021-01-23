@@ -9,7 +9,7 @@ CMapManager::CMapManager(QWidget *parent) : QGraphicsView(parent)
 {
     m_scene = new QGraphicsScene();
     setScene(m_scene);
-    // TODO: позже настроить ширину границ, чтобы антиалайзинг норм выглядел
+    // TODO: 3 min: настроить ширину границ, чтобы антиалайзинг норм выглядел
     // setRenderHint(QPainter::Antialiasing);
     /*// NOTE: Координатная разметка
     QPen penGreen(Qt::green);
@@ -47,8 +47,8 @@ void CMapManager::addFirstNode()
     m_nodes.insert(node->getId(), node);
 }
 
-// TODO: позже можно сделать ноды движимыми (зажимая ПКМ перемещать вдоль placeNumber)
-// TODO: чуть позже: расширить отступы, чтобы не у краёв были ноды. И можно добавить перемещение мышью?
+// TODO: 2 mid: можно сделать ноды движимыми (зажимая ПКМ перемещать вдоль placeNumber)
+// TODO: 2 min: расширить отступы, чтобы не у краёв были ноды
 void CMapManager::addNode(qint32 id, ENodeType type)
 {
     auto parentId = m_selectedNodeId;

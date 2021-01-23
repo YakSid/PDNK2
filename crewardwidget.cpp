@@ -3,9 +3,10 @@
 
 #include "cconstants.h"
 
-CRewardWidget::CRewardWidget(QWidget *parent) : QWidget(parent), ui(new Ui::CRewardWidget)
+CRewardWidget::CRewardWidget(qint32 staffCount, QWidget *parent) : QWidget(parent), ui(new Ui::CRewardWidget)
 {
     ui->setupUi(this);
+    m_staffCount = staffCount;
     ui->cb_rewardType->addItems(REWARD_TYPES);
 }
 
@@ -68,8 +69,9 @@ void CRewardWidget::on_cb_rewardType_currentIndexChanged(int index)
     ui->sp_rewardCount->setMaximum(99999);
 
     if (index != 0 && index != 2 && index != 7 && index != 8 && index != 10) {
-        // TODO: релиз: уточнить сколько сотрудников сейчас выбрано
-        ui->cb_object->addItems(CHARACTERS_MALE);
+        for (int i = 0; i < m_staffCount; i++) {
+            ui->cb_object->addItem(CHARACTERS_MALE[i]);
+        }
     } else if (index == 0) {
         ui->cb_object->addItems(RESOURCE_TYPES);
     } else if (index == 2 || index == 10) {

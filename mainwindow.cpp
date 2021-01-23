@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         break;
     case 2:
         // Редактировать старый приказ
-        // TODO: потом-потом, отобразить список сохранённых приказов с разными метками в corderspage
+        // TODO: 3 mid: отобразить список сохранённых приказов с разными метками в corderspage
         ui->setupUi(this);
         _prepareView();
         _initOrder(false);
@@ -276,7 +276,7 @@ void MainWindow::on_action_save_triggered()
     }
 }
 
-// TODO: позже отслеживать изменились ли mainSettings и сохранять их или предупреждать перед выходом
+// TODO: 2 mid: отслеживать изменились ли mainSettings и сохранять их или предупреждать перед выходом
 void MainWindow::on_action_saveAndExit_triggered()
 {
     on_action_save_triggered();
@@ -285,17 +285,17 @@ void MainWindow::on_action_saveAndExit_triggered()
 
 void MainWindow::on_action_runTest_triggered()
 {
-    // TODO: позже: сделать механику тест прогона приказа
+    // TODO: 2 mid: сделать механику тест прогона приказа
 }
 
 void MainWindow::updateWindow()
 {
-    // TODO: релиз: показывать условия приказа соответствующие типу вн или птр
+    // TODO: релиз энд: показывать условия приказа соответствующие типу вн или птр
 }
 
 void MainWindow::_prepareView()
 {
-    // TODO: чуть позже привести к начальному значению поля после сохранения или выбора другого приказа
+    // TODO: 2 mid: привести к начальному значению поля после сохранения или выбора другого приказа
     //Настройка полей главных настроек приказа
     ui->cb_threatLevel->addItems(THREAT_LEVELS);
     ui->cb_awarenessIndex->addItems(AWARNESS_INDEXES);
@@ -418,7 +418,8 @@ void MainWindow::_prepareStageUi(qint32 id)
             wgt->updateData(reward->type, reward->object, reward->count, reward->psyState, reward->note);
         }
     }
-    _setRewardsVisible(!rewards->isEmpty());
+    if (!stageInfo.isFinal)
+        _setRewardsVisible(!rewards->isEmpty());
     //Подготовка вариантов
     _deleteAllObjectsFromLw(ui->lw_variants);
     ui->lw_variants->clear();
@@ -458,9 +459,31 @@ bool MainWindow::_showQuestion(QString text, QString textYes, QString textNo, QS
 
 void MainWindow::_changeGrpNumberStaffTitle()
 {
-    qint32 numberStaff = ui->spb_first_rank->value() + ui->spb_second_rank->value() + ui->spb_third_rank->value()
+    qint32 previousStaffCount = m_staffCount;
+    m_staffCount = ui->spb_first_rank->value() + ui->spb_second_rank->value() + ui->spb_third_rank->value()
             + ui->spb_common->value();
-    ui->grp_number_staff->setTitle("Необходимо сотрудников: " + QString::number(numberStaff));
+    ui->grp_number_staff->setTitle("Необходимо сотрудников: " + QString::number(m_staffCount));
+
+    if (m_staffCount < 1) {
+        _showMessage("Должен быть назначен хотя бы один сотрудник");
+        ui->pb_createQuest->setEnabled(false);
+        if (m_questCreated)
+            ui->tabWidget->tabBar()->setTabEnabled(1, false);
+        return;
+    }
+
+    if (m_staffCount > 10) {
+        //Если увеличилось количество сотрудников
+        if (m_staffCount > previousStaffCount)
+            _showMessage("Количество персонажей больше 10, пожалуйста, уменьшите состав");
+        ui->pb_createQuest->setEnabled(false);
+        if (m_questCreated)
+            ui->tabWidget->tabBar()->setTabEnabled(1, false);
+    } else if (!ui->pb_createQuest->isEnabled()) {
+        ui->pb_createQuest->setEnabled(true);
+        if (m_questCreated)
+            ui->tabWidget->tabBar()->setTabEnabled(1, true);
+    }
 }
 
 qint32 MainWindow::_createOutcome()
@@ -509,7 +532,7 @@ void MainWindow::_saveCurrentOutcome()
 
 void MainWindow::_saveCurrentStage()
 {
-    // TODO: позже позже проверить утечки памяти, не быстрее ли будет проверять были ли изменения?
+    // TODO: позже-позже проверить утечки памяти, не быстрее ли будет проверять были ли изменения?
     QList<SReward *> rewards;
     for (int i = 0; i < ui->lw_rewards->count(); i++) {
         auto wgt = qobject_cast<CRewardWidget *>(ui->lw_rewards->itemWidget(ui->lw_rewards->item(i)));
@@ -564,6 +587,7 @@ void MainWindow::_setStageUiFinal(bool st)
         ui->groupStageDescription->setTitle("Описание результатов приказа");
         ui->grp_stageReward->setMaximumHeight(16777215);
         m_order->setStageFinal(m_currentNode.id, true);
+        _setRewardsVisible(true);
     } else {
         ui->pb_setFinal->setText("Сделать финальным");
         ui->groupVariants->setTitle("Варианты действий");
@@ -581,10 +605,10 @@ void MainWindow::_setRewardsVisible(bool st)
 {
     if (st) {
         ui->grp_stageReward->setVisible(true);
-        ui->pb_showRewardGroup->setText("Убрать результат(награду)");
+        ui->pb_showRewardGroup->setText("Убрать результаты(награды)");
     } else {
         ui->grp_stageReward->setVisible(false);
-        ui->pb_showRewardGroup->setText("Добавить результат(награду)");
+        ui->pb_showRewardGroup->setText("Добавить результаты(награды)");
     }
 }
 
@@ -719,7 +743,7 @@ void MainWindow::on_grp_req_resources_toggled(bool arg1)
 
 void MainWindow::on_cb_department_currentIndexChanged(int index)
 {
-    // TODO: позже: вписать значения в константы и энумы сделать
+    // TODO: 2 min: вписать значения в константы и энумы сделать
 }
 
 void MainWindow::on_pb_addCheck_clicked()
@@ -870,6 +894,12 @@ void MainWindow::on_pb_setFinal_clicked()
 
 void MainWindow::on_pb_showRewardGroup_clicked()
 {
+    auto stageInfo = m_order->getStageInfo(m_currentNode.id);
+    if (stageInfo.isFinal) {
+        _showMessage("Результат финального звена должен существовать");
+        return;
+    }
+
     if (ui->grp_stageReward->isVisible()) {
         _setRewardsVisible(false);
     } else {
@@ -879,7 +909,7 @@ void MainWindow::on_pb_showRewardGroup_clicked()
 
 void MainWindow::on_pb_createQuest_clicked()
 {
-    if (ui->tabWidget->tabBar()->isTabEnabled(1)) {
+    if (m_questCreated) {
         //Создание квеста уже было произведено, нужно просто перейти на первый этап
         m_mapManager->setSelected(0, eOutcome);
         _prepareOutcomeUi(0);
@@ -904,7 +934,7 @@ void MainWindow::on_pb_toParentOutcome_clicked()
 
 void MainWindow::on_pb_addReward_clicked()
 {
-    auto wgt = new CRewardWidget;
+    auto wgt = new CRewardWidget(m_staffCount);
     auto item = new QListWidgetItem(ui->lw_rewards);
     item->setSizeHint(wgt->sizeHint());
     ui->lw_rewards->setItemWidget(item, wgt);
@@ -948,6 +978,7 @@ void MainWindow::_initOrder(bool newOrder)
     connect(m_mapManager, &CMapManager::s_nodeDoubleClicked, this, &MainWindow::slotNodeDoubleClicked);
     ui->gb_map->layout()->addWidget(m_mapManager);
     m_currentNode.update(-1, eStage);
+    m_questCreated = true;
     if (newOrder)
         slotCreateOutcomeClicked();
 }
@@ -962,4 +993,24 @@ void MainWindow::on_pb_cancelCopy_clicked()
 void MainWindow::_hideWarning()
 {
     ui->lb_warningsLog->setVisible(false);
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    if (!m_questCreated)
+        return;
+
+    if (index == 0) {
+        if (m_currentNode.isOutcome()) {
+            _saveCurrentOutcome();
+        } else {
+            _saveCurrentStage();
+        }
+    } else {
+        if (m_currentNode.isOutcome()) {
+            _prepareOutcomeUi(m_currentNode.id);
+        } else {
+            _prepareStageUi(m_currentNode.id);
+        }
+    }
 }

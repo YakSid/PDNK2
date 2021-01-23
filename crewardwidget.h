@@ -20,7 +20,7 @@ class CRewardWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit CRewardWidget(QWidget *parent = nullptr);
+    explicit CRewardWidget(qint32 staffCount, QWidget *parent = nullptr);
     ~CRewardWidget();
 
     qint32 getType();
@@ -37,6 +37,7 @@ private slots:
 
 private:
     Ui::CRewardWidget *ui;
+    qint32 m_staffCount;
 };
 
 #endif // CREWARDWIDGET_H
