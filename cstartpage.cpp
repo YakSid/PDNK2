@@ -4,7 +4,7 @@
 CStartPage::CStartPage(QWidget *parent) : QDialog(parent), ui(new Ui::CStartPage)
 {
     ui->setupUi(this);
-    // TODO: релиз: сделать авторизацию и иконку
+    ui->lb_writer->setText(m_writer);
     // ui->pushButton_5->setVisible(false);
 
     //Пока БД не используется

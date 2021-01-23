@@ -130,9 +130,9 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="lb_writer">
      <property name="text">
-      <string>Пользователь: Дев</string>
+      <string>Пользователь: </string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

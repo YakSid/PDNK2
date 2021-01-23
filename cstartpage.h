@@ -37,6 +37,9 @@ private slots:
 
 private:
     Ui::CStartPage *ui;
+
+    // WARNING: Указывать здесь автора перед сборкой
+    QString m_writer { "DEV" };
 };
 
 #endif // CSTARTPAGE_H
