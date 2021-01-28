@@ -39,7 +39,7 @@ private:
     Ui::CStartPage *ui;
 
     // WARNING: Указывать здесь автора перед сборкой
-    QString m_writer { "DEV" };
+    QString m_writer { "Добро пожаловать!" };
 };
 
 #endif // CSTARTPAGE_H

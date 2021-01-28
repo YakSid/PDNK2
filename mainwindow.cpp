@@ -288,11 +288,6 @@ void MainWindow::on_action_runTest_triggered()
     // TODO: 2 mid: сделать механику тест прогона приказа
 }
 
-void MainWindow::updateWindow()
-{
-    // TODO: релиз энд: показывать условия приказа соответствующие типу вн или птр
-}
-
 void MainWindow::_prepareView()
 {
     // TODO: 2 mid: привести к начальному значению поля после сохранения или выбора другого приказа
@@ -304,6 +299,8 @@ void MainWindow::_prepareView()
     //
     setWindowTitle(PROGRAM_NAME);
     ui->cb_type->setCurrentIndex(0);
+    ui->lb_patrolDesc->setVisible(false);
+    ui->lb_patrolDesc->setText(DEPARTMENTS_PATROL_DESC[0]);
     ui->swgt_order_type->setCurrentWidget(ui->wgt_inner_order);
     ui->cb_time->addItems(TIME_PERIODS);
     ui->grp_stageReward->setVisible(false);
@@ -376,7 +373,7 @@ void MainWindow::_prepareOutcomeUi(qint32 id)
     ui->gb_stagesOutcomes->setTitle("Исходы выбора");
     if (id == 0) {
         ui->pb_toParentStage->setVisible(false);
-        ui->lb_briefReminderOutcome->setText("Начальный исход");
+        ui->lb_briefReminderOutcome->setText("Проверка после назначения");
     } else {
         ui->pb_toParentStage->setVisible(true);
         ui->lb_briefReminderOutcome->setText(m_order->getHeaderString(id, eOutcome));
@@ -699,10 +696,12 @@ void MainWindow::on_cb_type_currentIndexChanged(int index)
     case 0:
         // Если выбран внутренний приказ (0)
         ui->swgt_order_type->setCurrentWidget(ui->wgt_inner_order);
+        ui->lb_patrolDesc->setVisible(false);
         break;
     case 1:
         // Если выбран внешний приказ (патруль) (1)
         ui->swgt_order_type->setCurrentWidget(ui->wgt_patrol_order);
+        ui->lb_patrolDesc->setVisible(true);
         break;
     }
 }
@@ -741,9 +740,11 @@ void MainWindow::on_grp_req_resources_toggled(bool arg1)
     }
 }
 
+// TODO: 2 min: вписать значения в константы и энумы сделать
 void MainWindow::on_cb_department_currentIndexChanged(int index)
 {
-    // TODO: 2 min: вписать значения в константы и энумы сделать
+    if (index >= 0 && index <= DEPARTMENTS_PATROL_DESC.count())
+        ui->lb_patrolDesc->setText(DEPARTMENTS_PATROL_DESC[index]);
 }
 
 void MainWindow::on_pb_addCheck_clicked()
