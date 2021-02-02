@@ -211,7 +211,7 @@
               </font>
              </property>
              <property name="text">
-              <string>П.О. департамента:</string>
+              <string>Осведомлён. департамента:</string>
              </property>
             </widget>
            </item>
@@ -1063,6 +1063,9 @@ p, li { white-space: pre-wrap; }
             <height>31</height>
            </size>
           </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
           <property name="text">
            <string>К созданию</string>
           </property>
@@ -1906,6 +1909,7 @@ p, li { white-space: pre-wrap; }
      <string>Тест прогон</string>
     </property>
     <addaction name="action_runTest"/>
+    <addaction name="action_runTestFromCurrent"/>
    </widget>
    <addaction name="menu_saving"/>
    <addaction name="menu"/>
@@ -1937,6 +1941,14 @@ p, li { white-space: pre-wrap; }
   <action name="action_runTest">
    <property name="text">
     <string>Запустить</string>
+   </property>
+  </action>
+  <action name="action_runTestFromCurrent">
+   <property name="text">
+    <string>Запустить с текущего</string>
+   </property>
+   <property name="shortcut">
+    <string>F9</string>
    </property>
   </action>
  </widget>

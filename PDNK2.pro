@@ -36,6 +36,7 @@ SOURCES += \
         cstage.cpp \
         cstartpage.cpp \
         cstatisticspage.cpp \
+        ctestrun.cpp \
         cvariantwidget.cpp \
         main.cpp \
         mainwindow.cpp
@@ -53,6 +54,7 @@ HEADERS += \
         cstage.h \
         cstartpage.h \
         cstatisticspage.h \
+        ctestrun.h \
         cvariantwidget.h \
         mainwindow.h
 
@@ -62,6 +64,7 @@ FORMS += \
         crewardwidget.ui \
         cstartpage.ui \
         cstatisticspage.ui \
+        ctestrun.ui \
         cvariantwidget.ui \
         mainwindow.ui
 

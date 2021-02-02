@@ -573,6 +573,32 @@ QString COrder::getHeaderString(qint32 id, ENodeType type)
     return result;
 }
 
+SStageInfo COrder::getConstStageInfo(qint32 id) const
+{
+    SStageInfo result;
+    auto it = m_stages.find(id);
+    if (it != m_stages.end())
+        result = it.value()->getStageInfo();
+    return result;
+}
+
+const QList<SReward *> *COrder::getConstStageRewards(qint32 id) const
+{
+    const QList<SReward *> *result = nullptr;
+    auto it = m_stages.find(id);
+    if (it != m_stages.end())
+        result = it.value()->getRewards();
+    return result;
+}
+
+const QList<SVariant *> *COrder::getConstStageVariants(qint32 stageId) const
+{
+    auto it = m_stages.find(stageId);
+    if (it != m_stages.end())
+        return it.value()->getVariants();
+    return nullptr;
+}
+
 qint32 COrder::_makeMinId(ENodeType type)
 {
     qint32 minId = 0;

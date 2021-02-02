@@ -68,6 +68,12 @@ public:
     //! Получить подпись хэдэра для этого нода из названия кнопки родителя
     QString getHeaderString(qint32 id, ENodeType type);
 
+public:
+    //Константные методы
+    SStageInfo getConstStageInfo(qint32 id) const;
+    const QList<SReward *> *getConstStageRewards(qint32 id) const;
+    const QList<SVariant *> *getConstStageVariants(qint32 stageId) const;
+
 private:
     //! Пройтись по всем нодам указанного типа и вернуть минимальный незанятый id
     qint32 _makeMinId(ENodeType type);

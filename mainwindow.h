@@ -10,6 +10,7 @@
 #include "cmapmanager.h"
 #include "cstartpage.h"
 #include "corder.h"
+#include "ctestrun.h"
 
 /** @class class MainWindow
  * Класс основного рабочего окна.
@@ -50,6 +51,7 @@ struct SNode {
 // наградах. Предупреждение "есть ли провал у каждой из первых трех". В будущем добавить проверку после компиляции перед
 // прогоном с выводом всех возможных предупреждений. Предупреждение: если изменили в ауткоме проверку, то нужно создать
 // то же количество кнопок
+//продумать предупреждение или проверку на сущности @Старший_офицер_полиции например
 namespace Ui {
 class MainWindow;
 }
@@ -87,6 +89,7 @@ private slots:
     void on_action_save_triggered();
     void on_action_saveAndExit_triggered();
     void on_action_runTest_triggered();
+    void on_action_runTestFromCurrent_triggered();
     void on_cb_type_currentIndexChanged(int index);
     void on_spb_first_rank_valueChanged(int arg1);
     void on_spb_second_rank_valueChanged(int arg1);
@@ -154,6 +157,7 @@ private:
     Ui::MainWindow *ui;
     CDatabaseManager *m_databaseManager;
     CMapManager *m_mapManager;
+    CTestRun *m_testRun;
     //! Текущий приказ
     COrder *m_order { nullptr };
     //! Текущий нод

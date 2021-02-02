@@ -286,6 +286,20 @@ void MainWindow::on_action_saveAndExit_triggered()
 void MainWindow::on_action_runTest_triggered()
 {
     // TODO: 2 mid: сделать механику тест прогона приказа
+    // m_testRun->startFromBegining();
+    // m_testRun->setModal(true);
+    // m_testRun->exec();
+}
+
+void MainWindow::on_action_runTestFromCurrent_triggered()
+{
+    if (m_currentNode.isOutcome()) {
+        _showMessage("Выберите этап, чтобы провести тестовый прогон с указанного этапа");
+    } else {
+        m_testRun->startFromStage(m_currentNode.id);
+        m_testRun->setModal(true);
+        m_testRun->exec();
+    }
 }
 
 void MainWindow::_prepareView()
@@ -295,6 +309,7 @@ void MainWindow::_prepareView()
     ui->cb_threatLevel->addItems(THREAT_LEVELS);
     ui->cb_awarenessIndex->addItems(AWARNESS_INDEXES);
     ui->cb_vampiresMentioned->addItems(VAMPIRES_MENTIONED);
+    ui->cb_vampiresMentioned->setCurrentIndex(1);
     ui->cb_innerType->addItems(INNER_ORDER_TYPES);
     //
     setWindowTitle(PROGRAM_NAME);
@@ -973,6 +988,7 @@ void MainWindow::_initOrder(bool newOrder)
 {
     ui->tabWidget->tabBar()->setTabEnabled(1, true);
     m_order = new COrder();
+    m_testRun = new CTestRun(m_order, this);
     m_mapManager = new CMapManager();
     connect(m_mapManager, &CMapManager::s_newNodeSelected, this, &MainWindow::slotNewNodeSelected);
     connect(m_mapManager, &CMapManager::s_askToCopy, this, &MainWindow::slotPrepareNodesCopy);
